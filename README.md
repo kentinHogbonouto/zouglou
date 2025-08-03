@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zouglou Frontend
 
-## Getting Started
+## 🚀 Fonctionnalités
 
-First, run the development server:
+- **Interface moderne et responsive** : Design adaptatif pour tous les appareils
+- **Composants réutilisables** : Architecture modulaire avec des composants UI personnalisés
+- **TypeScript** : Typage statique pour une meilleure maintenabilité
+- **Tailwind CSS** : Framework CSS utilitaire pour un styling rapide et cohérent
+- **Pages statiques** : Performance optimisée avec le rendu côté serveur
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 📁 Structure du projet
+
+```
+src/
+├── app/                    # Pages Next.js (App Router)
+│   ├── globals.css        # Styles globaux
+│   ├── layout.tsx         # Layout principal
+│   └── page.tsx           # Page d'accueil
+├── components/            # Composants React
+│   ├── features/          # Composants spécifiques aux fonctionnalités
+│   │   ├── Hero.tsx       # Section d'accueil
+│   │   └── ServicesSection.tsx
+│   ├── layout/            # Composants de mise en page
+│   │   ├── Header.tsx     # Navigation principale
+│   │   └── Footer.tsx     # Pied de page
+│   └── ui/                # Composants UI réutilisables
+│       ├── Button.tsx     # Boutons
+│       ├── Card.tsx       # Cartes
+│       └── Input.tsx      # Champs de saisie
+├── hooks/                 # Hooks personnalisés
+│   └── useApi.ts          # Hook pour les appels API
+├── lib/                   # Utilitaires et configurations
+│   └── utils.ts           # Fonctions utilitaires
+└── shared/                # Types et ressources partagées
+    └── types/             # Types TypeScript
+        └── index.ts       # Types de base
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Technologies utilisées
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js 15** : Framework React avec App Router
+- **React 19** : Bibliothèque UI
+- **TypeScript** : Typage statique
+- **Tailwind CSS** : Framework CSS utilitaire
+- **clsx** : Utilitaire pour les classes CSS conditionnelles
+- **tailwind-merge** : Fusion intelligente des classes Tailwind
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Installation et démarrage
 
-## Learn More
+1. **Installer les dépendances** :
+   ```bash
+   yarn install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Démarrer le serveur de développement** :
+   ```bash
+   yarn dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Ouvrir dans le navigateur** :
+   ```
+   http://localhost:3000
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 Scripts disponibles
 
-## Deploy on Vercel
+- `yarn dev` : Démarre le serveur de développement
+- `yarn build` : Construit l'application pour la production
+- `yarn start` : Démarre le serveur de production
+- `yarn lint` : Lance le linter ESLint
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 Design System
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Le projet utilise un système de design cohérent avec :
+
+- **Variables CSS** : Couleurs et espacements standardisés
+- **Composants UI** : Boutons, cartes, inputs réutilisables
+- **Responsive Design** : Adaptation mobile-first
+- **Accessibilité** : Support des lecteurs d'écran et navigation clavier
+
+## 🔧 Configuration
+
+### Tailwind CSS
+Le fichier `tailwind.config.ts` contient la configuration personnalisée avec :
+- Variables CSS pour les couleurs
+- Extensions de thème
+- Configuration des plugins
+
+### TypeScript
+Configuration dans `tsconfig.json` avec :
+- Path mapping pour les imports
+- Configuration stricte
+- Support des fonctionnalités modernes
+
+## 📱 Pages disponibles
+
+- **Accueil** (`/`) : Page principale avec hero et services
+- **Services** (`/services`) : Liste des services médicaux
+- **Packs** (`/packs`) : Packs de santé disponibles
+- **Contact** (`/contact`) : Formulaire de contact et informations
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche pour votre fonctionnalité
+3. Commiter vos changements
+4. Pousser vers la branche
+5. Ouvrir une Pull Request
+
+## 📄 Licence
+
+Ce projet est sous licence MIT.
