@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext } from 'react';
 import { User } from '@/shared/types';
+import { apiService } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
@@ -9,6 +10,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   register: (userData: Partial<User> & { password: string }) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (token: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,12 +25,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (token) {
       setUser({
         id: '1',
-        email: 'user@example.com',
+        email: 'admin@example.com',
         firstName: 'Utilisateur',
         lastName: 'Test',
         username: 'utilisateur_test',
-        role: 'user',
+        role: 'super-admin',
         isVerified: false,
+        status: 'active',
+        isEmailVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -37,21 +42,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const mockUser: User = {
+      const response = await apiService.post<{ user: User; accessToken: string, refreshToken: string }>('/account/login/', { email, password });
+      const mockUser: User = response.data?.user || {
         id: '1',
-        email,
+        email: 'admin@example.com',
         firstName: 'Utilisateur',
-        lastName: 'Connecté',
-        username: 'utilisateur_connecte',
-        role: 'user',
+        lastName: 'Test',
+        username: 'utilisateur_test',
+        role: 'super-admin',
         isVerified: false,
+        status: 'active',
+        isEmailVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       setUser(mockUser);
-      localStorage.setItem('auth_token', 'mock_token');
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error) {
+        throw new Error(error as string);
+      }
+      
       throw new Error('Échec de la connexion');
     }
   };
@@ -71,19 +82,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         username: userData.username || 'nouveau_utilisateur',
         role: 'user',
         isVerified: false,
+        status: 'active',
+        isEmailVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
       setUser(mockUser);
       localStorage.setItem('auth_token', 'mock_token');
-    } catch (error) {
-      throw new Error('Échec de l\'inscription');
+    } catch (error: unknown) {
+      if (error) {
+        throw new Error(error as string);
+      }
+      
+      throw new Error('Échec de l&apos;inscription');
+    }
+  };
+
+  const forgotPassword = async (email: string) => {
+    try {
+      await apiService.post('/account/forgot-password/', { email });
+    } catch (error: unknown) {
+      if (error) {
+        throw new Error(error as string);
+      }
+      throw new Error('Erreur lors de l&apos;envoi de l&apos;email de réinitialisation');
+    }
+  };
+
+  const resetPassword = async (token: string, newPassword: string) => {
+    try {
+      await apiService.post('/account/reset-password/', { token, newPassword });
+    } catch (error: unknown) {
+      if (error) {
+        throw new Error(error as string);
+      }
+      throw new Error('Erreur lors de la réinitialisation du mot de passe');
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, forgotPassword, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

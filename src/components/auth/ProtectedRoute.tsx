@@ -20,10 +20,10 @@ export function ProtectedRoute({
   requiredRoles = [],
   fallback 
 }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingPage />;
   }
 
@@ -49,7 +49,7 @@ export function ProtectedRoute({
                 onClick={() => router.push('/')}
                 className="w-full"
               >
-                Retour à l'accueil
+                Retour à l&apos;accueil
               </Button>
             </div>
           </CardContent>
@@ -71,7 +71,7 @@ export function ProtectedRoute({
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-gray-600">
-              Vous n'avez pas les rôles nécessaires pour accéder à cette page.
+              Vous n&apos;avez pas les rôles nécessaires pour accéder à cette page.
             </p>
             <Button 
               onClick={() => router.push('/dashboard')}
@@ -96,7 +96,7 @@ export function ProtectedRoute({
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-gray-600">
-              Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+              Vous n&apos;avez pas les permissions nécessaires pour accéder à cette page.
             </p>
             <Button 
               onClick={() => router.push('/dashboard')}

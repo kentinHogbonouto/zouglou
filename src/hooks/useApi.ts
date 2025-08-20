@@ -4,7 +4,7 @@ import { ApiResponse } from '@/shared/types';
 interface UseApiOptions<T> {
   url: string;
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  body?: any;
+  body?: unknown;
   headers?: Record<string, string>;
   onSuccess?: (data: T) => void;
   onError?: (error: string) => void;
@@ -66,7 +66,7 @@ export function useApiGet<T>(url: string) {
 
   useEffect(() => {
     execute();
-  }, [url]);
+  }, [url, execute]);
 
   return { data, loading, error, refetch: execute };
 } 

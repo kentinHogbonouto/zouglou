@@ -4,12 +4,25 @@ import { useAuth } from '@/hooks/useAuth';
 import { RBAC, SYSTEM_PERMISSIONS } from '@/lib/rbac';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/Button';
+import { ChartLineIcon, Music, Settings, ShieldCheckIcon, User, Users, Disc3, Radio, Podcast } from 'lucide-react';
+import Image from 'next/image';
 interface MenuItem {
   label: string;
   href: string;
-  icon: string;
+  icon: React.ReactNode;
   permission?: string;
   roles?: string[];
 }
@@ -18,37 +31,47 @@ const artistMenuItems: MenuItem[] = [
   {
     label: 'Vue d\'ensemble',
     href: '/dashboard/artist',
-    icon: '📊',
+    icon: <ChartLineIcon size={16} className="h-4 w-4" />,
   },
   {
     label: 'Mes titres',
     href: '/dashboard/artist/tracks',
-    icon: '🎵',
+    icon: <Music size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_READ,
   },
   {
     label: 'Mes albums',
     href: '/dashboard/artist/albums',
-    icon: '📀',
+    icon: <Disc3 size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_READ,
+  },
+  {
+    label: 'Live Streams',
+    href: '/dashboard/artist/live',
+    icon: <Radio size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_CREATE,
+  },
+  {
+    label: 'Podcasts',
+    href: '/dashboard/artist/podcasts',
+    icon: <Podcast size={16} className="h-4 w-4" />,
   },
   {
     label: 'Analytics',
     href: '/dashboard/artist/analytics',
-    icon: '📈',
+    icon: <ChartLineIcon size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.ANALYTICS_READ,
   },
   {
     label: 'Revenus',
     href: '/dashboard/artist/revenue',
-    icon: '💰',
+    icon: <Music size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.REVENUE_READ,
   },
   {
-    label: 'Streams en direct',
-    href: '/dashboard/artist/live',
-    icon: '📺',
-    permission: SYSTEM_PERMISSIONS.CONTENT_CREATE,
+    label: 'Mon Profil',
+    href: '/dashboard/artist/profile',
+    icon: <User size={16} className="h-4 w-4" />,
   },
 ];
 
@@ -61,31 +84,31 @@ const adminMenuItems: MenuItem[] = [
   {
     label: 'Utilisateurs',
     href: '/dashboard/admin/users',
-    icon: '👥',
-    permission: SYSTEM_PERMISSIONS.USER_MANAGE,
+    icon: <Users size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.SYSTEM_MANAGE,
   },
   {
     label: 'Artistes',
     href: '/dashboard/admin/artists',
-    icon: '🎤',
+    icon: <User size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.ARTIST_MANAGE,
   },
   {
     label: 'Modération',
     href: '/dashboard/admin/moderation',
-    icon: '🛡️',
+    icon: <ShieldCheckIcon size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
   },
   {
     label: 'Analytics',
     href: '/dashboard/admin/analytics',
-    icon: '📈',
+    icon: <ChartLineIcon size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.ANALYTICS_MANAGE,
   },
   {
     label: 'Système',
     href: '/dashboard/admin/system',
-    icon: '⚙️',
+    icon: <Settings size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.SYSTEM_MANAGE,
   },
 ];
@@ -93,13 +116,12 @@ const adminMenuItems: MenuItem[] = [
 export function DashboardSidebar() {
   const { user } = useAuth();
   const pathname = usePathname();
-  
+
   if (!user) return null;
 
   const rbac = new RBAC(user);
-  const isArtist = rbac.hasRole('artist');
-  const isAdmin = rbac.hasRole('admin') || rbac.hasRole('super_admin');
-  
+  const isAdmin = rbac.hasRole('admin') || rbac.hasRole('super-admin');
+
   const menuItems = isAdmin ? adminMenuItems : artistMenuItems;
 
   const filteredMenuItems = menuItems.filter(item => {
@@ -113,67 +135,60 @@ export function DashboardSidebar() {
   });
 
   return (
-    <div className="w-72 bg-gradient-to-b from-gray-900 to-gray-800 text-white min-h-screen p-6 shadow-2xl">
-      {/* Logo et branding */}
-      <div className="mb-10">
-        <div className="flex items-center space-x-3 mb-2">
-          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-lg">Z</span>
+    <Sidebar>
+      <SidebarHeader>
+        <div className="flex items-center space-x-3 mt-10 mb-2">
+          <div className="rounded-xl flex items-center justify-center">
+            <Image src='/images/logo_zouglou.png' className='w-[8rem] h-[8rem] object-cover object-center' width={400} height={400} alt='logo zouglou' />
           </div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-            Zouglou
-          </h2>
         </div>
-        <p className="text-gray-400 text-sm font-medium">
-          {isAdmin ? 'Administration' : 'Dashboard Artiste'}
-        </p>
-      </div>
+      </SidebarHeader>
 
-      {/* Navigation */}
-      <nav className="space-y-3">
-        {filteredMenuItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex items-center space-x-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group',
-              pathname === item.href
-                ? 'bg-gradient-to-r from-green-500 to-blue-600 text-white shadow-lg'
-                : 'text-gray-300 hover:bg-white/10 hover:text-white'
-            )}
-          >
-            <span className={cn(
-              'text-xl transition-transform duration-200',
-              pathname === item.href ? 'scale-110' : 'group-hover:scale-110'
-            )}>
-              {item.icon}
-            </span>
-            <span>{item.label}</span>
-          </Link>
-        ))}
-      </nav>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filteredMenuItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.href}
+                    tooltip={item.label}
+                    className="my-2 hover:bg-orange-500 hover:text-white py-3 px-2"
+                  >
+                    <Link href={item.href}>
+                      <span className="text-xl">{item.icon}</span>
+                      <span className='text-bse'>{item.label}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-      {/* Profil utilisateur */}
-      <div className="mt-auto pt-8 border-t border-gray-700">
-        <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+      <SidebarFooter>
+        <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-xl">
           <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center">
             <span className="text-white font-bold text-lg">
-              {user.firstName.charAt(0)}
+              {user.firstName?.charAt(0)}
             </span>
           </div>
-          <div className="flex-1">
-            <p className="text-white font-medium">
+          <div className="flex-1 min-w-0">
+            <p className="font-medium truncate">
               {user.firstName} {user.lastName}
             </p>
-            <p className="text-gray-400 text-sm capitalize">
+            <p className="text-muted-foreground text-sm capitalize truncate">
               {user.role}
             </p>
           </div>
-          <button className="p-2 text-gray-400 hover:text-white transition-colors">
-            <span className="text-lg">⚙️</span>
-          </button>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Settings className="h-4 w-4" />
+          </Button>
         </div>
-      </div>
-    </div>
+      </SidebarFooter>
+    </Sidebar>
   );
 } 

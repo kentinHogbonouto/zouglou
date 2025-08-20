@@ -1,4 +1,4 @@
-import { User, Permission, Role } from '@/shared/types';
+import { User } from "@/shared/types/user";
 
 // Permissions système prédéfinies
 export const SYSTEM_PERMISSIONS = {
@@ -99,7 +99,7 @@ export class RBAC {
   }
 
   private getUserPermissions(user: User): string[] {
-    const rolePermissions = ROLE_PERMISSIONS[user.role] || [];
+    const rolePermissions = ROLE_PERMISSIONS[user.default_role || ''] || [];
     return rolePermissions;
   }
 
@@ -122,17 +122,17 @@ export class RBAC {
   // Vérifier si l'utilisateur a un rôle spécifique
   hasRole(role: string): boolean {
     if (!this.user) return false;
-    return this.user.role === role;
+    return this.user.default_role === role;
   }
 
   // Vérifier si l'utilisateur a au moins un des rôles
   hasAnyRole(roles: string[]): boolean {
     if (!this.user) return false;
-    return roles.includes(this.user.role);
+    return roles.includes(this.user.default_role || '');
   }
 
   // Obtenir toutes les permissions de l'utilisateur
-  getUserPermissions(): string[] {
+  getUserAllPermissions(): string[] {
     return [...this.userPermissions];
   }
 
@@ -151,12 +151,11 @@ export class RBAC {
   }
 }
 
-// Hook pour utiliser RBAC dans les composants
 export function useRBAC() {
-  // Cette fonction sera utilisée avec le contexte d'authentification
   return {
-    hasPermission: (permission: string) => false, // À implémenter avec le contexte
-    hasRole: (role: string) => false, // À implémenter avec le contexte
-    canAccessRoute: (route: string) => false, // À implémenter avec le contexte
+    hasPermission: () => false,
+    hasRole: () => false,
+    canAccessRoute: () => false,
+    getUserAllPermissions: () => [],
   };
 } 

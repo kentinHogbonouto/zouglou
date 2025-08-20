@@ -14,10 +14,10 @@ export function AnalyticsOverview() {
         </div>
       </div>
       <div className="bg-gray-50 p-4 rounded-lg">
-        <div className="text-sm text-gray-600 mb-2">Top pays d'écoute</div>
+        <div className="text-sm text-gray-600 mb-2">Top pays d&apos;écoute</div>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span>Côte d'Ivoire</span>
+            <span>Côte d&apos;Ivoire</span>
             <span className="font-medium">65%</span>
           </div>
           <div className="flex justify-between">

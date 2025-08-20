@@ -1,7 +1,5 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/Card';
-
 const mockTracks = [
   {
     id: '1',

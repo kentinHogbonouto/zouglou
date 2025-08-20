@@ -1,4 +1,10 @@
 export { Button } from './Button';
-export { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from './Card';
+export { Card } from './Card';
 export { Input } from './Input';
-export { Loading, LoadingPage } from './Loading'; 
+export { Loading } from './Loading';
+export { Modal, ModalButton, ModalActions } from './Modal';
+export { FormField, FormCheckbox } from './FormField';
+export { GenreSelect } from './GenreSelect';
+export { CategorySelect } from './CategorySelect';
+export { Notification } from './Notification';
+export { MusicPlayer } from './MusicPlayer'; 

@@ -1,33 +1,9 @@
-export interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  avatar?: string;
-  bio?: string;
-  role: 'user' | 'artist' | 'admin' | 'moderator';
-  isVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Artist, User } from './user';
 
-export interface Artist extends User {
-  role: 'artist';
-  artistName: string;
-  genre: string[];
-  followers: number;
-  monthlyListeners: number;
-  totalPlays: number;
-  isVerified: boolean;
-  socialLinks: {
-    instagram?: string;
-    twitter?: string;
-    youtube?: string;
-    tiktok?: string;
-  };
-}
+// Types utilisateur
+export * from './user';
 
+// Types existants
 export interface Track {
   id: string;
   title: string;
@@ -104,7 +80,7 @@ export interface Analytics {
   albumId?: string;
   type: 'play' | 'like' | 'share' | 'download' | 'stream';
   timestamp: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface Revenue {
@@ -126,7 +102,7 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
 }
 
@@ -151,14 +127,19 @@ export interface Role {
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
+  results?: T[];
   message?: string;
   error?: string;
 }
 
 export interface PaginatedResponse<T> {
   data: T[];
+  results?: T[];
   total: number;
   page: number;
   limit: number;
   totalPages: number;
 } 
+
+// Export des types API
+export * from './api'; 

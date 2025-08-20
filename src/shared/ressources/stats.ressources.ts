@@ -1,4 +1,4 @@
-const stats = [
+export const stats = [
   {
     title: 'Utilisateurs actifs',
     value: '125,432',
