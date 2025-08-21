@@ -124,6 +124,7 @@ export type ApiPaginatedAlbumList = ApiPaginatedResponse<ApiAlbum>;
 export type ApiPaginatedNotificationList = ApiPaginatedResponse<ApiNotification>;
 export type ApiPaginatedPostcardList = ApiPaginatedResponse<ApiPostcard>;
 export type ApiPaginatedLiveStreamList = ApiPaginatedResponse<ApiLiveStream>;
+export type ApiPaginatedGenreList = ApiPaginatedResponse<ApiGenre>;
 
 // Types pour les formulaires
 export interface CreateSongData {

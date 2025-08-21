@@ -203,13 +203,6 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async (): Promise<void> => {
-      try {
-        // Appeler l'API de déconnexion si nécessaire
-        await apiService.post('/account/logout/', {});
-      } catch (error) {
-        // Continuer même si l'API échoue
-        console.warn('Erreur lors de la déconnexion API:', error);
-      }
     },
     onSuccess: () => {
       // Supprimer le token et l'ID utilisateur
@@ -223,13 +216,14 @@ export function useLogout() {
       // Invalider toutes les requêtes d'authentification
       queryClient.invalidateQueries({ queryKey: authKeys.all });
       
-      // Optionnel : vider tout le cache
-      // queryClient.clear();
+      queryClient.clear();
+
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      } 
+
     },
-    onError: (error: unknown) => {
-      console.error('Erreur de déconnexion:', error);
-      throw error;
-    },
+   
   });
 }
 

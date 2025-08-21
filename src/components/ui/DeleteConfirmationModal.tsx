@@ -1,7 +1,6 @@
 "use client";
 
 import { Modal, ModalHeader, ModalContent, ModalActions, ModalButton } from './Modal';
-import { Trash2, X } from 'lucide-react';
 
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
@@ -23,11 +22,7 @@ export function DeleteConfirmationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size='sm'>
       <ModalHeader>
-        <div className="flex items-center gap-3 p-1">
-          <div>
-            <p className="text-slate-500">Confirmer la suppression</p>
-          </div>
-        </div>
+        <p className="text-slate-500 p-3">Confirmer la suppression</p>
       </ModalHeader>
       <ModalContent>
           <div className="flex items-start gap-4">
@@ -37,8 +32,6 @@ export function DeleteConfirmationModal({
                 Supprimer &quot;{itemName}&quot; ?
               </h3>
               <p className="text-slate-600 mb-4">{message}</p>
-              
-              
             </div>
           </div>
       </ModalContent>
@@ -48,7 +41,6 @@ export function DeleteConfirmationModal({
           variant="secondary"
           disabled={isDeleting}
         >
-          <X className="w-4 h-4" />
           Annuler
         </ModalButton>
         <ModalButton
@@ -56,7 +48,6 @@ export function DeleteConfirmationModal({
           variant="danger"
           disabled={isDeleting}
         >
-          <Trash2 className="w-4 h-4" />
           {isDeleting ? 'Suppression...' : 'Supprimer'}
         </ModalButton>
       </ModalActions>
