@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation';
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -16,7 +15,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/Button';
 import { ChartLineIcon, Music, Settings, ShieldCheckIcon, User, Users, Disc3, Radio, Podcast } from 'lucide-react';
 import Image from 'next/image';
 interface MenuItem {
@@ -168,27 +166,6 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
-        <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-xl">
-          <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-lg">
-              {user.firstName?.charAt(0)}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-medium truncate">
-              {user.firstName} {user.lastName}
-            </p>
-            <p className="text-muted-foreground text-sm capitalize truncate">
-              {user.role}
-            </p>
-          </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <Settings className="h-4 w-4" />
-          </Button>
-        </div>
-      </SidebarFooter>
     </Sidebar>
   );
 } 

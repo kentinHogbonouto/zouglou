@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Users, Heart, HelpCircle, Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
+import { Users, HelpCircle, Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
 import Image from 'next/image';
 
 export function Footer() {

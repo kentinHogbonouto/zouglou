@@ -270,7 +270,7 @@ export default function ArtistProfilePage() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
-                    Nom d'utilisateur
+                    Nom d&apos;utilisateur
                   </label>
                   <Input
                   value={userFormData.username || ''}
@@ -383,7 +383,7 @@ export default function ArtistProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="flex flex-col gap-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom d'artiste
+                    Nom d&apos;artiste
                   </label>
                 <Input
                   value={artistFormData.stage_name || ''}
