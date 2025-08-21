@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { Loading } from '@/components/ui/Loading';
 import { Notification } from '@/components/ui/Notification';
 import { ArtistRoute } from '@/components/auth/ProtectedRoute';
+import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 
 interface ProfileFormData {
   full_name?: string;
@@ -72,7 +73,7 @@ export default function ArtistProfilePage() {
         phone: userData.phone || '',
         city: userData.city || '',
         country: userData.country || '',
-        birth_date: userData.birth_date || '',
+        birth_date: userData.birth_date ? new Date(userData.birth_date).toISOString().split('T')[0] : '',
         sexe: userData.sexe || '',
         adress: userData.adress || '',
         countryCode: userData.countryCode || '',
@@ -215,7 +216,7 @@ export default function ArtistProfilePage() {
           <h1 className="text-3xl font-bold text-gray-900">Mon Profil</h1>
           <Button
             onClick={() => setShowDeleteConfirm(true)}
-            className="bg-red-600 hover:bg-red-700 text-white"
+            className="bg-red-600 hover:bg-red-700 text-white hidden"
           >
             Supprimer le Compte
           </Button>
@@ -258,48 +259,88 @@ export default function ArtistProfilePage() {
             <h2 className="text-xl font-semibold mb-6">Informations Personnelles</h2>
             <form onSubmit={handleUpdateUserProfile} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Nom complet
+                  </label>
+                  <Input
                   value={userFormData.full_name || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, full_name: e.target.value })}
                 />
-                <Input
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Nom d'utilisateur
+                  </label>
+                  <Input
                   value={userFormData.username || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, username: e.target.value })}
                 />
-                <Input
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Email
+                  </label>
+                  <Input
                   type="email"
                   value={userFormData.email || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, email: e.target.value })}
                 />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Téléphone
+                  </label>
                 <Input
                   value={userFormData.phone || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, phone: e.target.value })}
                 />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Ville
+                  </label>
                 <Input
                   value={userFormData.city || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, city: e.target.value })}
                 />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Pays
+                  </label>
                 <Input
                   value={userFormData.country || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, country: e.target.value })}
                 />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Code pays
+                  </label>
                 <Input
                   value={userFormData.countryCode || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, countryCode: e.target.value })}
                 />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
+                    Date de naissance
+                  </label>
                 <Input
                   type="date"
                   value={userFormData.birth_date || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, birth_date: e.target.value })}
                 />
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 p-3 mb-2">
                     Sexe
                   </label>
                   <select
                     value={userFormData.sexe || ''}
                     onChange={(e) => setUserFormData({ ...userFormData, sexe: e.target.value })}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-zouglou-green-500 focus:ring-zouglou-green-500"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-zouglou-green-500 focus:ring-zouglou-green-500 p-3"
                   >
                     <option value="">Sélectionner</option>
                     <option value="M">Masculin</option>
@@ -309,7 +350,7 @@ export default function ArtistProfilePage() {
                 </div>
               </div>
 
-              <div>
+              <div className="flex flex-col gap-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Adresse
                 </label>
@@ -317,7 +358,7 @@ export default function ArtistProfilePage() {
                   value={userFormData.adress || ''}
                   onChange={(e) => setUserFormData({ ...userFormData, adress: e.target.value })}
                   rows={3}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-zouglou-green-500 focus:ring-zouglou-green-500"
+                  className="p-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-zouglou-green-500 focus:ring-zouglou-green-500"
                   placeholder="Votre adresse complète..."
                 />
               </div>
@@ -326,7 +367,7 @@ export default function ArtistProfilePage() {
                 <Button
                   type="submit"
                   disabled={isUpdatingUserProfile}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-[#005929] hover:bg-[#005929]/80 text-white"
                 >
                   {isUpdatingUserProfile ? 'Mise à jour...' : 'Mettre à jour'}
                 </Button>
@@ -340,13 +381,18 @@ export default function ArtistProfilePage() {
             <h2 className="text-xl font-semibold mb-6">Profil Artiste</h2>
             <form onSubmit={handleUpdateArtistProfile} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nom d'artiste
+                  </label>
                 <Input
                   value={artistFormData.stage_name || ''}
                   onChange={(e) => setArtistFormData({ ...artistFormData, stage_name: e.target.value })}
                 />
+                </div>
               </div>
 
-              <div>
+              <div className="flex flex-col gap-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Biographie
                 </label>
@@ -354,13 +400,13 @@ export default function ArtistProfilePage() {
                   value={artistFormData.biography || ''}
                   onChange={(e) => setArtistFormData({ ...artistFormData, biography: e.target.value })}
                   rows={4}
-                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-zouglou-green-500 focus:ring-zouglou-green-500"
+                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-zouglou-green-500 focus:ring-zouglou-green-500 p-3 "
                   placeholder="Parlez-nous de votre parcours artistique..."
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
+                <div className="flex flex-col gap-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Image de profil (optionnel)
                   </label>
@@ -377,7 +423,7 @@ export default function ArtistProfilePage() {
                   )}
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Image de couverture (optionnel)
                   </label>
@@ -399,7 +445,7 @@ export default function ArtistProfilePage() {
                 <Button
                   type="submit"
                   disabled={isUpdatingArtistProfile}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-[#005929] hover:bg-[#005929]/80 text-white"
                 >
                   {isUpdatingArtistProfile ? 'Mise à jour...' : 'Mettre à jour'}
                 </Button>
@@ -413,31 +459,49 @@ export default function ArtistProfilePage() {
             <h2 className="text-xl font-semibold mb-6">Changer le Mot de Passe</h2>
             <form onSubmit={handleChangePassword} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mot de passe actuel
+                  </label>
+                  <Input
                   type="password"
                   value={passwordFormData.old_password}
+                  placeholder='********'
                   onChange={(e) => setPasswordFormData({ ...passwordFormData, old_password: e.target.value })}
                   required
                 />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nouveau mot de passe
+                  </label>
                 <Input
                   type="password"
                   value={passwordFormData.new_password}
+                  placeholder='********'
                   onChange={(e) => setPasswordFormData({ ...passwordFormData, new_password: e.target.value })}
                   required
                 />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Confirmer le nouveau mot de passe
+                  </label>
                 <Input
                   type="password"
                   value={passwordFormData.confirm_password}
+                  placeholder='********'
                   onChange={(e) => setPasswordFormData({ ...passwordFormData, confirm_password: e.target.value })}
                   required
                 />
+                </div>
               </div>
 
               <div className="flex justify-end">
                 <Button
                   type="submit"
                   disabled={isChangingPassword}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-[#005929] hover:bg-[#005929]/80 text-white"
                 >
                   {isChangingPassword ? 'Changement...' : 'Changer le mot de passe'}
                 </Button>
@@ -447,32 +511,14 @@ export default function ArtistProfilePage() {
         )}
 
         {/* Modal de confirmation de suppression */}
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <Card className="p-6 max-w-md mx-4">
-              <h3 className="text-xl font-semibold text-red-600 mb-4">
-                ⚠️ Supprimer le compte
-              </h3>
-              <p className="text-gray-700 mb-6">
-                Cette action est irréversible. Toutes vos données, tracks, albums et autres contenus seront définitivement supprimés.
-              </p>
-              <div className="flex justify-end space-x-4">
-                <Button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="bg-gray-500 hover:bg-gray-600"
-                >
-                  Annuler
-                </Button>
-                <Button
-                  onClick={handleDeleteAccount}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  Supprimer définitivement
-                </Button>
-              </div>
-            </Card>
-          </div>
-        )}
+        <DeleteConfirmationModal
+          isOpen={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={handleDeleteAccount}
+          itemName="Compte"
+          message="Cette action est irréversible. Toutes vos données, tracks, albums et autres contenus seront définitivement supprimées."
+        />
+      
       </div>
     </ArtistRoute>
   );
