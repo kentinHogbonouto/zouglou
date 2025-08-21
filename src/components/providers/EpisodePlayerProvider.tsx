@@ -22,6 +22,7 @@ interface EpisodePlayerContextType {
   addToQueue: (episode: ApiPodcastEpisode) => void;
   removeFromQueue: (index: number) => void;
   clearQueue: () => void;
+  stop: () => void;
 }
 
 const EpisodePlayerContext = createContext<EpisodePlayerContextType | undefined>(undefined);

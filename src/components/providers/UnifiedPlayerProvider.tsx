@@ -84,10 +84,17 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Protection contre les lectures multiples
+  const isPlayingRef = useRef(false);
+
   const playTrack = useCallback((track: ApiSong) => {
-    console.log('🎵 playTrack appelé:', track.title);
     
     if (!audioRef.current) {
+      return;
+    }
+
+    // Protection contre les lectures multiples
+    if (isPlayingRef.current) {
       return;
     }
 
@@ -104,18 +111,21 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
     }
 
     
-    // Arrêter complètement l'audio actuel
+    // Activer la protection
+    isPlayingRef.current = true;
+    
+    // Arrêter complètement l'audio actuel (piste ou épisode)
     audioRef.current.pause();
     audioRef.current.currentTime = 0;
     
-    // Mettre à jour l'état
+    // Mettre à jour l'état - arrêter TOUT et définir la nouvelle piste
     setState(prev => ({
       ...prev,
       isPlaying: false,
       currentTime: 0,
       duration: 0,
       currentTrack: track,
-      currentEpisode: null,
+      currentEpisode: null, // IMPORTANT: Arrêter l'épisode
       currentMediaType: 'track',
     }));
 
@@ -125,14 +135,15 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
     
     audioRef.current.play().then(() => {
       setState(prev => ({ ...prev, isPlaying: true }));
+      isPlayingRef.current = false; // Libérer la protection
     }).catch((error) => {
       console.error('Erreur de lecture:', error);
       setState(prev => ({ ...prev, isPlaying: false }));
+      isPlayingRef.current = false; // Libérer la protection
     });
   }, [state.currentTrack?.id, state.isPlaying]);
 
   const playEpisode = useCallback((episode: ApiPodcastEpisode) => {
-    console.log('🎧 playEpisode appelé:', episode.title);
     
     if (!audioRef.current) {
       return;
@@ -149,33 +160,44 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
       }
       return;
     }
-
     
-    // Arrêter complètement l'audio actuel
+    // ARRÊT FORCÉ ET IMMÉDIAT
     audioRef.current.pause();
     audioRef.current.currentTime = 0;
+    audioRef.current.src = ''; // VIDER complètement la source
+    audioRef.current.load(); // Forcer le rechargement
     
-    // Mettre à jour l'état
+    // Mettre à jour l'état immédiatement
     setState(prev => ({
       ...prev,
       isPlaying: false,
       currentTime: 0,
       duration: 0,
       currentEpisode: episode,
-      currentTrack: null,
+      currentTrack: null, // IMPORTANT: Arrêter la piste
       currentMediaType: 'episode',
     }));
 
-    // Charger et jouer le nouvel épisode
-    audioRef.current.src = episode.file;
-    audioRef.current.load();
-    
-    audioRef.current.play().then(() => {
-      setState(prev => ({ ...prev, isPlaying: true }));
-    }).catch((error) => {
-      console.error('Erreur de lecture épisode:', error);
-      setState(prev => ({ ...prev, isPlaying: false }));
-    });
+    // Attendre un peu pour s'assurer que l'arrêt est complet
+    setTimeout(() => {
+      if (audioRef.current) {
+        
+        // S'assurer que l'audio est bien arrêté
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        
+        // Définir la nouvelle source
+        audioRef.current.src = episode.file;
+        audioRef.current.load();
+        
+        audioRef.current.play().then(() => {
+          setState(prev => ({ ...prev, isPlaying: true }));
+        }).catch((error) => {
+          console.error('Erreur de lecture épisode:', error);
+          setState(prev => ({ ...prev, isPlaying: false }));
+        });
+      }
+    }, 100); // Délai pour s'assurer que l'arrêt est complet
   }, [state.currentEpisode?.id, state.isPlaying]);
 
   const togglePlayPause = () => {
@@ -191,18 +213,24 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
     }
   };
 
+  const seek = (time: number) => {
+    
+    if (!audioRef.current) {
+      return;
+    }
+
+    audioRef.current.currentTime = time;
+    setState(prev => ({ ...prev, currentTime: time }))
+  };
+
   const setVolume = (volume: number) => {
-    if (!audioRef.current) return;
+    
+    if (!audioRef.current) {
+      return;
+    }
 
     audioRef.current.volume = volume;
     setState(prev => ({ ...prev, volume }));
-  };
-
-  const seek = (time: number) => {
-    if (!audioRef.current) return;
-
-    audioRef.current.currentTime = time;
-    setState(prev => ({ ...prev, currentTime: time }));
   };
 
   const stop = () => {
@@ -210,8 +238,10 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      console.log('⏹️ Audio arrêté');
     }
+    
+    // Libérer la protection
+    isPlayingRef.current = false;
     
     setState(prev => ({
       ...prev,
@@ -223,7 +253,6 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
       duration: 0,
     }));
     
-    console.log('✅ Lecteur arrêté et état réinitialisé');
   };
 
   // Initialiser l'audio element
@@ -234,35 +263,32 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
 
       // Événements audio
       audioRef.current.addEventListener('loadedmetadata', () => {
-        setState(prev => ({ ...prev, duration: audioRef.current?.duration || 0 }));
+        const duration = audioRef.current?.duration || 0;
+        setState(prev => ({ ...prev, duration }));
       });
 
       audioRef.current.addEventListener('timeupdate', () => {
-        setState(prev => ({ ...prev, currentTime: audioRef.current?.currentTime || 0 }));
+        const currentTime = audioRef.current?.currentTime || 0;
+        setState(prev => ({ ...prev, currentTime }));
       });
 
       audioRef.current.addEventListener('ended', () => {
-        console.log('⏹️ Événement ended déclenché - lecture automatique');
         // handleNext(); // Removed as per edit hint
       });
 
       audioRef.current.addEventListener('pause', () => {
-        console.log('⏸️ Événement pause détecté - synchronisation de l\'état');
         setState(prev => ({ ...prev, isPlaying: false }));
       });
 
       audioRef.current.addEventListener('play', () => {
-        console.log('▶️ Événement play détecté - synchronisation de l\'état');
         setState(prev => ({ ...prev, isPlaying: true }));
       });
 
       audioRef.current.addEventListener('loadstart', () => {
-        console.log('🔄 Chargement audio démarré');
         setState(prev => ({ ...prev, isPlaying: false }));
       });
 
       audioRef.current.addEventListener('canplay', () => {
-        console.log('✅ Audio prêt à jouer');
       });
 
       audioRef.current.addEventListener('error', (e) => {
@@ -276,7 +302,7 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
         audioRef.current = null;
       }
     };
-  }, [state.volume]); // Removed handleNext from dependency array
+  }, [state.volume]); // Removed handleNext to dependency array
 
   // Sauvegarder l'état dans localStorage
   useEffect(() => {
@@ -377,13 +403,13 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
 
       // Actions communes
       togglePlayPause,
-      handleNext: () => {}, // Placeholder - fonctionnalité supprimée
-      handlePrevious: () => {}, // Placeholder - fonctionnalité supprimée
-      seek, // Placeholder - fonctionnalité supprimée
+      handleNext: () => {}, // Placeholder
+      handlePrevious: () => {}, // Placeholder
+      seek,
       setVolume,
       stop,
-      toggleShuffle: () => {}, // Placeholder - fonctionnalité supprimée
-      toggleRepeat: () => {}, // Placeholder - fonctionnalité supprimée
+      toggleShuffle: () => {}, // Placeholder
+      toggleRepeat: () => {}, // Placeholder
     }}>
       {children}
     </UnifiedPlayerContext.Provider>

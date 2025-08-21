@@ -16,6 +16,7 @@ export function GlobalEpisodePlayer() {
     handlePrevious,
     seek,
     setVolume,
+    stop,
   } = useEpisodePlayerContext();
 
   return (
@@ -27,6 +28,7 @@ export function GlobalEpisodePlayer() {
       onPrevious={handlePrevious}
       onSeek={seek}
       onVolumeChange={setVolume}
+      onClose={stop}
       currentTime={currentTime}
       duration={duration}
       volume={volume}
