@@ -6,7 +6,6 @@ import { AnalyticsOverview } from '@/components/dashboard/artist/AnalyticsOvervi
 import { QuickActions } from '@/components/dashboard/artist/QuickActions';
 import { WelcomeBanner } from '@/components/dashboard/artist/WelcomeBanner';
 import { ArtistRoute } from '@/components/auth/ProtectedRoute';
-import { Radio, Upload } from 'lucide-react';
 
 export default function ArtistDashboard() {
   return (
@@ -23,17 +22,6 @@ export default function ArtistDashboard() {
                 <p className="text-slate-500 text-base">
                   Gérez votre musique et suivez vos performances
                 </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl">
-                  <Upload className="w-4 h-4" />
-                  Uploader un titre
-                </button>
-                <button className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#FE5200] to-[#FE5200]/90 text-white font-medium rounded-lg hover:from-[#FE5200]/90 hover:to-[#FE5200] transition-all duration-200 shadow-lg hover:shadow-xl">
-                  <Radio className="w-4 h-4" />
-                  Nouveau live
-                </button>
               </div>
             </div>
           </div>

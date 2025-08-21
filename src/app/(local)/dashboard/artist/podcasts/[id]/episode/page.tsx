@@ -19,7 +19,7 @@ export default function ArtistPodcastEpisodePage() {
   const episodes = episodesData?.results || [];
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
-  const { playEpisode, currentEpisode, isPlaying } = useUnifiedEpisodePlayer();
+  const { playEpisodeQueue, currentEpisode, isPlaying } = useUnifiedEpisodePlayer();
 
   return (
     <ArtistRoute>
@@ -63,7 +63,11 @@ export default function ArtistPodcastEpisodePage() {
               <EpisodeList
                 episodes={episodes}
                 title="Mes Épisodes"
-                onPlay={playEpisode}
+                onPlay={(episode) => {
+                  // Jouer tous les épisodes en commençant par celui-ci
+                  const episodeIndex = episodes.findIndex(ep => ep.id === episode.id);
+                  playEpisodeQueue(episodes, episodeIndex);
+                }}
                 onView={(episode) => router.push(`/dashboard/artist/podcasts/${params.id}/episode/${episode.id}`)}
                 onEdit={(episode) => router.push(`/dashboard/artist/podcasts/${params.id}/episode/${episode.id}?edit=true`)}
                 isPlaying={isPlaying}

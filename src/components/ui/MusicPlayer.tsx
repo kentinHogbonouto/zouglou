@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ApiSong } from '@/shared/types/api';
 import Image from 'next/image';
+import { X, Shuffle, Repeat, Repeat1 } from 'lucide-react';
 interface MusicPlayerProps {
   currentTrack: ApiSong | null;
   isPlaying: boolean;
@@ -11,6 +12,11 @@ interface MusicPlayerProps {
   onPrevious: () => void;
   onSeek: (time: number) => void;
   onVolumeChange: (volume: number) => void;
+  onClose: () => void;
+  onShuffle: () => void;
+  onRepeat: () => void;
+  isShuffleOn: boolean;
+  repeatMode: 'none' | 'one' | 'all';
   currentTime: number;
   duration: number;
   volume: number;
@@ -24,6 +30,11 @@ export function MusicPlayer({
   onPrevious,
   onSeek,
   onVolumeChange,
+  onClose,
+  onShuffle,
+  onRepeat,
+  isShuffleOn,
+  repeatMode,
   currentTime,
   duration,
   volume
@@ -56,7 +67,7 @@ export function MusicPlayer({
         {/* Informations de la piste (gauche) */}
         <div className="flex items-center space-x-4 flex-1 min-w-0">
           <Image
-            src={currentTrack.cover || '/images/cover_default.jpg'}
+            src={currentTrack?.album?.cover || '/images/cover_default.jpg'}
             alt={currentTrack.title}
             className="w-12 h-12 rounded object-cover"
             width={400}
@@ -70,9 +81,21 @@ export function MusicPlayer({
 
         {/* Contrôles de lecture (centre) */}
         <div className="flex items-center space-x-4">
+          {/* Bouton lecture aléatoire */}
+          <button
+            onClick={onShuffle}
+            className={`transition-colors ${
+              isShuffleOn 
+                ? 'text-[#FE5200]' 
+                : 'text-gray-400 hover:text-[#FE5200]'
+            }`}
+          >
+            <Shuffle className="w-5 h-5" />
+          </button>
+
           <button
             onClick={onPrevious}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-[#FE5200] transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M8.445 14.832A1 1 0 0010 14v-2.798l5.445 3.63A1 1 0 0017 14V6a1 1 0 00-1.555-.832L10 8.798V6a1 1 0 00-1.555-.832l-6 4a1 1 0 000 1.664l6 4z" />
@@ -96,12 +119,54 @@ export function MusicPlayer({
 
           <button
             onClick={onNext}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-[#FE5200] transition-colors cursor-pointer"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path d="M4.555 5.168A1 1 0 003 6v8a1 1 0 001.555.832L10 11.202V14a1 1 0 001.555.832l6-4a1 1 0 000-1.664l-6-4A1 1 0 0010 6v2.798l-5.445-3.63z" />
             </svg>
           </button>
+
+          {/* Bouton répétition */}
+          <button
+            onClick={onRepeat}
+            className={`transition-colors ${
+              repeatMode === 'none' 
+                ? 'text-gray-400 hover:text-[#FE5200]' 
+                : 'text-[#FE5200]'
+            }`}
+          >
+            {repeatMode === 'one' ? (
+              <Repeat1 className="w-5 h-5" />
+            ) : (
+              <Repeat className="w-5 h-5" />
+            )}
+          </button>
+
+          {/* Volume */}
+          <div className="relative">
+              <button
+                onClick={() => setShowVolumeSlider(!showVolumeSlider)}
+                className="text-gray-400 hover:text-[#FE5200] transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.793L4.5 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.5l3.883-2.793a1 1 0 011.617.793zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+              {showVolumeSlider && (
+                <div className="absolute bottom-full right-0 mb-2 p-2 bg-gray-800 rounded-lg">
+                  <input
+                     type="range"
+                     min="0"
+                     max="1"
+                     step="0.1"
+                     value={volume}
+                     onChange={handleVolumeChange}
+                     className="w-20 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer music-player-slider"
+                   />
+                </div>
+              )}
+            </div>
+
         </div>
 
         {/* Barre de progression et contrôles (droite) */}
@@ -141,34 +206,13 @@ export function MusicPlayer({
 
           {/* Contrôles supplémentaires */}
           <div className="flex items-center space-x-2">
-            {/* Volume */}
-            <div className="relative">
-              <button
-                onClick={() => setShowVolumeSlider(!showVolumeSlider)}
-                className="text-gray-400 hover:text-[#FE5200] transition-colors"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.793L4.5 14H2a1 1 0 01-1-1V7a1 1 0 011-1h2.5l3.883-2.793a1 1 0 011.617.793zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-              {showVolumeSlider && (
-                <div className="absolute bottom-full right-0 mb-2 p-2 bg-gray-800 rounded-lg">
-                  <input
-                     type="range"
-                     min="0"
-                     max="1"
-                     step="0.1"
-                     value={volume}
-                     onChange={handleVolumeChange}
-                     className="w-20 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer music-player-slider"
-                   />
-                </div>
-              )}
-            </div>
-
-          
-
-           
+           {/* Close button */}
+           <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-[#FE5200] transition-colors"
+           >
+            <X className="w-5 h-5" />
+           </button>
           </div>
         </div>
       </div>

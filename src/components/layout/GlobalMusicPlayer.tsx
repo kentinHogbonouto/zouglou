@@ -11,11 +11,16 @@ export function GlobalMusicPlayer() {
     currentTime,
     duration,
     volume,
+    isShuffleOn,
+    repeatMode,
     togglePlayPause,
     handleNext,
     handlePrevious,
     seek,
     setVolume,
+    stop,
+    toggleShuffle,
+    toggleRepeat,
   } = useMusicPlayerContext();
 
   return (
@@ -27,6 +32,11 @@ export function GlobalMusicPlayer() {
       onPrevious={handlePrevious}
       onSeek={seek}
       onVolumeChange={setVolume}
+      onClose={stop}
+      onShuffle={toggleShuffle}
+      onRepeat={toggleRepeat}
+      isShuffleOn={isShuffleOn}
+      repeatMode={repeatMode}
       currentTime={currentTime}
       duration={duration}
       volume={volume}

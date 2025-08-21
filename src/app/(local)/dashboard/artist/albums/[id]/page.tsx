@@ -36,7 +36,7 @@ export default function AlbumDetailPage() {
   const deleteAlbumMutation = useDeleteAlbum();
   const createSongMutation = useCreateSong();
 
-  const { playTrack, currentTrack, isPlaying } = useUnifiedMusicPlayer();
+  const { playTrack, playTrackQueue, currentTrack, isPlaying } = useUnifiedMusicPlayer();
   const deleteConfirmation = useDeleteConfirmation();
 
   // Initialiser le formulaire avec les données de l'album
@@ -104,7 +104,13 @@ export default function AlbumDetailPage() {
   };
 
   const handlePlayTrack = (track: ApiSong) => {
-    playTrack(track);
+    // Jouer l'album entier en commençant par cette piste
+    if (album && album.songs && album.songs.length > 0) {
+      const trackIndex = album.songs.findIndex(song => song.id === track.id);
+      playTrackQueue(album.songs, trackIndex);
+    } else {
+      playTrack(track);
+    }
   };
 
   const handleViewTrack = (track: ApiSong) => {
