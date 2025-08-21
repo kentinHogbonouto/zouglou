@@ -9,8 +9,8 @@ import {
   UpdateSongData,
   CreateAlbumData,
   UpdateAlbumData,
-  ApiGenre,
   ApiCategory,
+  ApiPaginatedGenreList,
 } from '@/shared/types/api';
 
 // Clés de cache pour React Query
@@ -290,9 +290,9 @@ export function useDeleteAlbum() {
 export function useGenres() {
   return useQuery({
     queryKey: musicKeys.genres(),
-    queryFn: async (): Promise<ApiGenre[]> => {
-      const response = await apiService.get<ApiGenre[]>('/genre/');
-      return response.data || [];
+    queryFn: async (): Promise<ApiPaginatedGenreList> => {
+      const response = await apiService.get<ApiPaginatedGenreList>('/genre/');
+      return response.data || { count: 0, results: [] };
     },
     staleTime: 10 * 60 * 1000, // Cache pendant 10 minutes
   });
