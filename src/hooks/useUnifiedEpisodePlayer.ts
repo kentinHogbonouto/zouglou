@@ -21,6 +21,7 @@ export function useUnifiedEpisodePlayer() {
     addEpisodeToQueue,
     removeEpisodeFromQueue,
     clearEpisodeQueue,
+    stop,
   } = useUnifiedPlayerContext();
 
   return {
@@ -45,5 +46,6 @@ export function useUnifiedEpisodePlayer() {
     addToQueue: addEpisodeToQueue,
     removeFromQueue: removeEpisodeFromQueue,
     clearQueue: clearEpisodeQueue,
+    stop,
   };
 }

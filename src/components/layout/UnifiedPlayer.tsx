@@ -62,6 +62,7 @@ export function UnifiedPlayer() {
         onPrevious={handlePrevious}
         onSeek={seek}
         onVolumeChange={setVolume}
+        onClose={stop}
         currentTime={currentTime}
         duration={duration}
         volume={volume}
