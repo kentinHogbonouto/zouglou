@@ -17,6 +17,7 @@ import { CreateTrackModal } from '@/components/features/artist/CreateTrackModal'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { GenreSelect } from '@/components/ui/GenreSelect';
 import Image from 'next/image';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function AlbumDetailPage() {
   const params = useParams();
@@ -30,6 +31,7 @@ export default function AlbumDetailPage() {
   const [showCreateTrackModal, setShowCreateTrackModal] = useState(false);
 
   const { data: album, isLoading, error } = useAlbum(albumId);
+  const { user } = useAuth();
   const updateAlbumMutation = useUpdateAlbum();
   const deleteAlbumMutation = useDeleteAlbum();
   const createSongMutation = useCreateSong();
@@ -151,7 +153,7 @@ export default function AlbumDetailPage() {
                   </div>
                   <div>
                     <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
-                      {isEditMode ? 'Modifier l&apos;Album' : album.title}
+                      {isEditMode ? 'Modifier Album' : album.title}
                     </h1>
                     <p className="text-slate-500 text-base">
                       Gérez votre album musical
@@ -554,7 +556,7 @@ export default function AlbumDetailPage() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
                         <span className="text-sm text-slate-600">Nombre de tracks</span>
-                        <span className="text-lg font-medium text-slate-800">{album.songs.length}</span>
+                        <span className="text-lg font-medium text-slate-800">{album.songs ? album.songs.length : 0}</span>
                       </div>
                       <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
                         <span className="text-sm text-slate-600">Durée totale</span>
@@ -602,7 +604,7 @@ export default function AlbumDetailPage() {
         onClose={() => setShowCreateTrackModal(false)}
         onSubmit={handleCreateTrack}
         isSubmitting={createSongMutation.isPending}
-        currentArtist={album?.artist?.id || ''}
+        currentArtist={user?.artist_profile?.id || ''}
         preSelectedAlbum={albumId}
       />
 

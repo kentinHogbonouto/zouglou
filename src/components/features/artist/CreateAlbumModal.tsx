@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Modal, ModalButton, ModalActions, ModalHeader, ModalContent } from '@/components/ui/Modal';
 import { CreateAlbumData } from '@/shared/types/api';
-import { Disc3, Calendar, Save, X } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 interface CreateAlbumModalProps {
   isOpen: boolean;
@@ -50,10 +50,8 @@ export function CreateAlbumModal({
       size="lg"
     >
       <ModalHeader>
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-gradient-to-r from-[#005929]/10 to-[#FE5200]/10">
-            <Disc3 className="w-6 h-6 text-[#005929]" />
-          </div>
+        <div className="flex items-center gap-3 p-3">
+          
           <div>
             <h2 className="text-2xl font-medium text-slate-800">Nouvel Album</h2>
             <p className="text-slate-500">Créez votre nouvel album musical</p>
@@ -134,7 +132,6 @@ export function CreateAlbumModal({
               variant="secondary"
               onClick={onClose}
             >
-              <X className="w-4 h-4" />
               Annuler
             </ModalButton>
             <ModalButton
@@ -142,8 +139,7 @@ export function CreateAlbumModal({
               variant="primary"
               disabled={isSubmitting}
             >
-              <Save className="w-4 h-4" />
-              {isSubmitting ? 'Création...' : 'Créer l&apos;Album'}
+              {isSubmitting ? 'Création...' : 'Créer Album'}
             </ModalButton>
           </ModalActions>
         </form>

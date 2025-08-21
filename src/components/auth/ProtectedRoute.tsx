@@ -3,9 +3,10 @@
 import { useAuth } from '@/hooks/useAuth';
 import { RBAC, SYSTEM_PERMISSIONS } from '@/lib/rbac';
 import { LoadingPage } from '@/components/ui/Loading';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -21,37 +22,38 @@ export function ProtectedRoute({
   fallback 
 }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const router = useRouter();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoading) {
+      setIsLoadingAuth(false);
+    }
+  }, [isLoading]);
+
+  if (isLoading || isLoadingAuth) {
     return <LoadingPage />;
   }
-
+  
   if (!user) {
-    return (
+    return fallback || (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-red-600">
-              Accès refusé
+              Vous n&apos;êtes pas connecté
             </CardTitle>
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <p className="text-gray-600">
               Vous devez être connecté pour accéder à cette page.
             </p>
-            <div className="space-y-2">
-              <Button onClick={() => router.push('/login')} className="w-full">
-                Se connecter
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => router.push('/')}
-                className="w-full"
-              >
-                Retour à l&apos;accueil
-              </Button>
-            </div>
+            <Button 
+              onClick={() => router.push('/auth/login')}
+              className="w-full"
+            >
+              Se connecter
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -74,10 +76,10 @@ export function ProtectedRoute({
               Vous n&apos;avez pas les rôles nécessaires pour accéder à cette page.
             </p>
             <Button 
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/')}
               className="w-full"
             >
-              Retour au dashboard
+              Retour à l&apos;accueil
             </Button>
           </CardContent>
         </Card>
@@ -99,10 +101,10 @@ export function ProtectedRoute({
               Vous n&apos;avez pas les permissions nécessaires pour accéder à cette page.
             </p>
             <Button 
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/')}
               className="w-full"
             >
-              Retour au dashboard
+              Retour à l&apos;accueil
             </Button>
           </CardContent>
         </Card>

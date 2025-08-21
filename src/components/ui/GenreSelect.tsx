@@ -19,8 +19,9 @@ export function GenreSelect({
   required = false,
   className = ""
 }: GenreSelectProps) {
-  const { data: genres = [], isLoading, error } = useGenres();
+  const { data, isLoading, error } = useGenres();
 
+  const genres = data?.results || [];
   // Si l'API n'est pas disponible, utiliser un input simple
   if (error) {
     return (

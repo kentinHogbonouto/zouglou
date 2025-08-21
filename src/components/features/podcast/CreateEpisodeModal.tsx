@@ -5,7 +5,7 @@ import { Modal, ModalHeader, ModalContent, ModalActions, ModalButton } from '@/c
 import { Input } from '@/components/ui/Input';
 import { useCreatePodcastEpisode, usePodcastList } from '@/hooks/usePodcastQuery';
 import { CreatePodcastEpisodeData } from '@/shared/types/api';
-import { Headphones, Upload, Calendar, Hash, FileText, Save, X } from 'lucide-react';
+import { Headphones, Upload, Calendar, Hash, FileText } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface CreateEpisodeModalProps {
@@ -196,7 +196,6 @@ export function CreateEpisodeModal({ isOpen, onClose, onSuccess }: CreateEpisode
           onClick={handleClose}
           variant="secondary"
         >
-          <X className="w-4 h-4" />
           Annuler
         </ModalButton>
         <ModalButton
@@ -205,8 +204,7 @@ export function CreateEpisodeModal({ isOpen, onClose, onSuccess }: CreateEpisode
           disabled={createEpisode.isPending}
           onClick={handleSubmit}
         >
-          <Save className="w-4 h-4" />
-          {createEpisode.isPending ? 'Création...' : 'Créer l&apos;épisode'}
+          {createEpisode.isPending ? 'Création...' : 'Créer'}
         </ModalButton>
       </ModalActions>
     </Modal>

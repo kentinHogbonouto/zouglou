@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { useCreatePodcast } from '@/hooks/usePodcastQuery';
 import { CreatePodcastData } from '@/shared/types/api';
 import { GenreSelect } from '@/components/ui/GenreSelect';
-import { Mic, Upload, FileText, Save, X, Hash } from 'lucide-react';
+import { Mic, Upload, FileText, Hash } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface CreatePodcastModalProps {
@@ -144,7 +144,6 @@ export function CreatePodcastModal({ isOpen, onClose, onSuccess }: CreatePodcast
           onClick={handleClose}
           variant="secondary"
         >
-          <X className="w-4 h-4" />
           Annuler
         </ModalButton>
         <ModalButton
@@ -153,7 +152,6 @@ export function CreatePodcastModal({ isOpen, onClose, onSuccess }: CreatePodcast
           disabled={createPodcast.isPending}
           onClick={handleSubmit}
         >
-          <Save className="w-4 h-4" />
           {createPodcast.isPending ? 'Création...' : 'Créer le podcast'}
         </ModalButton>
       </ModalActions>
