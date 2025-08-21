@@ -58,14 +58,14 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen w-full flex">
       <div className="hidden md:block md:w-1/2 h-screen">
-        <Image src="/images/login.jpg" alt="Musique africaine" className="w-full h-full object-cover" />
+        <Image src="/images/login.jpg" alt="Musique africaine" className="w-full h-full object-cover" width={1000} height={1000} />
       </div>
       <div className="w-full md:w-1/2 bg-green-900 flex justify-center items-center">
         <div className="w-3/5">
           {/* Logo */}
           <div className="text-center mb-8">
             <Link href="/" className="text-4xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
-              Zouglou
+              <Image src="/images/logo_zouglou.png" alt="Musique africaine" width={100} height={100} className="w-[10rem] h-[10rem] mx-auto" />
             </Link>
             <p className="text-gray-300 mt-2">Récupération de mot de passe</p>
           </div>

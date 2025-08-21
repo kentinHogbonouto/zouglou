@@ -107,7 +107,7 @@ function ResetPasswordContent() {
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/" className="text-4xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
-              Zouglou
+              <Image src="/images/logo_zouglou.png" alt="Musique africaine" width={100} height={100} className="w-[10rem] h-[10rem] mx-auto" />
             </Link>
             <p className="text-gray-300 mt-2">Réinitialisation de mot de passe</p>
           </div>
@@ -136,14 +136,14 @@ function ResetPasswordContent() {
   return (
     <div className="min-h-screen w-full flex">
       <div className="hidden md:block md:w-1/2 h-screen">
-        <Image src="/images/reset-password.jpg" alt="Musique africaine" className="w-full h-full object-cover rounded-lg" />
+        <Image src="/images/reset-password.jpg" alt="Musique africaine" className="w-full h-full object-cover rounded-lg" width={1000} height={1000} />
       </div>
       <div className="w-full md:w-1/2 bg-green-900 flex justify-center items-center">
         <div className="w-3/5">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="text-4xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
-            Zouglou
+            <Image src="/images/logo_zouglou.png" alt="Musique africaine" width={100} height={100} className="w-[10rem] h-[10rem] mx-auto" />
           </Link>
           <p className="text-gray-300 mt-2">Réinitialisation de mot de passe</p>
         </div>
@@ -187,7 +187,7 @@ function ResetPasswordContent() {
                     type="password"
                     {...register('newPassword')}
                     placeholder="Votre nouveau mot de passe"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400 ${
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400 ${
                       errors.newPassword ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''
                     }`}
                   />
@@ -205,7 +205,7 @@ function ResetPasswordContent() {
                     type="password"
                     {...register('confirmPassword')}
                     placeholder="Confirmez votre nouveau mot de passe"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400 ${
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400 ${
                       errors.confirmPassword ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''
                     }`}
                   />
