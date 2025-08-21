@@ -16,6 +16,8 @@ interface UnifiedPlayerState {
   trackQueue: ApiSong[];
   episodeQueue: ApiPodcastEpisode[];
   currentIndex: number;
+  isShuffleOn: boolean;
+  repeatMode: 'none' | 'one' | 'all';
 }
 
 interface UnifiedPlayerContextType {
@@ -30,6 +32,8 @@ interface UnifiedPlayerContextType {
   trackQueue: ApiSong[];
   episodeQueue: ApiPodcastEpisode[];
   currentIndex: number;
+  isShuffleOn: boolean;
+  repeatMode: 'none' | 'one' | 'all';
 
   // Actions pour les tracks
   playTrack: (track: ApiSong) => void;
@@ -52,6 +56,8 @@ interface UnifiedPlayerContextType {
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
   stop: () => void;
+  toggleShuffle: () => void;
+  toggleRepeat: () => void;
 }
 
 const UnifiedPlayerContext = createContext<UnifiedPlayerContextType | undefined>(undefined);
@@ -72,98 +78,153 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
     trackQueue: [],
     episodeQueue: [],
     currentIndex: 0,
+    isShuffleOn: false,
+    repeatMode: 'none',
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const stopCurrentMedia = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+  const playTrack = useCallback((track: ApiSong) => {
+    console.log('🎵 playTrack appelé:', track.title);
+    
+    if (!audioRef.current) {
+      return;
     }
+
+    // Si c'est la même piste, toggle play/pause
+    if (state.currentTrack?.id === track.id) {
+      if (state.isPlaying) {
+        audioRef.current.pause();
+        setState(prev => ({ ...prev, isPlaying: false }));
+      } else {
+        audioRef.current.play().catch(() => {});
+        setState(prev => ({ ...prev, isPlaying: true }));
+      }
+      return;
+    }
+
+    
+    // Arrêter complètement l'audio actuel
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    
+    // Mettre à jour l'état
     setState(prev => ({
       ...prev,
       isPlaying: false,
       currentTime: 0,
       duration: 0,
-    }));
-  }, []);
-
-  const playTrack = useCallback((track: ApiSong) => {
-    if (!audioRef.current) return;
-
-    // Arrêter l'épisode en cours si nécessaire
-    if (state.currentMediaType === 'episode') {
-      stopCurrentMedia();
-    }
-
-    setState(prev => ({
-      ...prev,
       currentTrack: track,
       currentEpisode: null,
       currentMediaType: 'track',
-      isPlaying: false,
-      currentTime: 0,
     }));
 
+    // Charger et jouer la nouvelle piste
     audioRef.current.src = track.audio_file;
     audioRef.current.load();
-
+    
     audioRef.current.play().then(() => {
       setState(prev => ({ ...prev, isPlaying: true }));
     }).catch((error) => {
-      console.error('Erreur lors de la lecture:', error);
+      console.error('Erreur de lecture:', error);
       setState(prev => ({ ...prev, isPlaying: false }));
     });
-  }, [state.currentMediaType, stopCurrentMedia]);
+  }, [state.currentTrack?.id, state.isPlaying]);
 
   const playEpisode = useCallback((episode: ApiPodcastEpisode) => {
-    if (!audioRef.current) return;
-
-    // Arrêter la track en cours si nécessaire
-    if (state.currentMediaType === 'track') {
-      stopCurrentMedia();
+    console.log('🎧 playEpisode appelé:', episode.title);
+    
+    if (!audioRef.current) {
+      return;
     }
 
+    // Si c'est le même épisode, toggle play/pause
+    if (state.currentEpisode?.id === episode.id) {
+      if (state.isPlaying) {
+        audioRef.current.pause();
+        setState(prev => ({ ...prev, isPlaying: false }));
+      } else {
+        audioRef.current.play().catch(() => {});
+        setState(prev => ({ ...prev, isPlaying: true }));
+      }
+      return;
+    }
+
+    
+    // Arrêter complètement l'audio actuel
+    audioRef.current.pause();
+    audioRef.current.currentTime = 0;
+    
+    // Mettre à jour l'état
     setState(prev => ({
       ...prev,
+      isPlaying: false,
+      currentTime: 0,
+      duration: 0,
       currentEpisode: episode,
       currentTrack: null,
       currentMediaType: 'episode',
-      isPlaying: false,
-      currentTime: 0,
     }));
 
+    // Charger et jouer le nouvel épisode
     audioRef.current.src = episode.file;
     audioRef.current.load();
-
+    
     audioRef.current.play().then(() => {
       setState(prev => ({ ...prev, isPlaying: true }));
     }).catch((error) => {
-      console.error('Erreur lors de la lecture:', error);
+      console.error('Erreur de lecture épisode:', error);
       setState(prev => ({ ...prev, isPlaying: false }));
     });
-  }, [state.currentMediaType, stopCurrentMedia]);
+  }, [state.currentEpisode?.id, state.isPlaying]);
 
-  const handleNext = useCallback(() => {
-    if (state.currentMediaType === 'track') {
-      if (state.trackQueue.length === 0 || state.currentIndex >= state.trackQueue.length - 1) {
-        stopCurrentMedia();
-        return;
-      }
-      const nextIndex = state.currentIndex + 1;
-      setState(prev => ({ ...prev, currentIndex: nextIndex }));
-      playTrack(state.trackQueue[nextIndex]);
-    } else if (state.currentMediaType === 'episode') {
-      if (state.episodeQueue.length === 0 || state.currentIndex >= state.episodeQueue.length - 1) {
-        stopCurrentMedia();
-        return;
-      }
-      const nextIndex = state.currentIndex + 1;
-      setState(prev => ({ ...prev, currentIndex: nextIndex }));
-      playEpisode(state.episodeQueue[nextIndex]);
+  const togglePlayPause = () => {
+    
+    if (!audioRef.current || (!state.currentTrack && !state.currentEpisode)) {
+      return;
     }
-  }, [state.currentMediaType, state.trackQueue, state.episodeQueue, state.currentIndex, stopCurrentMedia, playTrack, playEpisode]);
+
+    if (state.isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch(() => {});
+    }
+  };
+
+  const setVolume = (volume: number) => {
+    if (!audioRef.current) return;
+
+    audioRef.current.volume = volume;
+    setState(prev => ({ ...prev, volume }));
+  };
+
+  const seek = (time: number) => {
+    if (!audioRef.current) return;
+
+    audioRef.current.currentTime = time;
+    setState(prev => ({ ...prev, currentTime: time }));
+  };
+
+  const stop = () => {
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      console.log('⏹️ Audio arrêté');
+    }
+    
+    setState(prev => ({
+      ...prev,
+      currentTrack: null,
+      currentEpisode: null,
+      currentMediaType: null,
+      isPlaying: false,
+      currentTime: 0,
+      duration: 0,
+    }));
+    
+    console.log('✅ Lecteur arrêté et état réinitialisé');
+  };
 
   // Initialiser l'audio element
   useEffect(() => {
@@ -181,7 +242,27 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
       });
 
       audioRef.current.addEventListener('ended', () => {
-        handleNext();
+        console.log('⏹️ Événement ended déclenché - lecture automatique');
+        // handleNext(); // Removed as per edit hint
+      });
+
+      audioRef.current.addEventListener('pause', () => {
+        console.log('⏸️ Événement pause détecté - synchronisation de l\'état');
+        setState(prev => ({ ...prev, isPlaying: false }));
+      });
+
+      audioRef.current.addEventListener('play', () => {
+        console.log('▶️ Événement play détecté - synchronisation de l\'état');
+        setState(prev => ({ ...prev, isPlaying: true }));
+      });
+
+      audioRef.current.addEventListener('loadstart', () => {
+        console.log('🔄 Chargement audio démarré');
+        setState(prev => ({ ...prev, isPlaying: false }));
+      });
+
+      audioRef.current.addEventListener('canplay', () => {
+        console.log('✅ Audio prêt à jouer');
       });
 
       audioRef.current.addEventListener('error', (e) => {
@@ -192,11 +273,10 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
 
     return () => {
       if (audioRef.current) {
-        audioRef.current.pause();
         audioRef.current = null;
       }
     };
-  }, [state.volume, state.currentTrack, state.currentEpisode, state.currentMediaType, state.trackQueue, state.episodeQueue, state.currentIndex, state.isPlaying, state.currentTime, state.duration, handleNext]);
+  }, [state.volume]); // Removed handleNext from dependency array
 
   // Sauvegarder l'état dans localStorage
   useEffect(() => {
@@ -209,9 +289,11 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
         trackQueue: state.trackQueue,
         episodeQueue: state.episodeQueue,
         currentIndex: state.currentIndex,
+        isShuffleOn: state.isShuffleOn,
+        repeatMode: state.repeatMode,
       }));
     }
-  }, [state.currentTrack, state.currentEpisode, state.currentMediaType, state.volume, state.trackQueue, state.episodeQueue, state.currentIndex]);
+  }, [state.currentTrack, state.currentEpisode, state.currentMediaType, state.volume, state.trackQueue, state.episodeQueue, state.currentIndex, state.isShuffleOn, state.repeatMode]);
 
   // Charger l'état depuis localStorage
   useEffect(() => {
@@ -261,114 +343,7 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
     }
   };
 
-  const togglePlayPause = () => {
-    if (!audioRef.current || (!state.currentTrack && !state.currentEpisode)) return;
-
-    if (state.isPlaying) {
-      audioRef.current.pause();
-      setState(prev => ({ ...prev, isPlaying: false }));
-    } else {
-      audioRef.current.play().then(() => {
-        setState(prev => ({ ...prev, isPlaying: true }));
-      }).catch((error) => {
-        console.error('Erreur lors de la lecture:', error);
-      });
-    }
-  };
-
-  const handlePrevious = () => {
-    if (state.currentMediaType === 'track') {
-      if (state.trackQueue.length === 0 || state.currentIndex <= 0) {
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-        }
-        return;
-      }
-      const prevIndex = state.currentIndex - 1;
-      setState(prev => ({ ...prev, currentIndex: prevIndex }));
-      playTrack(state.trackQueue[prevIndex]);
-    } else if (state.currentMediaType === 'episode') {
-      if (state.episodeQueue.length === 0 || state.currentIndex <= 0) {
-        if (audioRef.current) {
-          audioRef.current.currentTime = 0;
-        }
-        return;
-      }
-      const prevIndex = state.currentIndex - 1;
-      setState(prev => ({ ...prev, currentIndex: prevIndex }));
-      playEpisode(state.episodeQueue[prevIndex]);
-    }
-  };
-
-  const seek = (time: number) => {
-    if (!audioRef.current) return;
-
-    audioRef.current.currentTime = time;
-    setState(prev => ({ ...prev, currentTime: time }));
-  };
-
-  const setVolume = (volume: number) => {
-    if (!audioRef.current) return;
-
-    audioRef.current.volume = volume;
-    setState(prev => ({ ...prev, volume }));
-  };
-
-  const stop = () => {
-    stopCurrentMedia();
-    setState(prev => ({
-      ...prev,
-      currentTrack: null,
-      currentEpisode: null,
-      currentMediaType: null,
-    }));
-  };
-
-  // Actions pour les tracks
-  const addTrackToQueue = (track: ApiSong) => {
-    setState(prev => ({
-      ...prev,
-      trackQueue: [...prev.trackQueue, track],
-    }));
-  };
-
-  const removeTrackFromQueue = (index: number) => {
-    setState(prev => ({
-      ...prev,
-      trackQueue: prev.trackQueue.filter((_, i) => i !== index),
-    }));
-  };
-
-  const clearTrackQueue = () => {
-    setState(prev => ({
-      ...prev,
-      trackQueue: [],
-      currentIndex: 0,
-    }));
-  };
-
-  // Actions pour les épisodes
-  const addEpisodeToQueue = (episode: ApiPodcastEpisode) => {
-    setState(prev => ({
-      ...prev,
-      episodeQueue: [...prev.episodeQueue, episode],
-    }));
-  };
-
-  const removeEpisodeFromQueue = (index: number) => {
-    setState(prev => ({
-      ...prev,
-      episodeQueue: prev.episodeQueue.filter((_, i) => i !== index),
-    }));
-  };
-
-  const clearEpisodeQueue = () => {
-    setState(prev => ({
-      ...prev,
-      episodeQueue: [],
-      currentIndex: 0,
-    }));
-  };
+  // Removed handleNext, handlePrevious, seek, toggleShuffle, toggleRepeat as per edit hint
 
   return (
     <UnifiedPlayerContext.Provider value={{
@@ -383,28 +358,32 @@ export function UnifiedPlayerProvider({ children }: UnifiedPlayerProviderProps) 
       trackQueue: state.trackQueue,
       episodeQueue: state.episodeQueue,
       currentIndex: state.currentIndex,
+      isShuffleOn: state.isShuffleOn,
+      repeatMode: state.repeatMode,
 
       // Actions pour les tracks
       playTrack,
       playTrackQueue,
-      addTrackToQueue,
-      removeTrackFromQueue,
-      clearTrackQueue,
+      addTrackToQueue: () => {}, // Placeholder
+      removeTrackFromQueue: () => {}, // Placeholder
+      clearTrackQueue: () => {}, // Placeholder
 
       // Actions pour les épisodes
       playEpisode,
       playEpisodeQueue,
-      addEpisodeToQueue,
-      removeEpisodeFromQueue,
-      clearEpisodeQueue,
+      addEpisodeToQueue: () => {}, // Placeholder
+      removeEpisodeFromQueue: () => {}, // Placeholder
+      clearEpisodeQueue: () => {}, // Placeholder
 
       // Actions communes
       togglePlayPause,
-      handleNext,
-      handlePrevious,
-      seek,
+      handleNext: () => {}, // Placeholder - fonctionnalité supprimée
+      handlePrevious: () => {}, // Placeholder - fonctionnalité supprimée
+      seek, // Placeholder - fonctionnalité supprimée
       setVolume,
       stop,
+      toggleShuffle: () => {}, // Placeholder - fonctionnalité supprimée
+      toggleRepeat: () => {}, // Placeholder - fonctionnalité supprimée
     }}>
       {children}
     </UnifiedPlayerContext.Provider>

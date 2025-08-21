@@ -5,16 +5,13 @@ import { ApiSong } from '@/shared/types/api';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { MoreVertical, Eye, Edit, Trash2, Heart, Play, Pause, Music, Clock, Users, Disc3 } from 'lucide-react';
+import { MoreVertical, Eye, Play, Pause, Music, Clock, Users, Disc3 } from 'lucide-react';
 import Image from 'next/image';
 interface MusicListProps {
   tracks: ApiSong[];
   title?: string;
   onPlay: (track: ApiSong) => void;
   onView: (track: ApiSong) => void;
-  onEdit: (track: ApiSong) => void;
-  onDelete: (track: ApiSong) => void;
-  onLike?: (track: ApiSong) => void;
   isPlaying?: boolean;
   currentTrackId?: string;
 }
@@ -24,9 +21,6 @@ export function MusicList({
   title = "Mes Tracks",
   onPlay,
   onView,
-  onEdit,
-  onDelete,
-  onLike,
   isPlaying = false,
   currentTrackId
 }: MusicListProps) {
@@ -159,17 +153,6 @@ export function MusicList({
                   )}
                 </button>
 
-                {/* Bouton Like */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onLike?.(track);
-                  }}
-                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-200 rounded-lg"
-                >
-                  <Heart className="w-4 h-4" />
-                </button>
-
                 {/* Menu Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -192,26 +175,6 @@ export function MusicList({
                     >
                       <Eye className="w-4 h-4 mr-3 text-slate-600" />
                       <span className="text-slate-700">Voir les détails</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(track);
-                      }}
-                      className="cursor-pointer hover:bg-slate-50 transition-colors duration-200"
-                    >
-                      <Edit className="w-4 h-4 mr-3 text-slate-600" />
-                      <span className="text-slate-700">Modifier</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(track);
-                      }}
-                      className="cursor-pointer hover:bg-red-50 transition-colors duration-200"
-                    >
-                      <Trash2 className="w-4 h-4 mr-3 text-red-500" />
-                      <span className="text-red-600">Supprimer</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

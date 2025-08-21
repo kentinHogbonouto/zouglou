@@ -12,6 +12,9 @@ interface MusicPlayerContextType {
   volume: number;
   queue: ApiSong[];
   currentIndex: number;
+  isShuffleOn: boolean;
+  repeatMode: 'none' | 'one' | 'all';
+  isLoading: boolean;
   playTrack: (track: ApiSong) => void;
   playQueue: (tracks: ApiSong[], startIndex?: number) => void;
   togglePlayPause: () => void;
@@ -19,6 +22,9 @@ interface MusicPlayerContextType {
   handlePrevious: () => void;
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
+  stop: () => void;
+  toggleShuffle: () => void;
+  toggleRepeat: () => void;
   addToQueue: (track: ApiSong) => void;
   removeFromQueue: (index: number) => void;
   clearQueue: () => void;

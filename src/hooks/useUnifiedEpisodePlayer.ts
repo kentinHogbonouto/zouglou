@@ -35,6 +35,7 @@ export function useUnifiedEpisodePlayer() {
 
     // Actions
     playEpisode,
+    playEpisodeQueue,
     playQueue: playEpisodeQueue,
     togglePlayPause,
     handleNext,

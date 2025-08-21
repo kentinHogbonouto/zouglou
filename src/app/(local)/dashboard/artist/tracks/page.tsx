@@ -25,31 +25,25 @@ export default function ArtistTracksPage() {
   const createSongMutation = useCreateSong();
   const deleteSongMutation = useDeleteSong();
 
-  const { playTrack, currentTrack, isPlaying } = useUnifiedMusicPlayer();
+  const { playTrackQueue, currentTrack, isPlaying } = useUnifiedMusicPlayer();
   const deleteConfirmation = useDeleteConfirmation();
 
   const handleCreateSong = async (data: CreateSongData) => {
     await createSongMutation.mutateAsync(data);
   };
 
-  const handleDeleteSong = async (track: ApiSong) => {
-    try {
-      await deleteSongMutation.mutateAsync(track.id);
-    } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
-    }
-  };
+  
 
-  const handlePlayTrack = (track: ApiSong) => {
-    playTrack(track);
+  
+
+  const handlePlayAllTracks = (track: ApiSong) => {
+    // Jouer toutes les pistes de la page
+    const trackIndex = songs.findIndex(song => song.id === track.id);
+    playTrackQueue(songs, trackIndex);
   };
 
   const handleViewTrack = (track: ApiSong) => {
     router.push(`/dashboard/artist/tracks/${track.id}`);
-  };
-
-  const handleEditTrack = (track: ApiSong) => {
-    router.push(`/dashboard/artist/tracks/${track.id}?edit=true`);
   };
 
 
@@ -172,19 +166,8 @@ export default function ArtistTracksPage() {
               <MusicList
                 tracks={songs}
                 title="Mes Tracks"
-                onPlay={handlePlayTrack}
-                onView={handleViewTrack}
-                onEdit={handleEditTrack}
-                onDelete={(track) => {
-                const trackToDelete = songs.find((t: ApiSong) => t.id === track.id);
-                if (trackToDelete) {
-                  deleteConfirmation.showDeleteConfirmation(
-                    trackToDelete.title,
-                    'track',
-                    () => handleDeleteSong(trackToDelete)
-                  );
-                }
-              }}
+                onPlay={handlePlayAllTracks}
+                onView={handleViewTrack}            
                 isPlaying={isPlaying}
                 currentTrackId={currentTrack?.id}
               />
