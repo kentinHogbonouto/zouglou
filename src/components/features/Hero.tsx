@@ -5,7 +5,7 @@ import Image from 'next/image';
 export function Hero() {
   return (
     <section className="bg-gradient-to-br from-slate-50 via-white to-slate-50/50 h-[80vh] flex flex-col items-center justify-center">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 items-center text-center h-full">
           <div className="md:col-span-2 flex flex-col items-center justify-center py-24">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -27,7 +27,7 @@ export function Hero() {
               </Button>
             </div>
           </div>
-          <div className="flex items-center justify-center h-full w-full">
+          <div className="flex items-center justify-center w-full">
             <Image src="/images/humainhome.png" alt="Musique africaine" className="w-full h-full object-cover" width={400} height={400} />
           </div>
         </div>
