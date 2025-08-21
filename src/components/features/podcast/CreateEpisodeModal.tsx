@@ -204,7 +204,7 @@ export function CreateEpisodeModal({ isOpen, onClose, onSuccess }: CreateEpisode
           disabled={createEpisode.isPending}
           onClick={handleSubmit}
         >
-          {createEpisode.isPending ? 'Création...' : 'Créer'}
+          {createEpisode.isPending ? 'Création...' : 'Créer l\'épisode'}
         </ModalButton>
       </ModalActions>
     </Modal>

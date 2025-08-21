@@ -139,7 +139,7 @@ export function CreateAlbumModal({
               variant="primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Création...' : 'Créer Album'}
+              {isSubmitting ? 'Création...' : 'Créer l\'album'}
             </ModalButton>
           </ModalActions>
         </form>
