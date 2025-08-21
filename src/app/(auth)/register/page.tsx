@@ -99,14 +99,14 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen w-full flex">
       <div className="hidden md:block md:w-1/2 h-screen">
-        <Image src="/images/register.jpg" alt="Musique africaine" className="w-full h-full object-top object-cover" />
+        <Image src="/images/register.jpg" alt="Musique africaine" width={1000} height={1000} className="w-full h-full object-top object-cover" />
       </div>
       <div className="w-full md:w-1/2 bg-green-900 flex justify-center items-center">
         <div className="w-3/5">
           {/* Logo */}
           <div className="text-center mb-8">
             <Link href="/" className="text-4xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
-              Zouglou
+              <Image src="/images/logo_zouglou.png" alt="Musique africaine" width={100} height={100} className="w-[10rem] h-[10rem] mx-auto" />
             </Link>
             <p className="text-gray-300 mt-2">Rejoignez la communauté musicale</p>
           </div>
@@ -133,7 +133,7 @@ export default function RegisterPage() {
                     type="text"
                     {...register('fullName')}
                     placeholder="Nom complet"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400
                       ${errors.fullName ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                   />
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                     type="email"
                     {...register('email')}
                     placeholder="votre@email.com"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                   />
                   {errors.email && (
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                     type="password"
                     {...register('password')}
                     placeholder="••••••••"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                   />
                   {password && (
@@ -204,7 +204,7 @@ export default function RegisterPage() {
                     type="password"
                     {...register('confirmPassword')}
                     placeholder="••••••••"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400 ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400 ${errors.confirmPassword ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                   />
                   {errors.confirmPassword && (

@@ -66,7 +66,6 @@ export function Header({ className }: HeaderProps) {
                 <Link href={`/dashboard/${user.default_role === 'artist' ? 'artist' : 'admin'}/notifications`}>
                   <button className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all duration-200 relative">
                     <Bell className="w-5 h-5" />
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-[#005929] to-[#FE5200] rounded-full"></span>
                   </button>
                 </Link>
 

@@ -76,13 +76,13 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen w-full flex">
       <div className="hidden md:block md:w-1/2 h-screen" >
-        <Image src="/images/login.jpg" alt="Musique africaine" className="w-full h-full object-cover" />
+        <Image src="/images/login.jpg" alt="Musique africaine" className="w-full h-full object-cover" width={1000} height={1000} />
       </div>
       <div className="w-1/2 bg-green-900 flex justify-center items-center">
         <div className=" w-3/5">
           <div className="text-center mb-8">
             <Link href="/" className="text-4xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
-              Zouglou
+              <Image src="/images/logo_zouglou.png" alt="Musique africaine" width={100} height={100} className="w-[10rem] h-[10rem] mx-auto" />
             </Link>
             <p className="text-gray-200 mt-2">Connectez-vous à votre compte</p>
           </div>
@@ -107,7 +107,7 @@ export default function LoginPage() {
                     type="email"
                     {...register('email')}
                     placeholder="votre@email.com"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                   />
                   {errors.email && (
@@ -124,7 +124,7 @@ export default function LoginPage() {
                     type="password"
                     {...register('password')}
                     placeholder="••••••••"
-                    className={`bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                    className={`bg-white/10 border-white/20 text-white placeholder:text-white/80 dark:placeholder:text-white/80 focus:border-orange-400 focus:ring-orange-400 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
                       }`}
                   />
                   {errors.password && (
@@ -132,15 +132,8 @@ export default function LoginPage() {
                   )}
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      {...register('rememberMe')}
-                      className="rounded border-white/20 bg-white/10 text-orange-400 focus:ring-orange-400"
-                    />
-                    <span className="ml-2 text-sm text-gray-200">Se souvenir de moi</span>
-                  </label>
+                <div className="flex items-center justify-end">
+
                   <Link
                     href="/forgot-password"
                     className="text-sm text-orange-400 hover:text-orange-300 transition-colors"

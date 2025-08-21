@@ -107,15 +107,11 @@ export function Footer() {
 
         {/* Séparateur */}
         <div className="border-t border-slate-800 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-around items-center gap-4">
             <p className="text-slate-400 text-sm">
               &copy; 2024 Zouglou. Tous droits réservés.
             </p>
-            <div className="flex items-center gap-6 text-sm">
-              <span className="text-slate-400">Fait avec</span>
-              <Heart className="w-4 h-4 text-red-500 animate-pulse" />
-              <span className="text-slate-400">en Afrique</span>
-            </div>
+           
           </div>
         </div>
       </div>
