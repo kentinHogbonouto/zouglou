@@ -12,7 +12,7 @@ import { ArtistRoute } from '@/components/auth/ProtectedRoute';
 import { useUnifiedMusicPlayer } from '@/hooks/useUnifiedMusicPlayer';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
-import { Eye, Edit, Trash2, Music, Plus, Calendar, User, Tag, Clock, Play, Pause, Heart, MoreVertical, ArrowLeft } from 'lucide-react';
+import { Eye, Edit, Trash2, Music, Plus, Calendar, User, Tag, Clock, Play, Pause, MoreVertical, ArrowLeft } from 'lucide-react';
 import { CreateTrackModal } from '@/components/features/artist/CreateTrackModal';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { GenreSelect } from '@/components/ui/GenreSelect';
@@ -488,16 +488,6 @@ export default function AlbumDetailPage() {
                                 ) : (
                                   <Play className="w-4 h-4" />
                                 )}
-                              </button>
-
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // handleLikeTrack(song);
-                                }}
-                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-200 rounded-lg"
-                              >
-                                <Heart className="w-4 h-4" />
                               </button>
 
                               <DropdownMenu>
