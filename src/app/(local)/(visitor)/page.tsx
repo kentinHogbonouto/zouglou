@@ -163,7 +163,7 @@ export default function Home() {
         {/* Background avec overlay */}
         <div className="absolute bottom-0 left-0 w-full h-full bg-slate-900 -z-10">
           <Image
-            src="/images/contact.png"
+            src="/images/contact.jpg"
             alt="Musique africaine"
             width={1920}
             height={1080}

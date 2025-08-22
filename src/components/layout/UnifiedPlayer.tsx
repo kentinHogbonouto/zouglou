@@ -39,7 +39,6 @@ export function UnifiedPlayer() {
         onNext={handleNext}
         onPrevious={handlePrevious}
         onSeek={seek}
-        onVolumeChange={setVolume}
         onClose={stop}
         onShuffle={toggleShuffle}
         onRepeat={toggleRepeat}
@@ -47,7 +46,6 @@ export function UnifiedPlayer() {
         repeatMode={repeatMode}
         currentTime={currentTime}
         duration={duration}
-        volume={volume}
       />
     );
   }

@@ -10,14 +10,12 @@ export function GlobalMusicPlayer() {
     isPlaying,
     currentTime,
     duration,
-    volume,
     isShuffleOn,
     repeatMode,
     togglePlayPause,
     handleNext,
     handlePrevious,
     seek,
-    setVolume,
     stop,
     toggleShuffle,
     toggleRepeat,
@@ -31,7 +29,6 @@ export function GlobalMusicPlayer() {
       onNext={handleNext}
       onPrevious={handlePrevious}
       onSeek={seek}
-      onVolumeChange={setVolume}
       onClose={stop}
       onShuffle={toggleShuffle}
       onRepeat={toggleRepeat}
@@ -39,7 +36,6 @@ export function GlobalMusicPlayer() {
       repeatMode={repeatMode}
       currentTime={currentTime}
       duration={duration}
-      volume={volume}
     />
   );
 }
