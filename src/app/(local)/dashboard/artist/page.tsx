@@ -8,32 +8,16 @@ import { QuickActions } from '@/components/dashboard/artist/QuickActions';
 import { WelcomeBanner } from '@/components/dashboard/artist/WelcomeBanner';
 import { ArtistRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
-import { ApiSong } from '@/shared/types/api';
 import { useArtistSongs } from '@/hooks';
-import { useUnifiedMusicPlayer } from '@/hooks/useUnifiedMusicPlayer';
-import { MusicList } from '@/components/features/MusicList';
-import { useRouter } from 'next/navigation';
+import { RecentTracks } from '@/components/dashboard/artist/RecentTracks';
 
 export default function ArtistDashboard() {
-  const router = useRouter();
   const { user } = useAuth();
 
   const { data: songsData } = useArtistSongs(user?.artist_profile?.id || '');
 
-  const { playTrackQueue, currentTrack, isPlaying } = useUnifiedMusicPlayer();
-
-
   const songs = songsData?.results || [];
   
-  const handlePlayAllTracks = (track: ApiSong) => {
-    // Jouer toutes les pistes de la page
-    const trackIndex = songs.findIndex(song => song.id === track.id);
-    playTrackQueue(songs, trackIndex);
-  };
-
-  const handleViewTrack = (track: ApiSong) => {
-    router.push(`/dashboard/artist/tracks/${track.id}`);
-  };
 
   return (
     <ArtistRoute>
@@ -106,14 +90,7 @@ export default function ArtistDashboard() {
             <CardContent className="p-6">
             {songs.length > 0 ? (
             <div className="space-y-4">
-              <MusicList
-                tracks={songs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5)}
-                title="Mes Tracks"
-                onPlay={handlePlayAllTracks}
-                onView={handleViewTrack}            
-                isPlaying={isPlaying}
-                currentTrackId={currentTrack?.id}
-              />
+              <RecentTracks />
             </div>
             ) : (
               <div className="text-center text-slate-500">
