@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ChartLineIcon, Music, Settings, ShieldCheckIcon, User, Users, Disc3, Radio, Podcast } from 'lucide-react';
+import { ChartLineIcon, Music, Settings, ShieldCheckIcon, User, Users, Disc3, Podcast } from 'lucide-react';
 import Image from 'next/image';
 interface MenuItem {
   label: string;
@@ -42,12 +42,6 @@ const artistMenuItems: MenuItem[] = [
     href: '/dashboard/artist/albums',
     icon: <Disc3 size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_READ,
-  },
-  {
-    label: 'Live Streams',
-    href: '/dashboard/artist/live',
-    icon: <Radio size={16} className="h-4 w-4" />,
-    permission: SYSTEM_PERMISSIONS.CONTENT_CREATE,
   },
   {
     label: 'Podcasts',

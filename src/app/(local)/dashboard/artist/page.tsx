@@ -1,13 +1,24 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ArtistDashboardStats } from '@/components/dashboard/artist/ArtistDashboardStats';
-import { RecentTracks } from '@/components/dashboard/artist/RecentTracks';
 import { RevenueChart } from '@/components/dashboard/artist/RevenueChart';
 import { AnalyticsOverview } from '@/components/dashboard/artist/AnalyticsOverview';
 import { QuickActions } from '@/components/dashboard/artist/QuickActions';
 import { WelcomeBanner } from '@/components/dashboard/artist/WelcomeBanner';
 import { ArtistRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/hooks/useAuth';
+import { useArtistSongs } from '@/hooks';
+import { RecentTracks } from '@/components/dashboard/artist/RecentTracks';
 
 export default function ArtistDashboard() {
+  const { user } = useAuth();
+
+  const { data: songsData } = useArtistSongs(user?.artist_profile?.id || '');
+
+  const songs = songsData?.results || [];
+  
+
   return (
     <ArtistRoute>
       <div className="min-h-screen bg-slate-50/50">
@@ -31,7 +42,7 @@ export default function ArtistDashboard() {
         <div className="max-w-7xl mx-auto px-8 py-8">
           {/* Welcome Banner */}
           <div className="mb-8">
-            <WelcomeBanner artistName="John Doe" lastLogin="il y a 2 heures" />
+            <WelcomeBanner artistName={user?.full_name} lastLogin="il y a 2 heures" />
           </div>
 
           {/* Stats Section */}
@@ -77,7 +88,15 @@ export default function ArtistDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
+            {songs.length > 0 ? (
+            <div className="space-y-4">
               <RecentTracks />
+            </div>
+            ) : (
+              <div className="text-center text-slate-500">
+                Aucun titre trouvé
+              </div>
+            )}
             </CardContent>
           </Card>
         </div>
