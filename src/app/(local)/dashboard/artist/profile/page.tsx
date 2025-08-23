@@ -100,9 +100,6 @@ export default function ArtistProfilePage() {
         isVisible: true
       });
 
-      setTimeout(() => {
-        logoutMutation.mutate();
-      }, 3000);
     } catch (error) {
       console.error('Erreur lors de la mise à jour du profil utilisateur:', error);
       setNotification({
@@ -177,6 +174,9 @@ export default function ArtistProfilePage() {
         new_password: '',
         confirm_password: ''
       });
+      setTimeout(() => {
+        logoutMutation.mutate();
+      }, 3000);
     } catch (error) {
       console.error('Erreur lors du changement de mot de passe:', error);
       setNotification({
