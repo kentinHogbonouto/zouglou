@@ -30,13 +30,15 @@ export function CreatePodcastModal({ isOpen, onClose, onSuccess }: CreatePodcast
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setTimeout(() => {
+        handleClose();
+      }, 2000);
       const data: CreatePodcastData = {
         ...formData,
         artist: user?.artist_profile?.id || '',
         cover: coverFile || undefined
       };
       await createPodcast.mutateAsync(data);
-      handleClose();
       onSuccess?.();
     } catch (error) {
       console.error('Erreur lors de la création du podcast:', error);

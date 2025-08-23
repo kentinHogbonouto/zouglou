@@ -11,6 +11,7 @@ import { CreateEpisodeModal } from "@/components/features/podcast/CreateEpisodeM
 import { EpisodeList } from "@/components/features/podcast/EpisodeList";
 import { useUnifiedEpisodePlayer } from '@/hooks/useUnifiedEpisodePlayer';
 import { Headphones, Plus, ArrowLeft } from 'lucide-react';
+import { ApiPodcastEpisode } from "@/shared/types/api";
 
 export default function ArtistPodcastEpisodePage() {
   const params = useParams();
@@ -65,7 +66,7 @@ export default function ArtistPodcastEpisodePage() {
                 title="Mes Épisodes"
                 onPlay={(episode) => {
                   // Jouer tous les épisodes en commençant par celui-ci
-                  const episodeIndex = episodes.findIndex(ep => ep.id === episode.id);
+                  const episodeIndex = episodes.findIndex((ep: ApiPodcastEpisode) => ep.id === episode.id);
                   playEpisodeQueue(episodes, episodeIndex);
                 }}
                 onView={(episode) => router.push(`/dashboard/artist/podcasts/${params.id}/episode/${episode.id}`)}

@@ -1,3 +1,5 @@
+'use client';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '@/lib/api';
 import {
@@ -12,6 +14,8 @@ import {
   ApiCategory,
   ApiPaginatedGenreList,
 } from '@/shared/types/api';
+import { useToast } from '@/components/providers/ToastProvider';
+import { useRef } from 'react';
 
 // Clés de cache pour React Query
 export const musicKeys = {
@@ -81,10 +85,13 @@ export function useArtistSongs(artistId: string) {
 
 export function useCreateSong() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingCreateSongRef = useRef<string>('');
+  
   return useMutation({
     mutationFn: async (data: CreateSongData): Promise<ApiSong> => {
       const formData = new FormData();
+      loadingCreateSongRef.current = toast.showLoading('Chargement', 'Track en cours de création');
       formData.append('title', data.title);
       formData.append('artist', data.artist);
       if (data.album) formData.append('album', data.album);
@@ -94,6 +101,7 @@ export function useCreateSong() {
       if (data.audio_file) formData.append('audio_file', data.audio_file);
       if (data.cover_image) formData.append('cover', data.cover_image);
       if (data.is_published) formData.append('is_published', data.is_published.toString());
+      if (data.duration) formData.append('duration', data.duration.toString());
 
       const response = await apiService.post<ApiSong>('/songs/', formData);
       return response.data!;
@@ -104,16 +112,30 @@ export function useCreateSong() {
       queryClient.invalidateQueries({ queryKey: musicKeys.artistSongs(data.artist.id) });
       // Ajouter le nouveau song au cache
       queryClient.setQueryData(musicKeys.song(data.id), data);
+      if (data.album) {
+        queryClient.invalidateQueries({ queryKey: musicKeys.albums() });
+        queryClient.invalidateQueries({ queryKey: musicKeys.artistAlbums(data.artist.id) });
+        queryClient.invalidateQueries({ queryKey: musicKeys.album(data.album.id) });
+      }
+      toast.dismissLoading(loadingCreateSongRef.current);
+      toast.showSuccess('Succès', 'Track créé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingCreateSongRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la création du track ' + error.message);
     },
   });
 }
 
 export function useUpdateSong() {
   const queryClient = useQueryClient();
+  const toast = useToast();
+  const loadingUpdateSongRef = useRef<string>('');
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateSongData }): Promise<ApiSong> => {
       const formData = new FormData();
+      loadingUpdateSongRef.current = toast.showLoading('Chargement', 'Track en cours de mise à jour');
       if (data.title) formData.append('title', data.title);
       if (data.artist) formData.append('artist', data.artist);
       if (data.album) formData.append('album', data.album);
@@ -123,6 +145,7 @@ export function useUpdateSong() {
       if (data.audio_file) formData.append('audio_file', data.audio_file);
       if (data.cover_image) formData.append('cover', data.cover_image);
       if (data.is_published !== undefined) formData.append('is_published', data.is_published.toString());
+      if (data.duration) formData.append('duration', data.duration.toString());
 
       const response = await apiService.patch<ApiSong>(`/songs/${id}/`, formData);
       return response.data!;
@@ -133,15 +156,24 @@ export function useUpdateSong() {
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: musicKeys.songs() });
       queryClient.invalidateQueries({ queryKey: musicKeys.artistSongs(data.artist.id) });
+      toast.dismissLoading(loadingUpdateSongRef.current);
+      toast.showSuccess('Succès', 'Track mis à jour avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingUpdateSongRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour du track ' + error.message);
     },
   });
 }
 
 export function useDeleteSong() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingDeleteSongRef = useRef<string>('');
+  
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      loadingDeleteSongRef.current = toast.showLoading('Chargement', 'Track en cours de suppression');
       await apiService.delete(`/songs/${id}/`);
     },
     onSuccess: (_, id) => {
@@ -149,6 +181,13 @@ export function useDeleteSong() {
       queryClient.removeQueries({ queryKey: musicKeys.song(id) });
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: musicKeys.songs() });
+        
+      toast.dismissLoading(loadingDeleteSongRef.current);
+      toast.showSuccess('Succès', 'Track supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeleteSongRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression du track ' + error.message);
     },
   });
 }
@@ -222,10 +261,13 @@ export function useArtistAlbums(artistId: string) {
 
 export function useCreateAlbum() {
   const queryClient = useQueryClient();
+  const toast = useToast();
+  const loadingRef = useRef<string>('');
 
   return useMutation({
     mutationFn: async (data: CreateAlbumData): Promise<ApiAlbum> => {
       const formData = new FormData();
+      loadingRef.current = toast.showLoading('Chargement', 'Album en cours de création');
       formData.append('title', data.title);
       if (data.release_date) formData.append('release_date', data.release_date);
       if (data.description) formData.append('description', data.description);
@@ -237,20 +279,31 @@ export function useCreateAlbum() {
       return response.data!;
     },
     onSuccess: (data) => {
+      toast.dismissLoading(loadingRef.current);
+
       // Invalider les listes d'albums
       queryClient.invalidateQueries({ queryKey: musicKeys.albums() });
       // Ajouter le nouvel album au cache
       queryClient.setQueryData(musicKeys.album(data.id), data);
+      toast.showSuccess('Succès', 'Album créé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la création de l\'album ' + error.message);
     },
   });
 }
 
 export function useUpdateAlbum() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingUpdateAlbumRef = useRef<string>('');
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateAlbumData }): Promise<ApiAlbum> => {
       const formData = new FormData();
+console.log(data);
+
+      loadingUpdateAlbumRef.current = toast.showLoading('Chargement', 'Album en cours de mise à jour');
       if (data.title) formData.append('title', data.title);
       if (data.release_date) formData.append('release_date', data.release_date);
       if (data.description) formData.append('description', data.description);
@@ -266,15 +319,24 @@ export function useUpdateAlbum() {
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: musicKeys.albums() });
       queryClient.invalidateQueries({ queryKey: musicKeys.artistAlbums(data.artist.id) });
+      toast.dismissLoading(loadingUpdateAlbumRef.current);
+      toast.showSuccess('Succès', 'Album mis à jour avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingUpdateAlbumRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour de l\'album ' + error.message);
     },
   });
 }
 
 export function useDeleteAlbum() {
   const queryClient = useQueryClient();
+  const toast = useToast();
+  const loadingDeleteAlbumRef = useRef<string>('');
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      loadingDeleteAlbumRef.current = toast.showLoading('Chargement', 'Album en cours de suppression');
       await apiService.delete(`/albums/${id}/`);
     },
     onSuccess: (_, id) => {
@@ -282,6 +344,12 @@ export function useDeleteAlbum() {
       queryClient.removeQueries({ queryKey: musicKeys.album(id) });
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: musicKeys.albums() });
+      toast.dismissLoading(loadingDeleteAlbumRef.current);
+      toast.showSuccess('Succès', 'Album supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeleteAlbumRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression de l\'album ' + error.message);
     },
   });
 }

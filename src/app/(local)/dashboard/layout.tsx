@@ -22,6 +22,7 @@ import { Bell, ChevronDownIcon } from 'lucide-react';
 import { Inter } from 'next/font/google';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { ToastProvider } from '@/components/providers/ToastProvider';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,7 +30,6 @@ const inter = Inter({ subsets: ['latin'] })
 function DashboardHeader() {
   const router = useRouter();
   const { logout, user } = useAuth();
-
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12  w-full">
@@ -84,6 +84,7 @@ export default function DashboardLayout({
       <body className={inter.className}>
         <QueryProvider>
           <AuthProvider>
+            <ToastProvider>
             <UnifiedPlayerProvider>
               <SidebarProvider>
                 <div className="flex min-h-screen w-full">
@@ -98,6 +99,7 @@ export default function DashboardLayout({
                 <UnifiedPlayer />
               </SidebarProvider>
             </UnifiedPlayerProvider>
+            </ToastProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

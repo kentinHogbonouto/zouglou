@@ -33,8 +33,11 @@ export function CreateEpisodeModal({ isOpen, onClose, onSuccess }: CreateEpisode
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setTimeout(() => {
+        handleClose();
+      }, 2000);
       await createEpisode.mutateAsync(formData);
-      handleClose();
+     
       onSuccess?.();
     } catch (error) {
       console.error('Erreur lors de la création de l&apos;épisode:', error);

@@ -12,6 +12,7 @@ import { CreateAlbumModal } from '@/components/features/artist/CreateAlbumModal'
 import { Disc3, Plus, BarChart3, Clock, Music, Play } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+
 export default function ArtistAlbumsPage() {
   const { user } = useAuth();
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -21,11 +22,13 @@ export default function ArtistAlbumsPage() {
 
   const handleCreateAlbum = async (data: CreateAlbumData) => {
     try {
+      setTimeout(() => {
+        setShowCreateForm(false);
+      }, 2000);
       await createAlbumMutation.mutateAsync({
         ...data,
         artist: user?.artist_profile?.id || ''
       });
-      setShowCreateForm(false);
     } catch (error) {
       console.error('Erreur lors de la création de l\'album:', error);
     }

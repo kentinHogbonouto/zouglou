@@ -123,13 +123,14 @@ export default function AlbumDetailPage() {
 
   const handleCreateTrack = async (data: CreateSongData) => {
     try {
+      setTimeout(() => {
+        setShowCreateTrackModal(false);
+      }, 2000);
       await createSongMutation.mutateAsync({
         ...data,
         album: albumId,
       });
-      setShowCreateTrackModal(false);
-      // Recharger les données de l'album pour afficher le nouveau track
-      window.location.reload();
+      
     } catch (error) {
       console.error('Erreur lors de la création du track:', error);
     }

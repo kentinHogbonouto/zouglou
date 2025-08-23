@@ -11,6 +11,7 @@ import { Mic, Plus, BarChart3, FileText, Users, Headphones } from 'lucide-react'
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+
 export default function ArtistPodcastsPage() {
   const { user } = useAuth();
   const { data: podcastsData, refetch } = usePodcastList({artist: user?.artist_profile?.id});

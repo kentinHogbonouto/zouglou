@@ -29,6 +29,7 @@ export default function ArtistTracksPage() {
   const deleteConfirmation = useDeleteConfirmation();
 
   const handleCreateSong = async (data: CreateSongData) => {
+    setShowCreateForm(false);
     await createSongMutation.mutateAsync(data);
   };
 
