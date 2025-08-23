@@ -62,6 +62,8 @@ export function ProtectedRoute({
 
   const rbac = new RBAC(user);
   
+  console.log("hasAnyRole :",rbac.hasAnyRole(requiredRoles));
+  console.log("rbac :",rbac)
   if (requiredRoles.length > 0 && !rbac.hasAnyRole(requiredRoles)) {
     return fallback || (
       <div className="min-h-screen flex items-center justify-center p-4">
@@ -118,7 +120,7 @@ export function ProtectedRoute({
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute 
-      requiredRoles={['admin', 'super_admin']}
+      requiredRoles={['admin', 'super-admin']}
       requiredPermissions={[SYSTEM_PERMISSIONS.SYSTEM_MANAGE]}
     >
       {children}
@@ -129,7 +131,7 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
 export function ArtistRoute({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute 
-      requiredRoles={['artist', 'admin', 'super_admin']}
+      requiredRoles={['artist', 'admin', 'super-admin']}
       requiredPermissions={[SYSTEM_PERMISSIONS.CONTENT_CREATE]}
     >
       {children}
@@ -140,7 +142,7 @@ export function ArtistRoute({ children }: { children: React.ReactNode }) {
 export function ModeratorRoute({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute 
-      requiredRoles={['moderator', 'admin', 'super_admin']}
+      requiredRoles={['moderator', 'admin', 'super-admin']}
       requiredPermissions={[SYSTEM_PERMISSIONS.CONTENT_MODERATE]}
     >
       {children}

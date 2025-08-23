@@ -91,7 +91,7 @@ export function UserManagement() {
       artist: { color: 'bg-purple-100 text-purple-800', label: 'Artiste' },
       moderator: { color: 'bg-orange-100 text-orange-800', label: 'Modérateur' },
       admin: { color: 'bg-red-100 text-red-800', label: 'Admin' },
-      super_admin: { color: 'bg-green-100 text-green-800', label: 'Super Admin' },
+      'super-admin': { color: 'bg-green-100 text-green-800', label: 'Super Admin' },
     };
 
     const config = roleConfig[role as keyof typeof roleConfig];
@@ -177,7 +177,7 @@ export function UserManagement() {
                   <option value="artist">Artiste</option>
                   <option value="moderator">Modérateur</option>
                   <option value="admin">Admin</option>
-                  <option value="super_admin">Super Admin</option>
+                  <option value="super-admin">Super Admin</option>
                 </select>
               </div>
               <div>
