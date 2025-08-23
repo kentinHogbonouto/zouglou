@@ -98,11 +98,11 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen w-full flex">
-      <div className="hidden md:block md:w-1/2 h-screen">
+      <div className="hidden lg:block lg:w-1/2 h-screen">
         <Image src="/images/register.jpg" alt="Musique africaine" width={1000} height={1000} className="w-full h-full object-top object-cover" />
       </div>
-      <div className="w-full md:w-1/2 bg-green-900 flex justify-center items-center">
-        <div className="w-3/5">
+      <div className="w-full lg:w-1/2 bg-green-900 flex justify-center items-center px-4 lg:px-0">
+        <div className="w-full lg:w-10/12 2xl:w-3/5">
           {/* Logo */}
           <div className="text-center mb-8">
             <Link href="/" className="text-4xl font-bold text-orange-400 hover:text-orange-300 transition-colors">
