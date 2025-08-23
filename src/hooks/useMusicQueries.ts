@@ -301,8 +301,7 @@ export function useUpdateAlbum() {
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateAlbumData }): Promise<ApiAlbum> => {
       const formData = new FormData();
-console.log(data);
-
+      
       loadingUpdateAlbumRef.current = toast.showLoading('Chargement', 'Album en cours de mise à jour');
       if (data.title) formData.append('title', data.title);
       if (data.release_date) formData.append('release_date', data.release_date);
