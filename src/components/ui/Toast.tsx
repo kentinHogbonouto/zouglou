@@ -18,6 +18,13 @@ const Toast: React.FC<ToastProps> = ({ id, type, title, message, duration = 5000
   const [isVisible, setIsVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onClose(id);
+    }, 300);
+  };
+
   useEffect(() => {
     setIsVisible(true);
     
@@ -30,12 +37,7 @@ const Toast: React.FC<ToastProps> = ({ id, type, title, message, duration = 5000
     }
   }, [duration, type]);
 
-  const handleClose = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      onClose(id);
-    }, 300);
-  };
+
 
   const getIcon = () => {
     switch (type) {
