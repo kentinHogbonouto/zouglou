@@ -60,7 +60,7 @@ export function Header({ className }: HeaderProps) {
 
           {/* Actions utilisateur */}
           <div className="hidden md:flex items-center space-x-4">
-            {user ? (
+            {user && (
               <>
                 {/* Notifications */}
                 <Link href={`/dashboard/${user.default_role === 'artist' ? 'artist' : 'admin'}/notifications`}>
@@ -105,19 +105,6 @@ export function Header({ className }: HeaderProps) {
                   )}
                 </div>
               </>
-            ) : (
-              <>
-                <Link href="/login">
-                  <Button variant="outline" size="sm" className="border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all duration-200">
-                    Se connecter
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button size="sm" className="bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-sm hover:shadow-md">
-                    S&apos;inscrire
-                  </Button>
-                </Link>
-              </>
             )}
           </div>
 
@@ -161,7 +148,7 @@ export function Header({ className }: HeaderProps) {
                 Contact
               </Link>
               
-              {user ? (
+              {user && (
                 <>
                   <div className="border-t border-slate-200 pt-4 mt-4">
                     <div className="flex items-center gap-3 px-3 py-2">
@@ -190,19 +177,6 @@ export function Header({ className }: HeaderProps) {
                     </button>
                   </div>
                 </>
-              ) : (
-                <div className="border-t border-slate-200 pt-4 mt-4 space-y-2">
-                  <Link href="/login">
-                    <Button variant="outline" className="w-full border-slate-200 text-slate-600 hover:bg-slate-50">
-                      Se connecter
-                    </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button className="w-full bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white hover:from-[#005929]/90 hover:to-[#005929]">
-                      S&apos;inscrire
-                    </Button>
-                  </Link>
-                </div>
               )}
             </div>
           </div>
