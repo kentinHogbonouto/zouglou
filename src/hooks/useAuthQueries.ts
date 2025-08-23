@@ -1,6 +1,10 @@
+"use client";
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '@/lib/api';
 import { User } from '@/shared/types';
+import { useToast } from '@/components/providers/ToastProvider';
+import {useRef} from 'react';
 
 // Utility function to safely access localStorage (prevents SSR errors)
 const getLocalStorage = (key: string): string | null => {
@@ -258,9 +262,11 @@ export function useResetPassword() {
 // Hook pour mettre à jour le profil utilisateur
 export function useUpdateUserProfile() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingUpdateUserProfileRef = useRef<string>('');
   return useMutation({
     mutationFn: async (data: UpdateUserProfileData): Promise<User> => {
+      loadingUpdateUserProfileRef.current = toast.showLoading('Chargement', 'Mise à jour du profil utilisateur en cours');
       const response = await apiService.patch<User>(`/account/${getLocalStorage('current_user_id')}/`, data);
       return response.data!;
     },
@@ -272,9 +278,13 @@ export function useUpdateUserProfile() {
       // Invalider les requêtes liées à l'utilisateur
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
       queryClient.invalidateQueries({ queryKey: authKeys.userById(updatedUser.id) });
+      toast.dismissLoading(loadingUpdateUserProfileRef.current);
+      toast.showSuccess('Succès', 'Profil utilisateur mis à jour avec succès');
     },
     onError: (error: unknown) => {
       console.error('Erreur lors de la mise à jour du profil utilisateur:', error);
+      toast.dismissLoading(loadingUpdateUserProfileRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour du profil utilisateur ');
       throw error;
     },
   });
@@ -283,9 +293,11 @@ export function useUpdateUserProfile() {
 // Hook pour mettre à jour le profil artiste
 export function useUpdateArtistProfile() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingUpdateArtistProfileRef = useRef<string>('');
   return useMutation({
     mutationFn: async (data: UpdateArtistProfileData): Promise<User> => {
+      loadingUpdateArtistProfileRef.current = toast.showLoading('Chargement', 'Mise à jour du profil artiste en cours');
       const formData = new FormData();
       
       if (data.stage_name) formData.append('stage_name', data.stage_name);
@@ -304,9 +316,13 @@ export function useUpdateArtistProfile() {
       // Invalider les requêtes liées à l'utilisateur
       queryClient.invalidateQueries({ queryKey: authKeys.user() });
       queryClient.invalidateQueries({ queryKey: authKeys.userById(updatedUser.id) });
+      toast.dismissLoading(loadingUpdateArtistProfileRef.current);
+      toast.showSuccess('Succès', 'Profil artiste mis à jour avec succès');
     },
     onError: (error: unknown) => {
       console.error('Erreur lors de la mise à jour du profil artiste:', error);
+      toast.dismissLoading(loadingUpdateArtistProfileRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour du profil artiste ');
       throw error;
     },
   });
@@ -314,21 +330,27 @@ export function useUpdateArtistProfile() {
 
 // Hook pour changer le mot de passe
 export function useChangePassword() {
+  const toast = useToast();
+  const loadingChangePasswordRef = useRef<string>('');
   return useMutation({
     mutationFn: async (data: ChangePasswordData): Promise<void> => {
       if (data.new_password !== data.confirm_password) {
         throw new Error('Les mots de passe ne correspondent pas');
       }
-      
+      loadingChangePasswordRef.current = toast.showLoading('Chargement', 'Changement de mot de passe en cours');
       await apiService.put(`/account/${getLocalStorage('current_user_id')}/set_password/`, {
         old_password: data.old_password,
         new_password: data.new_password,
       });
     },
     onSuccess: () => {
+      toast.dismissLoading(loadingChangePasswordRef.current);
+      toast.showSuccess('Succès', 'Mot de passe changé avec succès');
     },
     onError: (error: unknown) => {
       console.error('Erreur lors du changement de mot de passe:', error);
+      toast.dismissLoading(loadingChangePasswordRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors du changement de mot de passe ');
       throw error;
     },
   });

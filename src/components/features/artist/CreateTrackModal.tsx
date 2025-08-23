@@ -5,6 +5,7 @@ import { GenreSelect } from '@/components/ui/GenreSelect';
 import { CreateSongData } from '@/shared/types/api';
 import { AlbumSelect } from '@/components/features/artist/AlbumSelect';
 import { Mic, Disc3, Hash } from 'lucide-react';
+import { useToast } from '@/components/providers/ToastProvider';
 
 interface CreateTrackModalProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export function CreateTrackModal({
   currentArtist,
   preSelectedAlbum
 }: CreateTrackModalProps) {
+  const toast = useToast();
   const [formData, setFormData] = useState<Partial<CreateSongData>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -36,7 +38,7 @@ export function CreateTrackModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile || !formData.title) {
-      alert('Veuillez remplir tous les champs obligatoires');
+      toast.showError('Erreur', 'Veuillez remplir tous les champs obligatoires');
       return;
     }
 

@@ -10,6 +10,9 @@ import {
   CreatePodcastEpisodeData,
   UpdatePodcastEpisodeData,
 } from '@/shared/types/api';
+import { useToast } from '@/components/providers/ToastProvider';
+import { useRef } from 'react';
+
 
 // Clés de cache pour React Query
 export const podcastKeys = {
@@ -62,9 +65,11 @@ export function usePodcast(id: string) {
 
 export function useCreatePodcast() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingCreatePodcastRef = useRef<string>('');
   return useMutation({
     mutationFn: async (data: CreatePodcastData): Promise<ApiPodcast> => {
+      loadingCreatePodcastRef.current = toast.showLoading('Chargement', 'Podcast en cours de création');
       const formData = new FormData();
       formData.append('title', data.title);
       formData.append('description', data.description);
@@ -81,15 +86,23 @@ export function useCreatePodcast() {
       queryClient.invalidateQueries({ queryKey: podcastKeys.podcastList() });
       // Ajouter le nouveau podcast au cache
       queryClient.setQueryData(podcastKeys.podcast(data.id), data);
+      toast.dismissLoading(loadingCreatePodcastRef.current);
+      toast.showSuccess('Succès', 'Podcast créé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingCreatePodcastRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la création du podcast ' + error.message);
     },
   });
 }
 
 export function useUpdatePodcast() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingUpdatePodcastRef = useRef<string>('');
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdatePodcastData }): Promise<ApiPodcast> => {
+      loadingUpdatePodcastRef.current = toast.showLoading('Chargement', 'Podcast en cours de mise à jour');
       const formData = new FormData();
       if (data.title) formData.append('title', data.title);
       if (data.description) formData.append('description', data.description);
@@ -106,15 +119,23 @@ export function useUpdatePodcast() {
       queryClient.setQueryData(podcastKeys.podcast(data.id), data);
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: podcastKeys.podcastList() });
+      toast.dismissLoading(loadingUpdatePodcastRef.current);
+      toast.showSuccess('Succès', 'Podcast mis à jour avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingUpdatePodcastRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour du podcast ' + error.message);
     },
   });
 }
 
 export function useDeletePodcast() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingDeletePodcastRef = useRef<string>('');
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      loadingDeletePodcastRef.current = toast.showLoading('Chargement', 'Podcast en cours de suppression');
       await apiService.delete(`/podcast/${id}/`);
     },
     onSuccess: (_, id) => {
@@ -122,6 +143,12 @@ export function useDeletePodcast() {
       queryClient.removeQueries({ queryKey: podcastKeys.podcast(id) });
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: podcastKeys.podcastList() });
+      toast.dismissLoading(loadingDeletePodcastRef.current);
+      toast.showSuccess('Succès', 'Podcast supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeletePodcastRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression du podcast ' + error.message);
     },
   });
 }
@@ -171,9 +198,11 @@ export function usePodcastEpisode(id: string) {
 
 export function useCreatePodcastEpisode() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingCreatePodcastEpisodeRef = useRef<string>('');
   return useMutation({
     mutationFn: async (data: CreatePodcastEpisodeData): Promise<ApiPodcastEpisode> => {
+      loadingCreatePodcastEpisodeRef.current = toast.showLoading('Chargement', 'Episode de podcast en cours de création');
       const formData = new FormData();
       formData.append('title', data.title);
       formData.append('description', data.description);
@@ -194,15 +223,23 @@ export function useCreatePodcastEpisode() {
       queryClient.setQueryData(podcastKeys.episode(data.id), data);
       // Invalider le cache du podcast parent
       queryClient.invalidateQueries({ queryKey: podcastKeys.podcast(data.podcast) });
+      toast.dismissLoading(loadingCreatePodcastEpisodeRef.current);
+      toast.showSuccess('Succès', 'Episode de podcast créé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingCreatePodcastEpisodeRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la création de l\'épisode de podcast ' + error.message);
     },
   });
 }
 
 export function useUpdatePodcastEpisode() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingUpdatePodcastEpisodeRef = useRef<string>('');
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdatePodcastEpisodeData }): Promise<ApiPodcastEpisode> => {
+      loadingUpdatePodcastEpisodeRef.current = toast.showLoading('Chargement', 'Episode de podcast en cours de mise à jour');
       const formData = new FormData();
       if (data.title) formData.append('title', data.title);
       if (data.description) formData.append('description', data.description);
@@ -223,15 +260,23 @@ export function useUpdatePodcastEpisode() {
       queryClient.invalidateQueries({ queryKey: podcastKeys.episodeList() });
       // Invalider le cache du podcast parent
       queryClient.invalidateQueries({ queryKey: podcastKeys.podcast(data.podcast) });
+      toast.dismissLoading(loadingUpdatePodcastEpisodeRef.current);
+      toast.showSuccess('Succès', 'Episode de podcast mis à jour avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingUpdatePodcastEpisodeRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour de l\'épisode de podcast ' + error.message);
     },
   });
 }
 
 export function useDeletePodcastEpisode() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingDeletePodcastEpisodeRef = useRef<string>('');
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      loadingDeletePodcastEpisodeRef.current = toast.showLoading('Chargement', 'Episode de podcast en cours de suppression');
       await apiService.delete(`/podcast-episodes/${id}/`);
     },
     onSuccess: (_, id) => {
@@ -239,6 +284,12 @@ export function useDeletePodcastEpisode() {
       queryClient.removeQueries({ queryKey: podcastKeys.episode(id) });
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: podcastKeys.episodeList() });
+      toast.dismissLoading(loadingDeletePodcastEpisodeRef.current);
+      toast.showSuccess('Succès', 'Episode de podcast supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeletePodcastEpisodeRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression de l\'épisode de podcast ' + error.message);
     },
   });
 }
@@ -246,9 +297,11 @@ export function useDeletePodcastEpisode() {
 // Hook pour supprimer définitivement un épisode (soft delete)
 export function useDeletePodcastEpisodeReal() {
   const queryClient = useQueryClient();
-
+  const toast = useToast();
+  const loadingDeletePodcastEpisodeRealRef = useRef<string>('');
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      loadingDeletePodcastEpisodeRealRef.current = toast.showLoading('Chargement', 'Episode de podcast en cours de suppression définitive');
       await apiService.delete(`/podcast-episodes/${id}/real/`);
     },
     onSuccess: (_, id) => {
@@ -256,6 +309,12 @@ export function useDeletePodcastEpisodeReal() {
       queryClient.removeQueries({ queryKey: podcastKeys.episode(id) });
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: podcastKeys.episodeList() });
+      toast.dismissLoading(loadingDeletePodcastEpisodeRealRef.current);
+      toast.showSuccess('Succès', 'Episode de podcast supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeletePodcastEpisodeRealRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression définitive de l\'épisode de podcast ' + error.message);
     },
   });
 }
