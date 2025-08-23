@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuthQueries';
-import { useArtistAlbums, useCreateAlbum } from '@/hooks/useMusicQueries';
+import { useAlbums, useCreateAlbum } from '@/hooks/useMusicQueries';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Loading } from '@/components/ui/Loading';
 import { CreateAlbumData } from '@/shared/types/api';
 import { ArtistRoute } from '@/components/auth/ProtectedRoute';
-import { CreateAlbumModal } from '@/components/features/artist/CreateAlbumModal'
+import { CreateAlbumModal } from '@/components/features/artist/CreateAlbumModal';
+import { Pagination } from '@/components/ui/Pagination';
 import { Disc3, Plus, BarChart3, Clock, Music, Play } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -16,8 +17,15 @@ import Image from 'next/image';
 export default function ArtistAlbumsPage() {
   const { user } = useAuth();
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const router = useRouter();
-  const { data: albumsData, isLoading, error } = useArtistAlbums(user?.artist_profile?.id || '');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+  const router = useRouter(); 
+  const { data: albumsData, isLoading, error } = useAlbums({
+    artist: user?.artist_profile?.id || '',
+    page: currentPage,
+    page_size: pageSize,
+  }); 
   const createAlbumMutation = useCreateAlbum();
 
   const handleCreateAlbum = async (data: CreateAlbumData) => {
@@ -35,11 +43,18 @@ export default function ArtistAlbumsPage() {
   };
 
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+ 
 
   if (isLoading) return <Loading />;
   if (error) return <div>Erreur lors du chargement des albums</div>;
 
   const albums = albumsData?.results || [];
+  const totalItems = albumsData?.count || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   const formatDuration = (duration: number) => {
     const minutes = Math.floor(duration / 60);
@@ -155,7 +170,8 @@ export default function ArtistAlbumsPage() {
 
           {/* Liste des albums */}
           {albums.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {albums.map((album) => (
                 <Card
                   key={album.id}
@@ -206,6 +222,19 @@ export default function ArtistAlbumsPage() {
                   </div>
                 </Card>
               ))}
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  pageSize={pageSize}
+                  onPageChange={handlePageChange}
+                  className="mt-6"
+                />
+              )}
             </div>
           ) : (
             <Card className="relative overflow-hidden p-12 border-0 shadow-sm bg-white/60 backdrop-blur-sm text-center">

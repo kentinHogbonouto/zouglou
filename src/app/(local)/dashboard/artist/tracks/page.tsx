@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuthQueries';
-import { useArtistSongs, useCreateSong, useDeleteSong } from '@/hooks/useMusicQueries';
+import { useSongs, useCreateSong, useDeleteSong } from '@/hooks/useMusicQueries';
 import { Button } from '@/components/ui/Button';
 import { Loading } from '@/components/ui/Loading';
 import { Card } from '@/components/ui/Card';
@@ -13,6 +13,7 @@ import { ArtistRoute } from '@/components/auth/ProtectedRoute';
 import { useUnifiedMusicPlayer } from '@/hooks/useUnifiedMusicPlayer';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
+import { Pagination } from '@/components/ui/Pagination';
 import { useRouter } from 'next/navigation';
 import { Music, Heart, Plus, BarChart3, Clock } from 'lucide-react';
 
@@ -20,8 +21,14 @@ export default function ArtistTracksPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  const { data: songsData, isLoading, error } = useArtistSongs(user?.artist_profile?.id || '');
+  const { data: songsData, isLoading, error } = useSongs({
+    artist: user?.artist_profile?.id || '',
+    page: currentPage,
+    page_size: pageSize,
+  });
   const createSongMutation = useCreateSong();
   const deleteSongMutation = useDeleteSong();
 
@@ -31,6 +38,10 @@ export default function ArtistTracksPage() {
   const handleCreateSong = async (data: CreateSongData) => {
     setShowCreateForm(false);
     await createSongMutation.mutateAsync(data);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   
@@ -52,6 +63,8 @@ export default function ArtistTracksPage() {
   if (error) return <div>Erreur lors du chargement des tracks</div>;
 
   const songs = songsData?.results || [];
+  const totalItems = songsData?.count || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   return (
     <ArtistRoute>
@@ -163,7 +176,7 @@ export default function ArtistTracksPage() {
 
           {/* Liste des tracks */}
           {songs.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <MusicList
                 tracks={songs}
                 title="Mes Tracks"
@@ -172,6 +185,18 @@ export default function ArtistTracksPage() {
                 isPlaying={isPlaying}
                 currentTrackId={currentTrack?.id}
               />
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  pageSize={pageSize}
+                  onPageChange={handlePageChange}
+                  className="mt-6"
+                />
+              )}
             </div>
           ) : (
             <Card className="relative overflow-hidden p-12 border-0 shadow-sm bg-white/60 backdrop-blur-sm text-center">

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { ApiPodcast } from "@/shared/types/api";
 import { CreatePodcastModal } from "@/components/features/podcast/CreatePodcastModal";
+import { Pagination } from "@/components/ui/Pagination";
 import { Mic, Plus, BarChart3, FileText, Users, Headphones } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
@@ -14,10 +15,24 @@ import Image from "next/image";
 
 export default function ArtistPodcastsPage() {
   const { user } = useAuth();
-  const { data: podcastsData, refetch } = usePodcastList({artist: user?.artist_profile?.id});
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 6;
+  const { data: podcastsData, refetch } = usePodcastList({
+    artist: user?.artist_profile?.id,
+    page: currentPage,
+    page_size: pageSize,
+  });
   const podcasts = podcastsData?.results || [];
+  const totalItems = podcastsData?.count || 0;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const router = useRouter();
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+  
   return (
     <ArtistRoute>
       <div className="min-h-screen bg-slate-50/50">
@@ -111,7 +126,8 @@ export default function ArtistPodcastsPage() {
 
           {/* Liste des podcasts */}
           {podcasts.length > 0 ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {podcasts.map((podcast: ApiPodcast) => (
                 <Card key={podcast.id} className="group cursor-pointer border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-xl transition-all duration-500 hover:scale-105 overflow-hidden">
                   {/* Couverture */}
@@ -167,6 +183,19 @@ export default function ArtistPodcastsPage() {
                   </CardContent>
                 </Card>
               ))}
+              </div>
+              
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  pageSize={pageSize}
+                  onPageChange={handlePageChange}
+                  className="mt-6"
+                />
+              )}
             </div>
           ) : (
             <Card className="p-12 border-0 shadow-sm bg-white/60 backdrop-blur-sm text-center">

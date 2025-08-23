@@ -38,7 +38,7 @@ export const SYSTEM_PERMISSIONS = {
 
 // Rôles système prédéfinis
 export const SYSTEM_ROLES = {
-  SUPER_ADMIN: 'super_admin',
+  SUPER_ADMIN: 'super-admin',
   ADMIN: 'admin',
   MODERATOR: 'moderator',
   ARTIST: 'artist',

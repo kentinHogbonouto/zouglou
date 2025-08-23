@@ -24,7 +24,7 @@ export function Hero() {
                 Télécharger l&apos;application
               </Button>
               <Button variant="outline" size="lg" className="border-[#FE5200] bg-[#FE5200] text-white hover:text-[#FE5200] hover:bg-white cursor-pointer">
-                <Link href="/artists">
+                <Link href="#">
                   Découvrir les artistes
                 </Link>
               </Button>
