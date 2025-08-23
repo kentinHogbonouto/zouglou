@@ -136,7 +136,6 @@ export default function AlbumDetailPage() {
     }
   };
 
-  if (isLoading) return <Loading />;
   if (error) return <div>Erreur lors du chargement de l&apos;album</div>;
   if (!album) return <div>Album non trouvé</div>;
 
@@ -214,6 +213,7 @@ export default function AlbumDetailPage() {
         </div>
 
         {/* Main Content */}
+        {isLoading ? <Loading /> : (
         <div className="max-w-7xl mx-auto px-8 py-8">
           {isEditMode ? (
             // Mode édition
@@ -593,6 +593,7 @@ export default function AlbumDetailPage() {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Modal de création de track */}

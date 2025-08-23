@@ -44,9 +44,9 @@ export default function ArtistTracksPage() {
     setCurrentPage(page);
   };
 
-  
 
-  
+
+
 
   const handlePlayAllTracks = (track: ApiSong) => {
     // Jouer toutes les pistes de la page
@@ -59,7 +59,6 @@ export default function ArtistTracksPage() {
   };
 
 
-  if (isLoading) return <Loading />;
   if (error) return <div>Erreur lors du chargement des tracks</div>;
 
   const songs = songsData?.results || [];
@@ -174,48 +173,53 @@ export default function ArtistTracksPage() {
             currentArtist={user?.artist_profile?.id || ''}
           />
 
+
           {/* Liste des tracks */}
-          {songs.length > 0 ? (
-            <div className="space-y-6">
-              <MusicList
-                tracks={songs}
-                title="Mes Tracks"
-                onPlay={handlePlayAllTracks}
-                onView={handleViewTrack}            
-                isPlaying={isPlaying}
-                currentTrackId={currentTrack?.id}
-              />
-              
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={totalItems}
-                  pageSize={pageSize}
-                  onPageChange={handlePageChange}
-                  className="mt-6"
-                />
+          {isLoading ? <Loading /> : (
+            <div>
+              {songs.length > 0 ? (
+                <div className="space-y-6">
+                  <MusicList
+                    tracks={songs}
+                    title="Mes Tracks"
+                    onPlay={handlePlayAllTracks}
+                    onView={handleViewTrack}
+                    isPlaying={isPlaying}
+                    currentTrackId={currentTrack?.id}
+                  />
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalItems={totalItems}
+                      pageSize={pageSize}
+                      onPageChange={handlePageChange}
+                      className="mt-6"
+                    />
+                  )}
+                </div>
+              ) : (
+                <Card className="relative overflow-hidden p-12 border-0 shadow-sm bg-white/60 backdrop-blur-sm text-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#005929]/5 via-transparent to-[#FE5200]/5"></div>
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-gradient-to-r from-[#005929]/10 to-[#FE5200]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Music className="w-8 h-8 text-slate-600" />
+                    </div>
+                    <h3 className="text-xl font-medium text-slate-800 mb-2">Aucun track</h3>
+                    <p className="text-slate-500 mb-6">Commencez par ajouter votre premier track musical</p>
+                    <Button
+                      onClick={() => setShowCreateForm(true)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Créer votre premier track
+                    </Button>
+                  </div>
+                </Card>
               )}
             </div>
-          ) : (
-            <Card className="relative overflow-hidden p-12 border-0 shadow-sm bg-white/60 backdrop-blur-sm text-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#005929]/5 via-transparent to-[#FE5200]/5"></div>
-              <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-r from-[#005929]/10 to-[#FE5200]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Music className="w-8 h-8 text-slate-600" />
-                </div>
-                <h3 className="text-xl font-medium text-slate-800 mb-2">Aucun track</h3>
-                <p className="text-slate-500 mb-6">Commencez par ajouter votre premier track musical</p>
-                <Button
-                  onClick={() => setShowCreateForm(true)}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <Plus className="w-4 h-4" />
-                  Créer votre premier track
-                </Button>
-              </div>
-            </Card>
           )}
 
           {/* Modal de confirmation de suppression */}
