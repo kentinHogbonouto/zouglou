@@ -75,10 +75,9 @@ export default function AlbumDetailPage() {
 
   const handleDeleteAlbum = async () => {
     if (!album) return;
-
     try {
       await deleteAlbumMutation.mutateAsync(albumId);
-      router.push('/dashboard/artist/albums');
+      router.back();
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
