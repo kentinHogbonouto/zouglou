@@ -62,8 +62,6 @@ export function ProtectedRoute({
 
   const rbac = new RBAC(user);
   
-  console.log("hasAnyRole :",rbac.hasAnyRole(requiredRoles));
-  console.log("rbac :",rbac)
   if (requiredRoles.length > 0 && !rbac.hasAnyRole(requiredRoles)) {
     return fallback || (
       <div className="min-h-screen flex items-center justify-center p-4">
