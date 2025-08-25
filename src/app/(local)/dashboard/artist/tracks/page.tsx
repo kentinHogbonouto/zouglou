@@ -11,8 +11,6 @@ import { MusicList } from '@/components/features/MusicList';
 import { ApiSong, CreateSongData } from '@/shared/types/api';
 import { ArtistRoute } from '@/components/auth/ProtectedRoute';
 import { useUnifiedMusicPlayer } from '@/hooks/useUnifiedMusicPlayer';
-import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
-import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
 import { Pagination } from '@/components/ui/Pagination';
 import { useRouter } from 'next/navigation';
 import { Music, Heart, Plus, BarChart3, Clock } from 'lucide-react';
@@ -30,10 +28,8 @@ export default function ArtistTracksPage() {
     page_size: pageSize,
   });
   const createSongMutation = useCreateSong();
-  const deleteSongMutation = useDeleteSong();
 
   const { playTrackQueue, currentTrack, isPlaying } = useUnifiedMusicPlayer();
-  const deleteConfirmation = useDeleteConfirmation();
 
   const handleCreateSong = async (data: CreateSongData) => {
     setShowCreateForm(false);
@@ -222,15 +218,6 @@ export default function ArtistTracksPage() {
             </div>
           )}
 
-          {/* Modal de confirmation de suppression */}
-          <DeleteConfirmationModal
-            isOpen={deleteConfirmation.isOpen}
-            onClose={deleteConfirmation.hideDeleteConfirmation}
-            onConfirm={deleteConfirmation.handleConfirm}
-            message={deleteConfirmation.message}
-            itemName={deleteConfirmation.itemName}
-            isDeleting={deleteSongMutation.isPending}
-          />
         </div>
       </div>
     </ArtistRoute>
