@@ -8,7 +8,7 @@ interface WelcomeBannerProps {
   lastLogin?: string;
 }
 
-export function WelcomeBanner({ artistName = "Artiste", lastLogin = "aujourd'hui" }: WelcomeBannerProps) {
+export function WelcomeBanner({ artistName = "Artiste" }: WelcomeBannerProps) {
   const currentHour = new Date().getHours();
   const getGreeting = () => {
     if (currentHour < 12) return "Bonjour";
@@ -44,9 +44,6 @@ export function WelcomeBanner({ artistName = "Artiste", lastLogin = "aujourd'hui
                 <h2 className="text-xl font-medium text-slate-800">
                   {getGreeting()}, {artistName}
                 </h2>
-                <p className="text-slate-500 text-sm">
-                  Dernière connexion {lastLogin}
-                </p>
               </div>
             </div>
             
