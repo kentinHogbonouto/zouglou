@@ -6,5 +6,6 @@ export { Modal, ModalButton, ModalActions } from './Modal';
 export { FormField, FormCheckbox } from './FormField';
 export { GenreSelect } from './GenreSelect';
 export { CategorySelect } from './CategorySelect';
+export { CitySelect } from './CitySelect';
 export { Notification } from './Notification';
 export { MusicPlayer } from './MusicPlayer'; 

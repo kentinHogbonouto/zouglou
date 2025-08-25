@@ -282,7 +282,7 @@ export function useUpdateUserProfile() {
       toast.showSuccess('Succès', 'Profil utilisateur mis à jour avec succès');
     },
     onError: (error: unknown) => {
-      console.error('Erreur lors de la mise à jour du profil utilisateur:', error);
+      console.log(' erreur lors de la mise à jour du profil utilisateur:')
       toast.dismissLoading(loadingUpdateUserProfileRef.current);
       toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour du profil utilisateur ');
       throw error;
@@ -320,7 +320,6 @@ export function useUpdateArtistProfile() {
       toast.showSuccess('Succès', 'Profil artiste mis à jour avec succès');
     },
     onError: (error: unknown) => {
-      console.error('Erreur lors de la mise à jour du profil artiste:', error);
       toast.dismissLoading(loadingUpdateArtistProfileRef.current);
       toast.showError('Erreur', 'Une erreur est survenue lors de la mise à jour du profil artiste ');
       throw error;

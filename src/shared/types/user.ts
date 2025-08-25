@@ -1,3 +1,5 @@
+import { City } from "./api";
+
 export interface User {
   id: string;
   email: string;
@@ -20,7 +22,7 @@ export interface User {
   updatedAt?: Date;
   
   // Champs supplémentaires de l'API
-  city?: string | null;
+  city?: City | null;
   interested_artists?: string[];
   birth_date?: string | null;
   sexe?: string | null;
@@ -71,7 +73,7 @@ export interface UserProfile extends User {
   phoneNumber?: string;
   dateOfBirth?: Date;
   country?: string;
-  city?: string;
+  city?: City | null;
   timezone?: string;
   language?: string;
   preferences: UserPreferences;
