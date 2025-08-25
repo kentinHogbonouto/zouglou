@@ -464,7 +464,7 @@ export default function AlbumDetailPage() {
 
                             {/* Genre */}
                             <div className="hidden md:block w-32">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs text-center font-medium bg-slate-100 text-slate-600">
                                 {song.genre?.name || 'Pop'}
                               </span>
                             </div>
