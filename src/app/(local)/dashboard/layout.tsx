@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, ChevronDownIcon } from 'lucide-react';
+import { ChevronDownIcon } from 'lucide-react';
 import { Inter } from 'next/font/google';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -39,9 +39,6 @@ function DashboardHeader() {
         <div className="flex items-center gap-2 w-full justify-between">
           <h1 className="text-lg font-semibold">Dashboard</h1>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="my-auto">
-              <Bell size={16} />
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-auto p-0 hover:bg-transparent my-auto">
