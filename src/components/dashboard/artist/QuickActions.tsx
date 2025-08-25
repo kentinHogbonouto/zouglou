@@ -3,11 +3,11 @@
 import { Card, CardContent } from '@/components/ui/Card';
 import { 
   Music, 
-  Radio, 
-  Users, 
   TrendingUp, 
   Calendar, 
-  Mic
+  Mic,
+  User,
+  Disc3
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -23,7 +23,7 @@ const quickActions = [
   {
     title: 'Nouvelle album',
     description: 'Créer un nouvel album',
-    icon: Radio,
+    icon: Disc3,
     color: 'from-[#FE5200] to-[#FE5200]/90',
     bgColor: 'bg-gradient-to-br from-[#FE5200]/5 to-[#FE5200]/10',
     href: '/dashboard/artist/albums'
@@ -45,20 +45,20 @@ const quickActions = [
     href: '/dashboard/artist/analytics'
   },
   {
-    title: 'Profil',
-    description: 'Gérer votre profil',
-    icon: Users,
-    color: 'from-[#005929] to-[#005929]/90',
-    bgColor: 'bg-gradient-to-br from-[#005929]/5 to-[#005929]/10',
-    href: '/dashboard/artist/profile'
-  },
-  {
     title: 'Revenus',
     description: 'Voir vos revenus',
     icon: Calendar,
+    color: 'from-[#005929] to-[#005929]/90',
+    bgColor: 'bg-gradient-to-br from-[#005929]/5 to-[#005929]/10',
+    href: '/dashboard/artist/revenue'
+  },
+  {  
+    title: 'Profil',
+    description: 'Gérer votre profil',
+    icon: User,
     color: 'from-[#FE5200] to-[#FE5200]/90',
     bgColor: 'bg-gradient-to-br from-[#FE5200]/5 to-[#FE5200]/10',
-    href: '/dashboard/artist/revenues'
+    href: '/dashboard/artist/profile'
   }
 ];
 
