@@ -58,7 +58,7 @@ export default function ArtistDashboard() {
         <div className="max-w-7xl mx-auto px-8 py-8">
           {/* Welcome Banner */}
           <div className="mb-8">
-            <WelcomeBanner artistName={user?.full_name} lastLogin="il y a 2 heures" />
+            <WelcomeBanner artistName={user?.full_name} />
           </div>
 
           {/* Stats Section */}
