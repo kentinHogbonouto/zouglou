@@ -97,11 +97,11 @@ export default function RegisterPage() {
   const password = watch('password');
 
   return (
-    <div className="min-h-screen w-full flex">
-      <div className="hidden lg:block lg:w-1/2 h-screen">
+    <div className="h-screen w-full flex">
+      <div className="hidden lg:block lg:w-1/2 h-full">
         <Image src="/images/register.jpg" alt="Musique africaine" width={1000} height={1000} className="w-full h-full object-top object-cover" />
       </div>
-      <div className="w-full lg:w-1/2 bg-green-900 flex justify-center items-center px-4 lg:px-0">
+      <div className="w-full h-full overflow-y-auto lg:w-1/2 bg-green-900 flex justify-center items-center px-4 lg:px-0 py-10">
         <div className="w-full lg:w-10/12 2xl:w-3/5">
           {/* Logo */}
           <div className="text-center mb-8">
