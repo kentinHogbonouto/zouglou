@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, ChevronDownIcon } from 'lucide-react';
+import { ChevronDownIcon } from 'lucide-react';
 import { Inter } from 'next/font/google';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
