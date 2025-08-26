@@ -20,7 +20,6 @@ export function CreateTrackModal({
   isOpen,
   onClose,
   onSubmit,
-  isSubmitting,
   currentArtist,
   preSelectedAlbum
 }: CreateTrackModalProps) {
@@ -43,6 +42,11 @@ export function CreateTrackModal({
     }
 
       try {
+      setTimeout(() => {
+        setFormData({});
+        setSelectedFile(null);
+        onClose();
+      }, 100);
       await onSubmit({
         ...formData as CreateSongData,
         artist: currentArtist,
@@ -50,9 +54,7 @@ export function CreateTrackModal({
       });
 
       // Reset form
-      setFormData({});
-      setSelectedFile(null);
-      onClose();
+   
     } catch (error) {
       console.error('Erreur lors de la création du track:', error);
     }
@@ -201,9 +203,8 @@ export function CreateTrackModal({
             <ModalButton
               type="submit"
               variant="primary"
-              disabled={isSubmitting}
             >
-              {isSubmitting ? 'Création...' : 'Créer le Track'}
+              Créer le Track
             </ModalButton>
           </ModalActions>
         </form>

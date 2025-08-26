@@ -122,9 +122,7 @@ export default function AlbumDetailPage() {
 
   const handleCreateTrack = async (data: CreateSongData) => {
     try {
-      setTimeout(() => {
         setShowCreateTrackModal(false);
-      }, 2000);
       await createSongMutation.mutateAsync({
         ...data,
         album: albumId,

@@ -32,7 +32,7 @@ export function CreatePodcastModal({ isOpen, onClose, onSuccess }: CreatePodcast
     try {
       setTimeout(() => {
         handleClose();
-      }, 2000);
+      }, 100);
       const data: CreatePodcastData = {
         ...formData,
         artist: user?.artist_profile?.id || '',
@@ -151,10 +151,9 @@ export function CreatePodcastModal({ isOpen, onClose, onSuccess }: CreatePodcast
         <ModalButton
           type="submit"
           variant="primary"
-          disabled={createPodcast.isPending}
           onClick={handleSubmit}
         >
-          {createPodcast.isPending ? 'Création...' : 'Créer le podcast'}
+          Créer le podcast
         </ModalButton>
       </ModalActions>
     </Modal>

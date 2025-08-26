@@ -35,7 +35,7 @@ export function CreateEpisodeModal({ isOpen, onClose, onSuccess }: CreateEpisode
     try {
       setTimeout(() => {
         handleClose();
-      }, 2000);
+      }, 100);
       await createEpisode.mutateAsync(formData);
      
       onSuccess?.();
@@ -204,10 +204,9 @@ export function CreateEpisodeModal({ isOpen, onClose, onSuccess }: CreateEpisode
         <ModalButton
           type="submit"
           variant="primary"
-          disabled={createEpisode.isPending}
           onClick={handleSubmit}
         >
-          {createEpisode.isPending ? 'Création...' : 'Créer l\'épisode'}
+          Créer l&apos;épisode
         </ModalButton>
       </ModalActions>
     </Modal>

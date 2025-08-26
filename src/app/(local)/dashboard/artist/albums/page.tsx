@@ -30,9 +30,6 @@ export default function ArtistAlbumsPage() {
 
   const handleCreateAlbum = async (data: CreateAlbumData) => {
     try {
-      setTimeout(() => {
-        setShowCreateForm(false);
-      }, 2000);
       await createAlbumMutation.mutateAsync({
         ...data,
         artist: user?.artist_profile?.id || ''
