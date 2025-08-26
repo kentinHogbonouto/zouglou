@@ -76,8 +76,9 @@ export default function AlbumDetailPage() {
   const handleDeleteAlbum = async () => {
     if (!album) return;
     try {
-      await deleteAlbumMutation.mutateAsync(albumId);
-      router.back();
+      await deleteAlbumMutation.mutateAsync(albumId).then(() => {
+        router.back();
+      });
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
@@ -136,7 +137,7 @@ export default function AlbumDetailPage() {
   };
 
   if (error) return <div>Erreur lors du chargement de l&apos;album</div>;
-  if (!album) return <div>Album non trouvé</div>;
+  if (!album) return <div></div>;
 
   return (
     <ArtistRoute>
