@@ -4,6 +4,7 @@ import '../globals.css'
 import { AuthProvider } from '@/components/providers/AuthProvider'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { ToastProvider } from '@/components/providers/ToastProvider'
+import AuthLayoutWrapper from '@/components/auth/AuthLayoutWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,11 +24,9 @@ export default function AuthLayout({
         <QueryProvider>
           <AuthProvider>
             <ToastProvider>
-            <div className="min-h-screen flex flex-col">
-              <main className="flex-1">
+              <AuthLayoutWrapper>
                 {children}
-              </main>
-            </div>
+              </AuthLayoutWrapper>
             </ToastProvider>
           </AuthProvider>
         </QueryProvider>
