@@ -280,7 +280,7 @@ export default function ArtistPodcastDetailPage() {
                       <div className="md:w-1/2 space-y-6">
                         <div>
                           <h2 className="text-3xl font-light text-slate-800 mb-2">{podcast.title}</h2>
-                          <p className="text-lg text-slate-600 leading-relaxed">{podcast.description}</p>
+                          <p className="text-lg text-slate-600 leading-relaxed">{podcast.description.substring(0, 200)}...</p>
                         </div>
 
                         <div className="space-y-4">
