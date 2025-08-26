@@ -173,7 +173,6 @@ export default function ArtistProfilePage() {
 
   if (isLoading) return <Loading />;
   if (error) return <div>Erreur lors du chargement du profil</div>;
-  if (!userData) return <div>Profil non trouvé</div>;
 
   return (
     <ArtistRoute>
@@ -384,9 +383,9 @@ export default function ArtistProfilePage() {
                     onChange={(e) => setSelectedProfileImage(e.target.files?.[0] || null)}
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-zouglou-green-700 hover:file:bg-green-100"
                   />
-                  {userData.artist_profile?.profile_image && (
+                  {userData && userData?.artist_profile?.profile_image && (
                     <p className="text-xs text-gray-500 mt-1">
-                      Image actuelle: {userData.artist_profile.profile_image.split('/').pop()}
+                      Image actuelle: {userData?.artist_profile.profile_image.split('/').pop()}
                     </p>
                   )}
                 </div>
@@ -401,9 +400,9 @@ export default function ArtistProfilePage() {
                     onChange={(e) => setSelectedCoverImage(e.target.files?.[0] || null)}
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-zouglou-green-700 hover:file:bg-green-100"
                   />
-                  {userData.artist_profile?.cover_image && (
+                  {userData && userData?.artist_profile?.cover_image && (
                     <p className="text-xs text-gray-500 mt-1">
-                      Image actuelle: {userData.artist_profile.cover_image.split('/').pop()}
+                      Image actuelle: {userData?.artist_profile.cover_image.split('/').pop()}
                     </p>
                   )}
                 </div>
