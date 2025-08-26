@@ -43,7 +43,7 @@ function DashboardHeader() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-auto p-0 hover:bg-transparent my-auto">
                   <Avatar>
-                    <AvatarImage src="/images/avatar.jpg" alt="Profile image" />
+                    <AvatarImage src={ user?.artist_profile?.profile_image || "/images/avatar.jpg"} alt="Profile image" />
                   </Avatar>
                   <ChevronDownIcon size={16} className="opacity-60" aria-hidden="true" />
                 </Button>
