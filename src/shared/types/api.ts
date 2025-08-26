@@ -287,3 +287,14 @@ export interface UpdatePodcastEpisodeData {
   cover_image?: File;
   audio_file?: File;
 } 
+
+export interface City {
+  id: string;
+  name: string;
+  status: boolean;
+  logo: string | null;
+  longitude: string | null;
+  latitude: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
