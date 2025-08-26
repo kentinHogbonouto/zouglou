@@ -7,6 +7,7 @@ export interface ApiArtist {
   cover?: string;
   bio?: string;
   is_active: boolean;
+  profile_image?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -197,7 +198,7 @@ export interface ApiPodcast {
   title: string;
   description: string;
   cover: string;
-  artist: string;
+  artist: ApiArtist;
   genre: string;
   is_published: boolean;
   episodes_count: number;

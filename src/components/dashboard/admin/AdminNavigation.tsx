@@ -13,6 +13,12 @@ export function AdminNavigation() {
       description: 'Vue d\'ensemble'
     },
     {
+      href: '/dashboard/admin/user',
+      label: 'Utilisateurs',
+      icon: '👥',
+      description: 'Gérer les utilisateurs'
+    },
+    {
       href: '/dashboard/admin/tracks',
       label: 'Tracks',
       icon: '🎵',
@@ -38,7 +44,7 @@ export function AdminNavigation() {
         <span className="text-2xl mr-3">🧭</span>
         Navigation Admin
       </h3>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {navigationItems.map((item) => {
           const isActive = pathname === item.href;
           return (

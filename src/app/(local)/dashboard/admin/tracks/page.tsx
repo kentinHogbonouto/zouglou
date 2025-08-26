@@ -1,127 +1,168 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { AdminTrackList } from '@/components/features/admin/AdminTrackList';
-import { AdminNavigation } from '@/components/dashboard/admin/AdminNavigation';
+import { Card, CardContent } from '@/components/ui/Card';
 import { AdminRoute } from '@/components/auth/ProtectedRoute';
-
-interface Track {
-  id: string;
-  title: string;
-  artist: string;
-  album?: string;
-  genre?: string;
-  duration: number;
-  is_published: boolean;
-  createdAt: string;
-}
+import { useSongs, useUnifiedMusicPlayer, useGenres, useCreateSong } from '@/hooks';
+import { Pagination } from '@/components/ui/Pagination';
+import { MusicList } from '@/components/features';
+import { ApiSong } from '@/shared/types/api';
+import { useRouter } from 'next/navigation';
+import { BarChart3, Clock, Music, Search, Loader2, Plus } from 'lucide-react';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { AdminCreateTrackModal } from '@/components/features/admin/AdminCreateTrackModal';
+import { CreateSongData } from '@/shared/types/api';
 
 export default function AdminTracksPage() {
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [genreFilter, setGenreFilter] = useState<string>('all');
+  const [dateFilter, setDateFilter] = useState<string>('all');
+  const [showCreateTrackModal, setShowCreateTrackModal] = useState(false);
 
+  // React Query hooks
+  const { data: tracksData, isLoading, error } = useSongs({
+    page: currentPage,
+    page_size: pageSize,
+    genre: genreFilter === 'all' ? undefined : genreFilter,
+    is_published: statusFilter === 'all' ? undefined : statusFilter === 'published',
+  });
+
+  const { data: genresData } = useGenres();
+  const createSong = useCreateSong();
+
+  const tracks = tracksData?.results || [];
+  const totalPages = tracksData ? Math.ceil(tracksData.count / pageSize) : 0;
+  const { playTrackQueue, currentTrack, isPlaying } = useUnifiedMusicPlayer();
+
+  // Réinitialiser la page quand les filtres changent
   useEffect(() => {
-    const fetchTracks = async () => {
-      try {
-        // TODO: Remplacer par un vrai appel API
-        const mockTracks: Track[] = [
-          {
-            id: '1',
-            title: 'Zouglou Dance',
-            artist: 'John Doe',
-            album: 'Afro Vibes',
-            genre: 'Zouglou',
-            duration: 180,
-            is_published: true,
-            createdAt: '2024-01-15T10:30:00Z'
-          },
-          {
-            id: '2',
-            title: 'Coupé Décalé',
-            artist: 'Jane Smith',
-            album: 'Ivoire Sound',
-            genre: 'Coupé Décalé',
-            duration: 210,
-            is_published: false,
-            createdAt: '2024-01-14T15:45:00Z'
-          },
-          {
-            id: '3',
-            title: 'Afrobeat Groove',
-            artist: 'Bob Johnson',
-            album: 'Modern African',
-            genre: 'Afrobeat',
-            duration: 195,
-            is_published: true,
-            createdAt: '2024-01-13T09:20:00Z'
-          }
-        ];
-        setTracks(mockTracks);
-      } catch (error) {
-        console.error('Erreur lors du chargement des tracks:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, genreFilter, dateFilter]);
 
-    fetchTracks();
-  }, []);
+  // Filtrer les tracks selon la recherche et la date
+  const filteredTracks = tracks.filter(track => {
+    // Filtre par recherche
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        track.title.toLowerCase().includes(searchLower) ||
+        track.artist?.stage_name?.toLowerCase().includes(searchLower) ||
+        track.album?.title?.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    // Filtre par date de sortie
+    if (dateFilter !== 'all') {
+      const trackDate = new Date(track.createdAt);
+      const now = new Date();
+      
+      switch (dateFilter) {
+        case 'today':
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          return trackDate >= today;
+        case 'week':
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          return trackDate >= weekAgo;
+        case 'month':
+          const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+          return trackDate >= monthAgo;
+        case 'year':
+          const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+          return trackDate >= yearAgo;
+        default:
+          return true;
+      }
+    }
+    
+    return true;
+  });
+
+  const handlePlayAllTracks = (track: ApiSong) => {
+    // Jouer toutes les pistes de la page
+    const trackIndex = tracks.findIndex(song => song.id === track.id);
+    playTrackQueue(tracks, trackIndex);
+  };
+
+  const handleViewTrack = (track: ApiSong) => {
+    router.push(`/dashboard/admin/tracks/${track.id}`);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll vers le haut de la page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCreateTrack = async (data: CreateSongData) => {
+    try {
+      await createSong.mutateAsync(data);
+      setShowCreateTrackModal(false);
+    } catch (error) {
+      console.error('Erreur lors de la création du track:', error);
+    }
+  };
 
   return (
     <AdminRoute>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white">
-          <div className="px-6 py-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Gestion des Tracks</h1>
-                <p className="text-green-100">Créez et gérez les tracks pour tous les artistes</p>
+      <div className="min-h-screen bg-slate-50/50">
+        {/* Header Section */}
+        <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-8 py-8">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+              <div className="space-y-2">
+                <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
+                  Gestion des Tracks
+                </h1>
+                <p className="text-slate-500 text-base">
+                  Créez et gérez les tracks pour tous les artistes
+                </p>
               </div>
               <div className="flex space-x-3">
-                <button className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-200 font-medium">
-                  📊 Statistiques
-                </button>
-                <button className="bg-orange-500 text-white px-6 py-3 rounded-xl hover:bg-orange-600 transition-all duration-200 font-medium">
-                  ⚡ Actions rapides
-                </button>
+                <Button 
+                  className="bg-gradient-to-r from-[#005929] to-[#005929]/90 hover:from-[#005929]/90 hover:to-[#005929] text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
+                  onClick={() => setShowCreateTrackModal(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nouveau Track
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="px-6 py-8 space-y-8">
-          <AdminNavigation />
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          {/* Stats Section */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <span className="text-3xl mr-3">🎵</span>
-              Tracks de la plateforme
-            </h2>
-            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card className="border-0 shadow-lg bg-white rounded-2xl overflow-hidden">
+              <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <div className="p-3 bg-green-100 rounded-full">
-                      <span className="text-2xl">🎵</span>
+                    <div className="p-2 rounded-lg bg-slate-100">
+                      <Music className="w-5 h-5 text-slate-600" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Total Tracks</p>
-                      <p className="text-2xl font-bold text-gray-900">{tracks.length}</p>
+                      <p className="text-sm font-medium text-slate-600">Total Tracks</p>
+                      <p className="text-2xl font-bold text-slate-800">{tracksData?.count || 0}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-lg bg-white rounded-2xl overflow-hidden">
+              <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <div className="p-3 bg-blue-100 rounded-full">
-                      <span className="text-2xl">✅</span>
+                    <div className="p-2 rounded-lg bg-slate-100">
+                      <BarChart3 className="w-5 h-5 text-slate-600" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Publiés</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-sm font-medium text-slate-600">Publiés</p>
+                      <p className="text-2xl font-bold text-slate-800">
                         {tracks.filter(t => t.is_published).length}
                       </p>
                     </div>
@@ -129,15 +170,15 @@ export default function AdminTracksPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-0 shadow-lg bg-white rounded-2xl overflow-hidden">
+              <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <div className="p-3 bg-yellow-100 rounded-full">
-                      <span className="text-2xl">📝</span>
+                    <div className="p-2 rounded-lg bg-slate-100">
+                      <Clock className="w-5 h-5 text-slate-600" />
                     </div>
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-gray-600">Brouillons</p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-sm font-medium text-slate-600">Brouillons</p>
+                      <p className="text-2xl font-bold text-slate-800">
                         {tracks.filter(t => !t.is_published).length}
                       </p>
                     </div>
@@ -147,40 +188,132 @@ export default function AdminTracksPage() {
             </div>
           </div>
 
-          <Card className="border-0 shadow-lg bg-white rounded-2xl overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-              <CardTitle className="flex items-center text-xl">
-                <span className="mr-3">🎵</span>
-                Liste des Tracks
-              </CardTitle>
-            </CardHeader>
+          {/* Filters and Search */}
+          <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm mb-6">
             <CardContent className="p-6">
-              <AdminTrackList tracks={tracks} isLoading={isLoading} />
+              <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Input
+                      placeholder="Rechercher une track..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as 'all' | 'published' | 'draft')}
+                    className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
+                  >
+                    <option value="all">Tous les statuts</option>
+                    <option value="published">Publiés</option>
+                    <option value="draft">Brouillons</option>
+                  </select>
+                  <select
+                    value={genreFilter}
+                    onChange={(e) => setGenreFilter(e.target.value)}
+                    className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
+                  >
+                    <option value="all">Tous les genres</option>
+                    {genresData?.results?.map((genre) => (
+                      <option key={genre.id} value={genre.id}>
+                        {genre.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value)}
+                    className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
+                  >
+                    <option value="all">Toutes les dates</option>
+                    <option value="today">Aujourd&apos;hui</option>
+                    <option value="week">Cette semaine</option>
+                    <option value="month">Ce mois</option>
+                    <option value="year">Cette année</option>
+                  </select>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-              <span className="text-2xl mr-3">⚡</span>
-              Actions rapides
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button className="flex items-center justify-center p-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-200">
-                <span className="text-2xl mr-3">🎵</span>
-                Créer un Track
-              </button>
-              <button className="flex items-center justify-center p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200">
-                <span className="text-2xl mr-3">📊</span>
-                Voir les statistiques
-              </button>
-              <button className="flex items-center justify-center p-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-200">
-                <span className="text-2xl mr-3">🔄</span>
-                Synchroniser
-              </button>
-            </div>
-          </div>
+          {/* Loading State */}
+          {isLoading && (
+            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm mb-6">
+              <CardContent className="p-12 text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-[#005929] mx-auto mb-4" />
+                <p className="text-slate-600">Chargement des tracks...</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <Card className="border-0 shadow-sm bg-red-50/60 backdrop-blur-sm mb-6">
+              <CardContent className="p-6">
+                <p className="text-red-600 text-center">
+                  Erreur lors du chargement des tracks. Veuillez réessayer.
+                </p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Tracks List */}
+          {!isLoading && !error && (
+            <>
+              <MusicList
+                tracks={filteredTracks}
+                title="Tracks de la plateforme"
+                onPlay={handlePlayAllTracks}
+                onView={handleViewTrack}
+                isPlaying={isPlaying}
+                currentTrackId={currentTrack?.id}
+              />
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={tracksData?.count}
+                    pageSize={pageSize}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              )}
+
+              {/* No Results */}
+              {filteredTracks.length === 0 && !isLoading && (
+                <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm mt-6">
+                  <CardContent className="p-12 text-center">
+                    <Music className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-slate-800 mb-2">Aucune track trouvée</h3>
+                    <p className="text-slate-600">
+                      {searchTerm || statusFilter !== 'all' || genreFilter !== 'all' || dateFilter !== 'all'
+                        ? 'Essayez de modifier vos critères de recherche.'
+                        : 'Aucune track n\'est disponible pour le moment.'
+                      }
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
         </div>
       </div>
+
+      {/* Modal de création de track */}
+      <AdminCreateTrackModal
+        isOpen={showCreateTrackModal}
+        onClose={() => setShowCreateTrackModal(false)}
+        onSubmit={handleCreateTrack}
+        isSubmitting={createSong.isPending}
+      />
     </AdminRoute>
   );
 } 

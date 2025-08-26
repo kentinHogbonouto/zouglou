@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import ToastContainer, { ToastItem } from '@/components/ui/ToastContainer';
-import { ToastType } from '@/components/ui/Toast';
 
 interface ToastContextType {
   showToast: (toast: Omit<ToastItem, 'id'>) => string;

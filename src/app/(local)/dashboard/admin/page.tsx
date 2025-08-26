@@ -1,59 +1,104 @@
+"use client"
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { AdminDashboardStats } from '@/components/dashboard/admin/AdminDashboardStats';
 import { UserManagement } from '@/components/dashboard/admin/UserManagement';
 import { ContentModeration } from '@/components/dashboard/admin/ContentModeration';
 import { SystemAnalytics } from '@/components/dashboard/admin/SystemAnalytics';
 import { AdminRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/hooks/useAuth';
+import { WelcomeBanner } from '@/components/dashboard/artist/WelcomeBanner';
+import { QuickActions } from '@/components/dashboard/artist/QuickActions';
+import { useSongs, useAlbums, useAdminUsers } from '@/hooks';
+import { useRouter } from 'next/navigation';
+import { ApiArtist } from '@/shared/types';
+import { ApiUser } from '@/hooks/useAdminQueries';
 
 export default function AdminDashboard() {
+  const router = useRouter();
+  const { user } = useAuth();
+
+  // React Query hooks - avec gestion d'erreur pour les endpoints inexistants
+  const { data: songsData } = useSongs({ page_size: 5 });
+  const { data: albumsData } = useAlbums({ page_size: 5 });
+  const { data: usersData } = useAdminUsers({ page_size: 5 });
+
+  // Données récentes
+  const recentSongs = songsData?.results?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) || [];
+  const recentAlbums = albumsData?.results?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) || [];
+  const recentUsers = usersData?.results?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) || [];
+
+  // Fonctions utilitaires pour extraire les noms d'artistes
+  const getArtistName = (artist: ApiArtist) => {
+    if (artist && typeof artist === 'object' && 'stage_name' in artist) return artist.stage_name;
+    return 'Artiste inconnu';
+  };
+
+  const handleViewTrack = (trackId: string) => {
+    router.push(`/dashboard/admin/tracks/${trackId}`);
+  };
+
+  const handleViewAlbum = (albumId: string) => {
+    router.push(`/dashboard/admin/albums/${albumId}`);
+  };
+
+
+  const handleViewUser = (userId: string) => {
+    router.push(`/dashboard/admin/user/${userId}`);
+  };
+
   return (
     <AdminRoute>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white">
-          <div className="px-6 py-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Dashboard Administrateur</h1>
-                <p className="text-green-100">Gérez votre plateforme de streaming africain</p>
-              </div>
-              <div className="flex space-x-3">
-                <button className="bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-200 font-medium">
-                  📊 Rapports
-                </button>
-                <button className="bg-orange-500 text-white px-6 py-3 rounded-xl hover:bg-orange-600 transition-all duration-200 font-medium">
-                  ⚡ Actions rapides
-                </button>
+      <div className="min-h-screen bg-slate-50/50">
+        {/* Header Section */}
+        <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-8 py-8">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+              <div className="space-y-2">
+                <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
+                  Dashboard Administrateur
+                </h1>
+                <p className="text-slate-500 text-base">
+                  Gérez votre plateforme de streaming africain
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="px-6 py-8 space-y-8">
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          {/* Welcome Banner */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-              <span className="text-3xl mr-3">📈</span>
-              Vue d&apos;ensemble
-            </h2>
+            <WelcomeBanner artistName={user?.full_name} lastLogin="il y a 2 heures" />
+          </div>
+
+          {/* Stats Section */}
+          <div className="mb-8">
             <AdminDashboardStats />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card className="border-0 shadow-lg bg-white rounded-2xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-                <CardTitle className="flex items-center text-xl">
-                  <span className="mr-3">👥</span>
+          {/* Quick Actions Section */}
+          <div className="mb-8">
+            <QuickActions />
+          </div>
+
+          {/* Management Section */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
+              <CardHeader className="border-b border-slate-100 pb-4">
+                <CardTitle className="text-lg font-medium text-slate-800">
                   Gestion des utilisateurs
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <UserManagement />
+                <UserManagement recentUsers={recentUsers} onViewUser={handleViewUser} />
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-white rounded-2xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
-                <CardTitle className="flex items-center text-xl">
-                  <span className="mr-3">🛡️</span>
+            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
+              <CardHeader className="border-b border-slate-100 pb-4">
+                <CardTitle className="text-lg font-medium text-slate-800">
                   Modération de contenu
                 </CardTitle>
               </CardHeader>
@@ -63,10 +108,10 @@ export default function AdminDashboard() {
             </Card>
           </div>
 
-          <Card className="border-0 shadow-lg bg-white rounded-2xl overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              <CardTitle className="flex items-center text-xl">
-                <span className="mr-3">📊</span>
+          {/* Analytics Section */}
+          <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
+            <CardHeader className="border-b border-slate-100 pb-4">
+              <CardTitle className="text-lg font-medium text-slate-800">
                 Analytics système
               </CardTitle>
             </CardHeader>
@@ -75,30 +120,85 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-              <span className="text-2xl mr-3">⚡</span>
-              Actions rapides
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <a href="/dashboard/admin/tracks" className="flex items-center justify-center p-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-200">
-                <span className="text-2xl mr-3">🎵</span>
-                Gérer les Tracks
-              </a>
-              <a href="/dashboard/admin/albums" className="flex items-center justify-center p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200">
-                <span className="text-2xl mr-3">💿</span>
-                Gérer les Albums
-              </a>
-              <a href="/dashboard/admin/live" className="flex items-center justify-center p-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200">
-                <span className="text-2xl mr-3">📺</span>
-                Gérer les Live Streams
-              </a>
-              <button className="flex items-center justify-center p-4 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-200">
-                <span className="text-2xl mr-3">📊</span>
-                Générer rapport
-              </button>
-            </div>
+          {/* Recent Content Section */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+            {/* Recent Tracks */}
+            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
+              <CardHeader className="border-b border-slate-100 pb-4">
+                <CardTitle className="text-lg font-medium text-slate-800">
+                  Tracks récents
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {recentSongs.length > 0 ? (
+                  <div className="space-y-3">
+                    {recentSongs.map((song) => (
+                      <div key={song.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center">
+                            <span className="text-lg">🎵</span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-800">{song.title}</p>
+                            <p className="text-sm text-slate-600">{getArtistName(song.artist)}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleViewTrack(song.id)}
+                          className="text-sm text-slate-500 hover:text-slate-700"
+                        >
+                          Voir →
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-slate-500">
+                    Aucun track récent
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Albums */}
+            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
+              <CardHeader className="border-b border-slate-100 pb-4">
+                <CardTitle className="text-lg font-medium text-slate-800">
+                  Albums récents
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                {recentAlbums.length > 0 ? (
+                  <div className="space-y-3">
+                    {recentAlbums.map((album) => (
+                      <div key={album.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center">
+                            <span className="text-lg">💿</span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-800">{album.title}</p>
+                            <p className="text-sm text-slate-600">{getArtistName(album.artist)}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleViewAlbum(album.id)}
+                          className="text-sm text-slate-500 hover:text-slate-700"
+                        >
+                          Voir →
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-slate-500">
+                    Aucun album récent
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
+
         </div>
       </div>
     </AdminRoute>

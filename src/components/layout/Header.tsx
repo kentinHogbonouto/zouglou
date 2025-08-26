@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/Button';
 import { Menu, X, Bell, User, LogOut, Music, Home, Users, Mail, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 

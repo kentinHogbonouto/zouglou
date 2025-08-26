@@ -7,63 +7,56 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Pagination } from '@/components/ui/Pagination';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
-import { useAdminUsers, useToggleUserStatus, useDeleteUser } from '@/hooks/useAdminQueries';
 import { useRouter } from 'next/navigation';
-import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search, Eye, Trash2 } from 'lucide-react';
-import Image from 'next/image';
-import { ApiUser } from '@/hooks/useAdminQueries';
+import { CreditCard, Search, Plus, Eye, Edit, Trash2, CheckCircle, XCircle, Star, DollarSign } from 'lucide-react';
+import { useAdminSubscriptionPlans, useDeleteSubscriptionPlan } from '@/hooks/useAdminQueries';
 
 
-export default function AdminUserPage() {
+export default function AdminSubscriptionPlansPage() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'artist' | 'admin' | 'superuser'>('all');
-  const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'subscribed' | 'not_subscribed'>('all');
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; userId: string | null; userName: string }>({
+  const [featuredFilter, setFeaturedFilter] = useState<'all' | 'featured' | 'not_featured'>('all');
+  const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
+  const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; planId: string | null; planName: string }>({
     isOpen: false,
-    userId: null,
-    userName: ''
+    planId: null,
+    planName: ''
   });
 
   // React Query hooks
-  const { data: usersData, isLoading } = useAdminUsers({
+  const { data: plansData, isLoading } = useAdminSubscriptionPlans({
     page: currentPage,
     page_size: 10,
-    search: searchTerm || undefined,
+    name: searchTerm || undefined,
     is_active: statusFilter === 'all' ? undefined : statusFilter === 'active',
+    is_featured: featuredFilter === 'all' ? undefined : featuredFilter === 'featured',
   });
 
-  const toggleUserStatus = useToggleUserStatus();
-  const deleteUser = useDeleteUser();
+  const deletePlan = useDeleteSubscriptionPlan();
 
-  const users = usersData?.results || [];
-  const totalUsers = usersData?.count || 0;
-  const totalPages = Math.ceil(totalUsers / 10);
+  const plans = plansData?.results || [];
+  const totalPlans = plansData?.count || 0;
+  const totalPages = Math.ceil(totalPlans / 10);
 
-  const handleViewUser = (userId: string) => {
-    router.push(`/dashboard/admin/user/${userId}`);
+  const handleViewPlan = (planId: string) => {
+    router.push(`/dashboard/admin/subscription/plans/${planId}`);
   };
 
-  const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
-    try {
-      await toggleUserStatus.mutateAsync({ id: userId, is_active: !currentStatus });
-    } catch (error) {
-      console.error('Erreur lors du changement de statut:', error);
-    }
+  const handleEditPlan = (planId: string) => {
+    router.push(`/dashboard/admin/subscription/plans/${planId}/edit`);
   };
 
-  const handleDeleteUser = async (userId: string, userName: string) => {
-    setDeleteModal({ isOpen: true, userId, userName });
+  const handleDeletePlan = async (planId: string, planName: string) => {
+    setDeleteModal({ isOpen: true, planId, planName });
   };
 
   const confirmDelete = async () => {
-    if (deleteModal.userId) {
+    if (deleteModal.planId) {
       try {
-        await deleteUser.mutateAsync(deleteModal.userId);
-        setDeleteModal({ isOpen: false, userId: null, userName: '' });
+        await deletePlan.mutateAsync(deleteModal.planId);
+        setDeleteModal({ isOpen: false, planId: null, planName: '' });
       } catch (error) {
         console.error('Erreur lors de la suppression:', error);
       }
@@ -71,84 +64,46 @@ export default function AdminUserPage() {
   };
 
   const cancelDelete = () => {
-    setDeleteModal({ isOpen: false, userId: null, userName: '' });
+    setDeleteModal({ isOpen: false, planId: null, planName: '' });
   };
 
-  const handleSelectUser = (userId: string) => {
-    setSelectedUsers(prev =>
-      prev.includes(userId)
-        ? prev.filter(id => id !== userId)
-        : [...prev, userId]
+  const handleSelectPlan = (planId: string) => {
+    setSelectedPlans(prev =>
+      prev.includes(planId)
+        ? prev.filter(id => id !== planId)
+        : [...prev, planId]
     );
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === users.length) {
-      setSelectedUsers([]);
+    if (selectedPlans.length === plans.length) {
+      setSelectedPlans([]);
     } else {
-      setSelectedUsers(users.map(user => user.id));
+      setSelectedPlans(plans.map(plan => plan.id));
     }
-  };
-
-  const getRoleBadge = (user: ApiUser) => {
-    if (user.is_superuser) {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-          <Crown className="w-3 h-3 mr-1" />
-          Super Admin
-        </span>
-      );
-    }
-    if (user.default_role === 'admin') {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-          <Shield className="w-3 h-3 mr-1" />
-          Admin
-        </span>
-      );
-    }
-    if (user.artist_profile) {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-          <Music className="w-3 h-3 mr-1" />
-          Artiste
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-        <Users className="w-3 h-3 mr-1" />
-        Utilisateur
-      </span>
-    );
   };
 
   const getStatusBadge = (isActive: boolean) => {
     return isActive ? (
       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-        <UserCheck className="w-3 h-3 mr-1" />
+        <CheckCircle className="w-3 h-3 mr-1" />
         Actif
       </span>
     ) : (
       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-        <UserX className="w-3 h-3 mr-1" />
+        <XCircle className="w-3 h-3 mr-1" />
         Inactif
       </span>
     );
   };
 
-  const getSubscriptionBadge = (hasSubscription: boolean) => {
-    return hasSubscription ? (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-        <CreditCard className="w-3 h-3 mr-1" />
-        Abonné
+  const getFeaturedBadge = (isFeatured: boolean) => {
+    return isFeatured ? (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+        <Star className="w-3 h-3 mr-1" />
+        Mis en avant
       </span>
-    ) : (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-        <CreditCard className="w-3 h-3 mr-1" />
-        Non abonné
-      </span>
-    );
+    ) : null;
   };
 
   const formatDate = (dateString: string) => {
@@ -159,23 +114,29 @@ export default function AdminUserPage() {
     });
   };
 
-  const filteredUsers = users.filter(user => {
-    // Filtre par rôle
-    if (roleFilter !== 'all') {
-      if (roleFilter === 'superuser' && !user.is_superuser) return false;
-      if (roleFilter === 'admin' && user.default_role !== 'admin') return false;
-      if (roleFilter === 'artist' && !user.artist_profile) return false;
-      if (roleFilter === 'user' && (user.is_superuser || user.default_role === 'admin' || user.artist_profile)) return false;
-    }
+  const formatPrice = (price: string) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'XOF',
+    }).format(parseFloat(price));
+  };
 
-    // Filtre par abonnement
-    if (subscriptionFilter !== 'all') {
-      if (subscriptionFilter === 'subscribed' && !user.has_active_subscription) return false;
-      if (subscriptionFilter === 'not_subscribed' && user.has_active_subscription) return false;
+  const filteredPlans = plans.filter(plan => {
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        plan.name.toLowerCase().includes(searchLower) ||
+        plan.description.toLowerCase().includes(searchLower)
+      );
     }
-
     return true;
   });
+
+  const activePlans = plans.filter(p => p.is_active).length;
+  const featuredPlans = plans.filter(p => p.is_featured).length;
+  const totalRevenue = plans
+    .filter(p => p.is_active)
+    .reduce((sum, p) => sum + parseFloat(p.price), 0);
 
   return (
     <AdminRoute>
@@ -187,14 +148,14 @@ export default function AdminUserPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-[#005929]/10 to-[#FE5200]/10">
-                    <Users className="w-6 h-6 text-slate-600" />
+                    <CreditCard className="w-6 h-6 text-slate-600" />
                   </div>
                   <div>
                     <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
-                      Gestion des Utilisateurs
+                      Gestion des Plans d&apos;Abonnement
                     </h1>
                     <p className="text-slate-500 text-base">
-                      Gérez tous les utilisateurs de la plateforme
+                      Créez et gérez les plans d&apos;abonnement de la plateforme
                     </p>
                   </div>
                 </div>
@@ -202,10 +163,10 @@ export default function AdminUserPage() {
               <div className="flex space-x-3">
                 <Button 
                   className="bg-gradient-to-r from-[#005929] to-[#005929]/90 hover:from-[#005929]/90 hover:to-[#005929] text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
-                  onClick={() => router.push('/dashboard/admin/user/create')}
+                  onClick={() => router.push('/dashboard/admin/subscription/plans/create')}
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Nouvel utilisateur
+                  Nouveau Plan
                 </Button>
               </div>
             </div>
@@ -220,11 +181,11 @@ export default function AdminUserPage() {
               <div className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-[#005929] to-[#005929]/90 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                    <Users className="w-5 h-5 text-white" />
+                    <CreditCard className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Total Utilisateurs</p>
-                    <p className="text-2xl font-light text-slate-800">{totalUsers}</p>
+                    <p className="text-sm font-medium text-slate-600">Total Plans</p>
+                    <p className="text-2xl font-light text-slate-800">{totalPlans}</p>
                   </div>
                 </div>
               </div>
@@ -234,13 +195,11 @@ export default function AdminUserPage() {
               <div className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-[#FE5200] to-[#FE5200]/90 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                    <UserCheck className="w-5 h-5 text-white" />
+                    <CheckCircle className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Utilisateurs Actifs</p>
-                    <p className="text-2xl font-light text-slate-800">
-                      {users.filter(u => u.is_active).length}
-                    </p>
+                    <p className="text-sm font-medium text-slate-600">Plans Actifs</p>
+                    <p className="text-2xl font-light text-slate-800">{activePlans}</p>
                   </div>
                 </div>
               </div>
@@ -250,13 +209,11 @@ export default function AdminUserPage() {
               <div className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-[#005929] to-[#005929]/90 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                    <CreditCard className="w-5 h-5 text-white" />
+                    <Star className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Abonnés</p>
-                    <p className="text-2xl font-light text-slate-800">
-                      {users.filter(u => u.has_active_subscription).length}
-                    </p>
+                    <p className="text-sm font-medium text-slate-600">Plans Mis en Avant</p>
+                    <p className="text-2xl font-light text-slate-800">{featuredPlans}</p>
                   </div>
                 </div>
               </div>
@@ -266,13 +223,11 @@ export default function AdminUserPage() {
               <div className="p-6">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-[#FE5200] to-[#FE5200]/90 shadow-lg group-hover:shadow-xl transition-all duration-300">
-                    <Shield className="w-5 h-5 text-white" />
+                    <DollarSign className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600">Admins</p>
-                    <p className="text-2xl font-light text-slate-800">
-                      {users.filter(u => u.is_superuser || u.default_role === 'admin').length}
-                    </p>
+                    <p className="text-sm font-medium text-slate-600">Valeur Totale</p>
+                    <p className="text-2xl font-light text-slate-800">{formatPrice(totalRevenue.toString())}</p>
                   </div>
                 </div>
               </div>
@@ -287,7 +242,7 @@ export default function AdminUserPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
-                      placeholder="Rechercher un utilisateur..."
+                      placeholder="Rechercher un plan..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
@@ -305,39 +260,28 @@ export default function AdminUserPage() {
                     <option value="inactive">Inactifs</option>
                   </select>
                   <select
-                    value={roleFilter}
-                    onChange={(e) => setRoleFilter(e.target.value as 'all' | 'user' | 'artist' | 'admin' | 'superuser')}
+                    value={featuredFilter}
+                    onChange={(e) => setFeaturedFilter(e.target.value as 'all' | 'featured' | 'not_featured')}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
                   >
-                    <option value="all">Tous les rôles</option>
-                    <option value="user">Utilisateurs</option>
-                    <option value="artist">Artistes</option>
-                    <option value="admin">Admins</option>
-                    <option value="superuser">Super Admins</option>
-                  </select>
-                  <select
-                    value={subscriptionFilter}
-                    onChange={(e) => setSubscriptionFilter(e.target.value as 'all' | 'subscribed' | 'not_subscribed')}
-                    className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
-                  >
-                    <option value="all">Tous les abonnements</option>
-                    <option value="subscribed">Abonnés</option>
-                    <option value="not_subscribed">Non abonnés</option>
+                    <option value="all">Tous les plans</option>
+                    <option value="featured">Mis en avant</option>
+                    <option value="not_featured">Non mis en avant</option>
                   </select>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Users List */}
+          {/* Plans List */}
           <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
             <CardHeader className="border-b border-slate-100 pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-medium text-slate-800">
-                  Liste des Utilisateurs
+                  Liste des Plans
                 </CardTitle>
                 <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <span>{filteredUsers.length} utilisateur(s)</span>
+                  <span>{filteredPlans.length} plan(s)</span>
                 </div>
               </div>
             </CardHeader>
@@ -345,12 +289,12 @@ export default function AdminUserPage() {
               {isLoading ? (
                 <div className="p-8 text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#005929] mx-auto"></div>
-                  <p className="mt-2 text-slate-600">Chargement des utilisateurs...</p>
+                  <p className="mt-2 text-slate-600">Chargement des plans...</p>
                 </div>
-              ) : filteredUsers.length === 0 ? (
+              ) : filteredPlans.length === 0 ? (
                 <div className="p-8 text-center">
-                  <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                  <p className="text-slate-600">Aucun utilisateur trouvé</p>
+                  <CreditCard className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                  <p className="text-slate-600">Aucun plan trouvé</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -360,25 +304,25 @@ export default function AdminUserPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                           <input
                             type="checkbox"
-                            checked={selectedUsers.length === filteredUsers.length}
+                            checked={selectedPlans.length === filteredPlans.length}
                             onChange={handleSelectAll}
                             className="rounded border-slate-300 text-[#005929] focus:ring-[#005929]/20"
                           />
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                          Utilisateur
+                          Plan
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                          Rôle
+                          Prix
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          Durée
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                           Statut
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                          Abonnement
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                          Date d&apos;inscription
+                          Date de création
                         </th>
                         <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                           Actions
@@ -386,64 +330,58 @@ export default function AdminUserPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-slate-200">
-                      {filteredUsers.map((user) => (
-                        <tr key={user.id} className="hover:bg-slate-50/50 transition-colors duration-200">
+                      {filteredPlans.map((plan) => (
+                        <tr key={plan.id} className="hover:bg-slate-50/50 transition-colors duration-200">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <input
                               type="checkbox"
-                              checked={selectedUsers.includes(user.id)}
-                              onChange={() => handleSelectUser(user.id)}
+                              checked={selectedPlans.includes(plan.id)}
+                              onChange={() => handleSelectPlan(plan.id)}
                               className="rounded border-slate-300 text-[#005929] focus:ring-[#005929]/20"
                             />
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-10 w-10">
-                                {user.profil_image ? (
-                                  <Image
-                                    width={100}
-                                    height={100}
-                                    className="h-10 w-10 rounded-full object-cover"
-                                    src={user.profil_image}
-                                    alt={user.full_name}
-                                  />
-                                ) : (
-                                  <div className="h-10 w-10 rounded-full bg-gradient-to-r from-[#005929] to-[#FE5200] flex items-center justify-center text-white font-medium">
-                                    {user.full_name?.charAt(0) || user.username?.charAt(0) || 'U'}
-                                  </div>
-                                )}
+                            <div>
+                              <div className="text-sm font-medium text-slate-900">
+                                {plan.name}
                               </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-medium text-slate-900">
-                                  {user.full_name || 'Nom non renseigné'}
-                                </div>
-                                <div className="text-sm text-slate-500">
-                                  {user.email}
-                                </div>
-                                <div className="text-xs text-slate-400">
-                                  @{user.username}
-                                </div>
+                              <div className="text-sm text-slate-500">
+                                {plan.description}
+                              </div>
+                              <div className="flex gap-1 mt-1">
+                                {getStatusBadge(plan.is_active)}
+                                {getFeaturedBadge(plan.is_featured)}
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {getRoleBadge(user)}
+                            <div className="text-sm font-medium text-slate-900">
+                              {formatPrice(plan.price)}
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              {plan.free_trial_days > 0 ? `${plan.free_trial_days} jours d'essai` : 'Aucun essai'}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {getStatusBadge(user.is_active)}
+                            <div className="text-sm text-slate-900">
+                              {plan.duration_days} jours
+                            </div>
+                            <div className="text-xs text-slate-500">
+                              {plan.duration_days >= 365 ? 'Annuel' : plan.duration_days >= 30 ? 'Mensuel' : 'Personnalisé'}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {getSubscriptionBadge(user.has_active_subscription)}
+                            {getStatusBadge(plan.is_active)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                            {formatDate(user.createdAt)}
+                            {formatDate(plan.createdAt)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div className="flex items-center justify-end gap-2">
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => handleViewUser(user.id)}
+                                onClick={() => handleViewPlan(plan.id)}
                                 className="text-slate-600 hover:text-[#005929] hover:bg-[#005929]/10"
                               >
                                 <Eye className="w-4 h-4" />
@@ -451,18 +389,17 @@ export default function AdminUserPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => handleToggleStatus(user.id, user.is_active)}
+                                onClick={() => handleEditPlan(plan.id)}
                                 className="text-slate-600 hover:text-[#005929] hover:bg-[#005929]/10"
-                                disabled={toggleUserStatus.isPending}
                               >
-                                {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
+                                <Edit className="w-4 h-4" />
                               </Button>
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => handleDeleteUser(user.id, user.full_name || user.username)}
+                                onClick={() => handleDeletePlan(plan.id, plan.name)}
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                disabled={deleteUser.isPending}
+                                disabled={deletePlan.isPending}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -493,9 +430,9 @@ export default function AdminUserPage() {
             isOpen={deleteModal.isOpen}
             onClose={cancelDelete}
             onConfirm={confirmDelete}
-            message="Cette action est irréversible. L'utilisateur et toutes ses données seront définitivement supprimés."
-            itemName={deleteModal.userName}
-            isDeleting={deleteUser.isPending}
+            message="Cette action est irréversible. Le plan et toutes ses données seront définitivement supprimés."
+            itemName={deleteModal.planName}
+            isDeleting={deletePlan.isPending}
           />
         </div>
       </div>

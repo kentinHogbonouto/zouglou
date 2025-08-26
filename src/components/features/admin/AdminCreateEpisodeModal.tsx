@@ -2,43 +2,49 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Modal, ModalButton, ModalActions } from '@/components/ui/Modal';
 import { AdminArtistSelect } from './AdminArtistSelect';
-import { CreateLiveStreamData } from '@/shared/types/api';
+import { AdminPodcastSelect } from './AdminPodcastSelect';
+import { CreatePodcastEpisodeData } from '@/shared/types';
 
-interface AdminCreateLiveStreamModalProps {
+interface AdminCreateEpisodeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: CreateLiveStreamData) => Promise<void>;
+  onSubmit: (data: CreatePodcastEpisodeData) => Promise<void>;
   isSubmitting: boolean;
 }
 
-export function AdminCreateLiveStreamModal({
+export function AdminCreateEpisodeModal({
   isOpen,
   onClose,
   onSubmit,
   isSubmitting
-}: AdminCreateLiveStreamModalProps) {
-  const [formData, setFormData] = useState<Partial<CreateLiveStreamData>>({});
+}: AdminCreateEpisodeModalProps) {
+  const [formData, setFormData] = useState<Partial<CreatePodcastEpisodeData>>({});
+  const [selectedAudio, setSelectedAudio] = useState<File | null>(null);
   const [selectedArtist, setSelectedArtist] = useState('');
+  const [selectedPodcast, setSelectedPodcast] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !selectedArtist || !formData.start_time) {
-      alert('Veuillez remplir tous les champs obligatoires et sélectionner un artiste');
+    if (!formData.title || !selectedArtist || !selectedPodcast || !selectedAudio) {
+      alert('Veuillez remplir tous les champs obligatoires et sélectionner un artiste, un podcast et un fichier audio');
       return;
     }
 
     try {
       await onSubmit({
-        ...formData as CreateLiveStreamData,
-        artist: selectedArtist,
+        ...formData as CreatePodcastEpisodeData,
+        podcast: selectedPodcast,
+        file: selectedAudio,
       });
 
       // Reset form
       setFormData({});
+      setSelectedAudio(null);
       setSelectedArtist('');
+      setSelectedPodcast('');
       onClose();
     } catch (error) {
-      console.error('Erreur lors de la création du live stream:', error);
+      console.error('Erreur lors de la création de l\'épisode:', error);
     }
   };
 
@@ -50,24 +56,32 @@ export function AdminCreateLiveStreamModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-slate-800">Créer un nouveau live stream</h2>
-          <p className="text-slate-600 mt-2">Remplissez les informations pour créer un nouveau live stream</p>
+          <h2 className="text-2xl font-bold text-slate-800">Créer un nouvel épisode</h2>
+          <p className="text-slate-600 mt-2">Remplissez les informations pour créer un nouvel épisode</p>
         </div>
 
-        <AdminArtistSelect
-          selectedArtist={selectedArtist}
-          onArtistChange={setSelectedArtist}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <AdminArtistSelect
+            selectedArtist={selectedArtist}
+            onArtistChange={setSelectedArtist}
+          />
+
+          <AdminPodcastSelect
+            selectedPodcast={selectedPodcast}
+            onPodcastChange={setSelectedPodcast}
+            selectedArtist={selectedArtist}
+          />
+        </div>
 
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Titre du live stream *
+              Titre de l&apos;épisode *
             </label>
             <Input
               value={formData.title || ''}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Entrez le titre du live stream"
+              placeholder="Entrez le titre de l'épisode"
               className="outline-none"
               required
             />
@@ -80,7 +94,7 @@ export function AdminCreateLiveStreamModal({
             <textarea
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Description du live stream (optionnel)"
+              placeholder="Description de l'épisode (optionnel)"
               className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               rows={3}
             />
@@ -88,31 +102,32 @@ export function AdminCreateLiveStreamModal({
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              Date et heure programmées *
+              Numéro d&apos;épisode
             </label>
             <Input
-              type="datetime-local"
-              value={formData.start_time || ''}
-              onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
-              className="outline-none"
-              required
+              type="number"
+              value={formData.episode_number || ''}
+              onChange={(e) => setFormData({ ...formData, episode_number: parseInt(e.target.value) })}
+              placeholder="Numéro d'épisode"
+              min="1"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
-              URL du stream (RTMP)
+              Fichier audio * (MP3, WAV, etc.)
             </label>
-            <Input
-              value={formData.stream_url || ''}
-              onChange={(e) => setFormData({ ...formData, stream_url: e.target.value })}
-              placeholder="rtmp://stream.example.com/live"
+            <input
+              type="file"
+              accept="audio/*"
+              onChange={(e) => setSelectedAudio(e.target.files?.[0] || null)}
+              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-green-700 hover:file:bg-orange-100"
+              required
             />
             <p className="text-xs text-slate-500 mt-1">
-              URL RTMP pour la diffusion en direct (optionnel)
+              Formats acceptés: MP3, WAV, M4A. Taille max: 100MB
             </p>
           </div>
-
         </div>
 
         <div className="flex items-center space-x-4">
@@ -140,10 +155,10 @@ export function AdminCreateLiveStreamModal({
             variant="primary"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Création...' : 'Créer le Live Stream'}
+            {isSubmitting ? 'Création...' : 'Créer l\'Épisode'}
           </ModalButton>
         </ModalActions>
       </form>
     </Modal>
   );
-} 
+}

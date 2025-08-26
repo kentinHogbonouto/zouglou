@@ -1,58 +1,60 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { AdminCreateAlbumModal } from './AdminCreateAlbumModal';
+import { AdminCreatePodcastModal } from './AdminCreatePodcastModal';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
-import { useCreateAlbum, useUpdateAlbum, useDeleteAlbum } from '@/hooks';
-import { ApiAlbum, ApiArtist, CreateAlbumData } from '@/shared/types';
+import { useCreatePodcast, useUpdatePodcast, useDeletePodcast } from '@/hooks';
+import { ApiArtist, ApiPodcast, CreatePodcastData } from '@/shared/types';
 import Image from 'next/image';
 
-interface AdminAlbumListProps {
-  albums?: ApiAlbum[];
+interface AdminPodcastListProps {
+  podcasts?: ApiPodcast[];
   isLoading?: boolean;
 }
 
-export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumListProps) {
+export function AdminPodcastList({ podcasts = [], isLoading = false }: AdminPodcastListProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
   // React Query mutations
-  const createAlbumMutation = useCreateAlbum();
-  const updateAlbumMutation = useUpdateAlbum();
-  const deleteAlbumMutation = useDeleteAlbum();
+  const createPodcastMutation = useCreatePodcast();
+  const updatePodcastMutation = useUpdatePodcast();
+  const deletePodcastMutation = useDeletePodcast();
   
   const deleteConfirmation = useDeleteConfirmation();
 
-  const handleCreateAlbum = async (data: CreateAlbumData) => {
+  const handleCreatePodcast = async (data: CreatePodcastData) => {
     try {
-      await createAlbumMutation.mutateAsync(data);
+      await createPodcastMutation.mutateAsync(data);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error('Erreur lors de la création:', error);
     }
   };
 
-  const handleTogglePublish = async (album: ApiAlbum) => {
+  const handleTogglePublish = async (podcast: ApiPodcast) => {
     try {
-      await updateAlbumMutation.mutateAsync({
-        id: album.id,
-        data: { is_published: !album.is_published }
+      await updatePodcastMutation.mutateAsync({
+        id: podcast.id,
+        data: { is_published: !podcast.is_published }
       });
     } catch (error) {
       console.error('Erreur lors de la publication:', error);
     }
   };
 
-  const handleDeleteAlbum = async (albumId: string) => {
+  const handleDeletePodcast = async (podcastId: string) => {
     try {
-      await deleteAlbumMutation.mutateAsync(albumId);
+      await deletePodcastMutation.mutateAsync(podcastId);
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
   };
 
   const getArtistName = (artist: ApiArtist) => {
-    if (artist && typeof artist === 'object' && 'stage_name' in artist) return artist.stage_name;
+    if (typeof artist === 'string') return artist;
+    if (artist && typeof artist === 'object' && 'name' in artist) return artist.name;
+    if (artist && typeof artist === 'object' && 'full_name' in artist) return artist.full_name;
     return 'Artiste inconnu';
   };
 
@@ -60,8 +62,8 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold text-slate-800">Albums</h3>
-          <Button disabled>Créer un Album</Button>
+          <h3 className="text-lg font-semibold text-slate-800">Podcasts</h3>
+          <Button disabled>Créer un Podcast</Button>
         </div>
         <div className="grid gap-4">
           {[1, 2, 3].map((i) => (
@@ -75,90 +77,90 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold text-slate-800">Albums ({albums.length})</h3>
+        <h3 className="text-lg font-semibold text-slate-800">Podcasts ({podcasts.length})</h3>
         <Button
           onClick={() => setIsCreateModalOpen(true)}
           className="bg-green-600 hover:bg-green-700 text-white"
         >
-          + Créer un Album
+          + Créer un Podcast
         </Button>
       </div>
 
-      {albums.length === 0 ? (
+      {podcasts.length === 0 ? (
         <Card className="p-6 text-center">
-          <p className="text-slate-500">Aucun album trouvé</p>
+          <p className="text-slate-500">Aucun podcast trouvé</p>
           <Button
             onClick={() => setIsCreateModalOpen(true)}
             className="mt-4 bg-green-600 hover:bg-green-700 text-white"
           >
-            Créer le premier album
+            Créer le premier podcast
           </Button>
         </Card>
       ) : (
         <div className="grid gap-4">
-          {albums.map((album) => (
-            <Card key={album.id} className="p-4 hover:shadow-md transition-all duration-200">
+          {podcasts.map((podcast) => (
+            <Card key={podcast.id} className="p-4 hover:shadow-md transition-all duration-200">
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100">
-                    {album.cover ? (
+                    {podcast.cover ? (
                       <Image
-                        src={album.cover}
-                        alt={album.title}
+                        src={podcast.cover}
+                        alt={podcast.title}
                         width={64}
                         height={64}
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-slate-200">
-                        <span className="text-2xl">💿</span>
+                        <span className="text-2xl">🎙️</span>
                       </div>
                     )}
                   </div>
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-slate-900 truncate">{album.title}</h4>
+                  <h4 className="font-medium text-slate-900 truncate">{podcast.title}</h4>
                   <p className="text-sm text-slate-600">
-                    Artiste: {getArtistName(album.artist)} • {album.total_tracks || 0} tracks
+                    Artiste: {podcast?.artist?.stage_name} • {podcast.episodes_count || 0} épisodes
                   </p>
-                  {album.description && (
-                    <p className="text-sm text-slate-500 truncate">{album.description}</p>
+                  {podcast.description && (
+                    <p className="text-sm text-slate-500 truncate">{podcast.description}</p>
                   )}
                   <p className="text-xs text-slate-500">
-                    Créé le {new Date(album.createdAt).toLocaleDateString('fr-FR')}
+                    Créé le {new Date(podcast.createdAt).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
                 
                 <div className="flex items-center space-x-2">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
-                      album.is_published
+                      podcast.is_published
                         ? 'bg-green-100 text-green-800'
                         : 'bg-yellow-100 text-yellow-800'
                     }`}
                   >
-                    {album.is_published ? 'Publié' : 'Brouillon'}
+                    {podcast.is_published ? 'Publié' : 'Brouillon'}
                   </span>
                   <Button
                     size="sm"
-                    onClick={() => handleTogglePublish(album)}
-                    disabled={updateAlbumMutation.isPending}
-                    className={album.is_published ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'}
+                    onClick={() => handleTogglePublish(podcast)}
+                    disabled={updatePodcastMutation.isPending}
+                    className={podcast.is_published ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'}
                   >
-                    {updateAlbumMutation.isPending ? '...' : (album.is_published ? 'Dépublier' : 'Publier')}
+                    {updatePodcastMutation.isPending ? '...' : (podcast.is_published ? 'Dépublier' : 'Publier')}
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => deleteConfirmation.showDeleteConfirmation(
-                      album.title,
-                      'album',
-                      () => handleDeleteAlbum(album.id)
+                      podcast.title,
+                      'podcast',
+                      () => handleDeletePodcast(podcast.id)
                     )}
-                    disabled={deleteAlbumMutation.isPending}
+                    disabled={deletePodcastMutation.isPending}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    {deleteAlbumMutation.isPending ? '...' : 'Supprimer'}
+                    {deletePodcastMutation.isPending ? '...' : 'Supprimer'}
                   </Button>
                 </div>
               </div>
@@ -167,11 +169,11 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
         </div>
       )}
 
-      <AdminCreateAlbumModal
+      <AdminCreatePodcastModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateAlbum}
-        isSubmitting={createAlbumMutation.isPending}
+        onSubmit={handleCreatePodcast}
+        isSubmitting={createPodcastMutation.isPending}
       />
 
       {/* Modal de confirmation de suppression */}
@@ -181,8 +183,8 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
         onConfirm={deleteConfirmation.handleConfirm}
         message={deleteConfirmation.message}
         itemName={deleteConfirmation.itemName}
-        isDeleting={deleteAlbumMutation.isPending}
+        isDeleting={deletePodcastMutation.isPending}
       />
     </div>
   );
-} 
+}

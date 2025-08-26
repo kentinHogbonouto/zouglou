@@ -19,5 +19,8 @@ export * from './usePodcastQuery';
 export * from './useUnifiedMusicPlayer';
 export * from './useUnifiedEpisodePlayer';
 
+// Hooks pour l'administration
+export * from './useAdminQueries';
+
 // Hooks utilitaires
 export * from './useDeleteConfirmation'; 

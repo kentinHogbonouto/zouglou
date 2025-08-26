@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ChartLineIcon, Music, Settings, ShieldCheckIcon, User, Users, Disc3, Podcast } from 'lucide-react';
+import { ChartLineIcon, Music, User, Users, Disc3, Podcast, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 interface MenuItem {
   label: string;
@@ -71,7 +71,7 @@ const adminMenuItems: MenuItem[] = [
   {
     label: 'Vue d\'ensemble',
     href: '/dashboard/admin',
-    icon: '📊',
+    icon: <ChartLineIcon size={16} className="h-4 w-4" />,
   },
   {
     label: 'Utilisateurs',
@@ -86,22 +86,27 @@ const adminMenuItems: MenuItem[] = [
     permission: SYSTEM_PERMISSIONS.ARTIST_MANAGE,
   },
   {
-    label: 'Episodes',
-    href: '/dashboard/admin/episodes',
-    icon: <ChartLineIcon size={16} className="h-4 w-4" />,
-    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
-  },
-  {
     label: 'Podcasts',
     href: '/dashboard/admin/podcasts',
     icon: <Podcast size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
   },
   {
-    label: 'Titres',
+    label: 'Tracks',
     href: '/dashboard/admin/tracks',
     icon: <Music size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+  {
+    label: 'Subscription',
+    href: '/dashboard/admin/subscription',
+    icon: <CreditCard size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.REVENUE_READ,
+  },
+  {
+    label: 'Mon Profil',
+    href: '/dashboard/admin/profile',
+    icon: <User size={16} className="h-4 w-4" />,
   },
 ];
 
