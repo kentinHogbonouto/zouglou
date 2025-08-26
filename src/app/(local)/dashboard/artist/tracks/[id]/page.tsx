@@ -11,9 +11,11 @@ import { GenreSelect } from '@/components/ui/GenreSelect';
 import { UpdateSongData } from '@/shared/types/api';
 import { ArtistRoute } from '@/components/auth/ProtectedRoute';
 import { useUnifiedMusicPlayer } from '@/hooks/useUnifiedMusicPlayer';
-
+import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
 import { Edit, Trash2, Play, Pause, Music, Calendar, Clock, User, Tag, ArrowLeft, Save, X } from 'lucide-react';
 import Image from 'next/image';
+import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
+
 export default function TrackDetailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -24,12 +26,11 @@ export default function TrackDetailPage() {
   const [formData, setFormData] = useState<Partial<UpdateSongData>>({});
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-
   const { data: song, isLoading, error } = useSong(trackId);
   const updateSongMutation = useUpdateSong();
   const deleteSongMutation = useDeleteSong();
   const { playTrack, currentTrack, isPlaying } = useUnifiedMusicPlayer();
-
+  const deleteConfirmation = useDeleteConfirmation();
   // Initialiser le formulaire avec les données du track
   useEffect(() => {
     if (song) {
@@ -63,10 +64,10 @@ export default function TrackDetailPage() {
 
   const handleDeleteSong = async () => {
     if (!song) return;
-
+    
     try {
       await deleteSongMutation.mutateAsync(trackId);
-      router.push('/dashboard/artist/tracks');
+      router.back();
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
@@ -157,7 +158,13 @@ export default function TrackDetailPage() {
                     {song.is_published ? 'Dépublier' : 'Publier'}
                   </Button>
                   <Button
-                    onClick={handleDeleteSong}
+                    onClick={
+                      () => deleteConfirmation.showDeleteConfirmation(
+                        song.title,
+                        'track',
+                        handleDeleteSong
+                      )
+                    }
                     disabled={deleteSongMutation.isPending}
                     className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-medium rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl"
                   >
@@ -373,6 +380,14 @@ export default function TrackDetailPage() {
           </div>
         )}
       </div>
+      <DeleteConfirmationModal
+        isOpen={deleteConfirmation.isOpen}
+        onClose={deleteConfirmation.hideDeleteConfirmation}
+        onConfirm={deleteConfirmation.handleConfirm}
+        message={deleteConfirmation.message}
+        itemName={deleteConfirmation.itemName}
+        isDeleting={deleteSongMutation.isPending}
+      />
     </ArtistRoute>
   );
 }
