@@ -9,8 +9,8 @@ import { Pagination } from '@/components/ui/Pagination';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useAdminUsers, useRealDeleteUser, useToggleUserDeleted } from '@/hooks/useAdminQueries';
 import { useRouter } from 'next/navigation';
-import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search, Eye, Trash2, RefreshCw } from 'lucide-react';
-import { DeletedStatusBadge, ToggleDeletedButton } from '@/components/ui/DeletedStatusBadge';
+import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search, Eye, Trash2 } from 'lucide-react';
+import { ToggleDeletedButton } from '@/components/ui/DeletedStatusBadge';
 import Image from 'next/image';
 import { ApiUser } from '@/hooks/useAdminQueries';
 

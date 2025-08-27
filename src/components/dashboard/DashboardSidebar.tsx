@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ChartLineIcon, Music, User, Users, Disc3, Podcast, CreditCard, SquareChartGantt } from 'lucide-react';
+import { ChartLineIcon, Music, User, Users, Disc3, Podcast, CreditCard, SquareChartGantt, HelpCircle, Settings } from 'lucide-react';
 import Image from 'next/image';
 interface MenuItem {
   label: string;
@@ -107,6 +107,18 @@ const adminMenuItems: MenuItem[] = [
     label: 'Plans Abonnements',
     href: '/dashboard/admin/plans-subscription',
     icon: <SquareChartGantt size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+  {
+    label: 'FAQ',
+    href: '/dashboard/admin/faq',
+    icon: <HelpCircle size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+  {
+    label: 'Paramètres',
+    href: '/dashboard/admin/information',
+    icon: <Settings size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
   },
   {
