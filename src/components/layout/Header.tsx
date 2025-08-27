@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/Button';
-import { Menu, X, Bell, User, LogOut, Music, Home, Users, Mail, ChevronDown } from 'lucide-react';
+import { Menu, X, Bell, User, LogOut, Music, Home, Users, Mail, ChevronDown, HelpCircle } from 'lucide-react';
 import Image from 'next/image';
 
 interface HeaderProps {
@@ -55,6 +54,13 @@ export function Header({ className }: HeaderProps) {
             >
               <Mail className="w-4 h-4" />
               Contact
+            </Link>
+            <Link 
+              href="/faq" 
+              className="flex items-center gap-2 text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-slate-100"
+            >
+              <HelpCircle className="w-4 h-4" />
+              FAQ
             </Link>
           </nav>
 
@@ -146,6 +152,14 @@ export function Header({ className }: HeaderProps) {
               >
                 <Mail className="w-5 h-5" />
                 Contact
+              </Link>
+              <Link 
+                href="/faq" 
+                className="flex items-center gap-3 text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg text-base font-medium transition-all duration-200 hover:bg-slate-100"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <HelpCircle className="w-5 h-5" />
+                FAQ
               </Link>
               
               {user && (

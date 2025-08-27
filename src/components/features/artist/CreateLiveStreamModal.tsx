@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+'use client';
+
+import { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Modal, ModalButton, ModalActions, ModalHeader, ModalContent } from '@/components/ui/Modal';
 import { CreateLiveStreamData } from '@/shared/types/api';

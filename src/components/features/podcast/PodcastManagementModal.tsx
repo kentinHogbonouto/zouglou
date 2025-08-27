@@ -41,7 +41,7 @@ export function PodcastManagementModal({
       setFormData({
         title: podcastToEdit.title,
         description: podcastToEdit.description,
-        artist: podcastToEdit.artist,
+        artist: podcastToEdit.artist.id,
         genre: podcastToEdit.genre,
         is_published: podcastToEdit.is_published
       });

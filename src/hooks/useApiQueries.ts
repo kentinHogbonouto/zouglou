@@ -126,11 +126,11 @@ export function useApiDelete<TData>(
 
 // Hooks spécifiques pour les utilisateurs
 export function useUsers(page = 1, limit = 10) {
-  return usePaginatedQuery(queryKeys.users.list({ page, limit }), '/users/', page, limit);
+  return usePaginatedQuery(queryKeys.users.list({ page, limit }), '/account/', page, limit);
 }
 
 export function useUserByIdFromApi(id: string) {
-  return useApiQuery(queryKeys.users.detail(id), `/users/${id}/`);
+  return useApiQuery(queryKeys.users.detail(id), `/account/${id}/`);
 }
 
 // Hooks spécifiques pour les tracks
@@ -151,12 +151,16 @@ export function useRecentTracks() {
 }
 
 // Hooks spécifiques pour les artistes
+export function useArtistList() {
+  return usePaginatedQuery(queryKeys.artists.list({ page: 1, limit: 10000 }), '/artist/', 1, 10000);
+}
+
 export function useArtists(page = 1, limit = 10) {
-  return usePaginatedQuery(queryKeys.artists.list({ page, limit }), '/artists/', page, limit);
+  return usePaginatedQuery(queryKeys.artists.list({ page, limit }), '/artist/', page, limit);
 }
 
 export function useArtist(id: string) {
-  return useApiQuery(queryKeys.artists.detail(id), `/artists/${id}/`);
+  return useApiQuery(queryKeys.artists.detail(id), `/artist/${id}/`);
 }
 
 // Hooks pour les statistiques

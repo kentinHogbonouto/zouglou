@@ -8,4 +8,7 @@ export { GenreSelect } from './GenreSelect';
 export { CategorySelect } from './CategorySelect';
 export { CitySelect } from './CitySelect';
 export { Notification } from './Notification';
-export { MusicPlayer } from './MusicPlayer'; 
+export { MusicPlayer } from './MusicPlayer';
+export { LoadingState } from './LoadingState';
+export { ErrorState } from './ErrorState';
+export { DeletedStatusBadge, ToggleDeletedButton } from './DeletedStatusBadge'; 

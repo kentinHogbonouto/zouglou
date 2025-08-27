@@ -1,4 +1,5 @@
-import React from 'react';
+'use client';
+
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ApiSong } from '@/shared/types/api';

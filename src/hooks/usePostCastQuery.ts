@@ -20,6 +20,7 @@ export const podcastKeys = {
   episode: (id: string) => [...podcastKeys.episodeList(), id] as const,
   artistPodcast: (artistId: string) => [...podcastKeys.podcastList(), 'artist', artistId] as const,
   artistEpisode: (artistId: string) => [...podcastKeys.episodeList(), 'artist', artistId] as const,
+  podcastGenres: () => [...podcastKeys.all, 'genres'] as const,
 };
 
 // Hooks pour les Podcasts
@@ -257,5 +258,17 @@ export function useDeletePodcastEpisodeReal() {
       // Invalider les listes
       queryClient.invalidateQueries({ queryKey: podcastKeys.episodeList() });
     },
+  });
+}
+
+// Hook pour récupérer les genres de podcasts
+export function usePodcastGenres() {
+  return useQuery({
+    queryKey: podcastKeys.podcastGenres(),
+    queryFn: async (): Promise<string[]> => {
+      const response = await apiService.get<string[]>('/podcast/genres/');
+      return response.data || [];
+    },
+    staleTime: 10 * 60 * 1000, // Cache pendant 10 minutes
   });
 }

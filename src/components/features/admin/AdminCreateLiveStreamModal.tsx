@@ -7,22 +7,22 @@ import { CreateLiveStreamData } from '@/shared/types/api';
 interface AdminCreateLiveStreamModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: CreateLiveStreamData & { artist: string }) => Promise<void>;
+  onSubmit: (data: CreateLiveStreamData) => Promise<void>;
   isSubmitting: boolean;
 }
 
-export function AdminCreateLiveStreamModal({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  isSubmitting 
+export function AdminCreateLiveStreamModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  isSubmitting
 }: AdminCreateLiveStreamModalProps) {
   const [formData, setFormData] = useState<Partial<CreateLiveStreamData>>({});
   const [selectedArtist, setSelectedArtist] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.stream_url || !selectedArtist) {
+    if (!formData.title || !selectedArtist || !formData.start_time) {
       alert('Veuillez remplir tous les champs obligatoires et sélectionner un artiste');
       return;
     }
@@ -32,7 +32,7 @@ export function AdminCreateLiveStreamModal({
         ...formData as CreateLiveStreamData,
         artist: selectedArtist,
       });
-      
+
       // Reset form
       setFormData({});
       setSelectedArtist('');
@@ -49,36 +49,82 @@ export function AdminCreateLiveStreamModal({
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-slate-800">Créer un nouveau live stream</h2>
+          <p className="text-slate-600 mt-2">Remplissez les informations pour créer un nouveau live stream</p>
+        </div>
+
         <AdminArtistSelect
           selectedArtist={selectedArtist}
           onArtistChange={setSelectedArtist}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            value={formData.title || ''}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-          />
-          <Input
-            value={formData.stream_url || ''}
-            onChange={(e) => setFormData({ ...formData, stream_url: e.target.value })}
-            placeholder="rtmp://..."
-            required
-          />
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Titre du live stream *
+            </label>
+            <Input
+              value={formData.title || ''}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Entrez le titre du live stream"
+              className="outline-none"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Description
+            </label>
+            <textarea
+              value={formData.description || ''}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Description du live stream (optionnel)"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Date et heure programmées *
+            </label>
+            <Input
+              type="datetime-local"
+              value={formData.start_time || ''}
+              onChange={(e) => setFormData({ ...formData, start_time: e.target.value })}
+              className="outline-none"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              URL du stream (RTMP)
+            </label>
+            <Input
+              value={formData.stream_url || ''}
+              onChange={(e) => setFormData({ ...formData, stream_url: e.target.value })}
+              placeholder="rtmp://stream.example.com/live"
+            />
+            <p className="text-xs text-slate-500 mt-1">
+              URL RTMP pour la diffusion en direct (optionnel)
+            </p>
+          </div>
+
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Description
+
+        <div className="flex items-center space-x-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={formData.is_published || false}
+              onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+              className="rounded border-slate-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
+            />
+            <span className="ml-2 text-sm text-slate-700">Publier immédiatement</span>
           </label>
-          <textarea
-            value={formData.description || ''}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows={4}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            placeholder="Description du live stream..."
-          />
         </div>
 
         <ModalActions>

@@ -3,19 +3,20 @@ import { Input } from '@/components/ui/Input';
 import { Modal, ModalButton, ModalActions } from '@/components/ui/Modal';
 import { AdminArtistSelect } from './AdminArtistSelect';
 import { CreateAlbumData } from '@/shared/types/api';
+import { GenreSelect } from '@/components/ui/GenreSelect';
 
 interface AdminCreateAlbumModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: CreateAlbumData & { artist: string }) => Promise<void>;
+  onSubmit: (data: CreateAlbumData) => Promise<void>;
   isSubmitting: boolean;
 }
 
-export function AdminCreateAlbumModal({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  isSubmitting 
+export function AdminCreateAlbumModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  isSubmitting
 }: AdminCreateAlbumModalProps) {
   const [formData, setFormData] = useState<Partial<CreateAlbumData>>({});
   const [selectedCover, setSelectedCover] = useState<File | null>(null);
@@ -34,7 +35,7 @@ export function AdminCreateAlbumModal({
         artist: selectedArtist,
         cover_image: selectedCover || undefined,
       });
-      
+
       // Reset form
       setFormData({});
       setSelectedCover(null);
@@ -51,48 +52,61 @@ export function AdminCreateAlbumModal({
       onClose={onClose}
       size="lg"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 p-3">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-slate-800">Créer un nouvel album</h2>
+          <p className="text-slate-600 mt-2">Remplissez les informations pour créer un nouvel album</p>
+        </div>
+
         <AdminArtistSelect
           selectedArtist={selectedArtist}
           onArtistChange={setSelectedArtist}
         />
 
         <div className="space-y-4">
-          <Input
-            value={formData.title || ''}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            required
-          />
-          <Input
-            type="date"
-            value={formData.release_date || ''}
-            onChange={(e) => setFormData({ ...formData, release_date: e.target.value })}
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Titre de l&apos;album *
+            </label>
+            <Input
+              value={formData.title || ''}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Entrez le titre de l'album"
+              className="outline-none"
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Description
-          </label>
-          <textarea
-            value={formData.description || ''}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows={4}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            placeholder="Description de l'album..."
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Description
+            </label>
+            <textarea
+              value={formData.description || ''}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Description de l'album (optionnel)"
+              className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              rows={3}
+            />
+          </div>
+          <GenreSelect
+            value={formData.genre || ''}
+            onChange={(e) => setFormData({ ...formData, genre: e })}
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Image de couverture (optionnel)
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setSelectedCover(e.target.files?.[0] || null)}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-zouglou-green-700 hover:file:bg-orange-100"
-          />
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Image de couverture
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setSelectedCover(e.target.files?.[0] || null)}
+              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-green-700 hover:file:bg-orange-100"
+            />
+            <p className="text-xs text-slate-500 mt-1">
+              Formats acceptés: JPG, PNG, GIF. Taille max: 5MB
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center space-x-4">
@@ -101,9 +115,9 @@ export function AdminCreateAlbumModal({
               type="checkbox"
               checked={formData.is_published || false}
               onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-              className="rounded border-gray-300 text-zouglou-green-600 shadow-sm focus:border-zouglou-green-300 focus:ring focus:ring-zouglou-green-200 focus:ring-opacity-50"
+              className="rounded border-slate-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-green-200 focus:ring-opacity-50"
             />
-            <span className="ml-2 text-sm text-gray-700">Publier immédiatement</span>
+            <span className="ml-2 text-sm text-slate-700">Publier immédiatement</span>
           </label>
         </div>
 

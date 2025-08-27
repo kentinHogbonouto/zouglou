@@ -192,6 +192,32 @@ export function useDeleteSong() {
   });
 }
 
+export function useRealDeleteSong() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const loadingDeleteSongRef = useRef<string>('');
+  
+  return useMutation({
+    mutationFn: async (id: string): Promise<void> => {
+      loadingDeleteSongRef.current = toast.showLoading('Chargement', 'Track en cours de suppression');
+      await apiService.delete(`/songs/${id}/realDelete/`);
+    },
+    onSuccess: (_, id) => {
+      // Supprimer du cache
+      queryClient.removeQueries({ queryKey: musicKeys.song(id) });
+      // Invalider les listes
+      queryClient.invalidateQueries({ queryKey: musicKeys.songs() });
+        
+      toast.dismissLoading(loadingDeleteSongRef.current);
+      toast.showSuccess('Succès', 'Track supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeleteSongRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression du track ' + error.message);
+    },
+  });
+}
+
 export function useToggleSongFavorite() {
   const queryClient = useQueryClient();
 
@@ -337,6 +363,31 @@ export function useDeleteAlbum() {
     mutationFn: async (id: string): Promise<void> => {
       loadingDeleteAlbumRef.current = toast.showLoading('Chargement', 'Album en cours de suppression');
       await apiService.delete(`/albums/${id}/`);
+    },
+    onSuccess: (_, id) => {
+      // Supprimer du cache
+      queryClient.removeQueries({ queryKey: musicKeys.album(id) });
+      // Invalider les listes
+      queryClient.invalidateQueries({ queryKey: musicKeys.albums() });
+      toast.dismissLoading(loadingDeleteAlbumRef.current);
+      toast.showSuccess('Succès', 'Album supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeleteAlbumRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression de l\'album ' + error.message);
+    },
+  });
+}
+
+export function useRealDeleteAlbum() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const loadingDeleteAlbumRef = useRef<string>('');
+
+  return useMutation({
+    mutationFn: async (id: string): Promise<void> => {
+      loadingDeleteAlbumRef.current = toast.showLoading('Chargement', 'Album en cours de suppression');
+      await apiService.delete(`/albums/${id}/realDelete/`);
     },
     onSuccess: (_, id) => {
       // Supprimer du cache

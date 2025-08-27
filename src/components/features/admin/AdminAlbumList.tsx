@@ -4,69 +4,68 @@ import { Card } from '@/components/ui/Card';
 import { AdminCreateAlbumModal } from './AdminCreateAlbumModal';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
-
-interface Album {
-  id: string;
-  title: string;
-  artist: string;
-  description?: string;
-  total_tracks: number;
-  total_duration: number;
-  is_published: boolean;
-  createdAt: string;
-}
+import { useCreateAlbum, useUpdateAlbum, useDeleteAlbum } from '@/hooks';
+import { ApiAlbum, ApiArtist, CreateAlbumData } from '@/shared/types';
+import Image from 'next/image';
 
 interface AdminAlbumListProps {
-  albums?: Album[];
+  albums?: ApiAlbum[];
   isLoading?: boolean;
 }
 
 export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumListProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // React Query mutations
+  const createAlbumMutation = useCreateAlbum();
+  const updateAlbumMutation = useUpdateAlbum();
+  const deleteAlbumMutation = useDeleteAlbum();
+  
   const deleteConfirmation = useDeleteConfirmation();
 
-  const handleCreateAlbum = async () => {
-    setIsSubmitting(true);
+  const handleCreateAlbum = async (data: CreateAlbumData) => {
     try {
-      // TODO: Implémenter l'appel API pour créer un album
-    
+      await createAlbumMutation.mutateAsync(data);
       setIsCreateModalOpen(false);
     } catch (error) {
       console.error('Erreur lors de la création:', error);
-    } finally {
-      setIsSubmitting(false);
+    }
+  };
+
+  const handleTogglePublish = async (album: ApiAlbum) => {
+    try {
+      await updateAlbumMutation.mutateAsync({
+        id: album.id,
+        data: { is_published: !album.is_published }
+      });
+    } catch (error) {
+      console.error('Erreur lors de la publication:', error);
     }
   };
 
   const handleDeleteAlbum = async (albumId: string) => {
     try {
-      // TODO: Implémenter l'appel API pour supprimer un album
-      console.log('Suppression de l\'album:', albumId);
+      await deleteAlbumMutation.mutateAsync(albumId);
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
   };
 
-  const handleTogglePublish = async () => {
-    try {
-      // TODO: Implémenter l'appel API pour modifier le statut de publication
-     
-    } catch (error) {
-      console.error('Erreur lors de la publication:', error);
-    }
+  const getArtistName = (artist: ApiArtist) => {
+    if (artist && typeof artist === 'object' && 'stage_name' in artist) return artist.stage_name;
+    return 'Artiste inconnu';
   };
 
   if (isLoading) {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Albums</h3>
+          <h3 className="text-lg font-semibold text-slate-800">Albums</h3>
           <Button disabled>Créer un Album</Button>
         </div>
         <div className="grid gap-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
+            <div key={i} className="animate-pulse bg-slate-200 h-24 rounded-lg"></div>
           ))}
         </div>
       </div>
@@ -76,7 +75,7 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Albums ({albums.length})</h3>
+        <h3 className="text-lg font-semibold text-slate-800">Albums ({albums.length})</h3>
         <Button
           onClick={() => setIsCreateModalOpen(true)}
           className="bg-green-600 hover:bg-green-700 text-white"
@@ -87,7 +86,7 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
 
       {albums.length === 0 ? (
         <Card className="p-6 text-center">
-          <p className="text-gray-500">Aucun album trouvé</p>
+          <p className="text-slate-500">Aucun album trouvé</p>
           <Button
             onClick={() => setIsCreateModalOpen(true)}
             className="mt-4 bg-green-600 hover:bg-green-700 text-white"
@@ -98,20 +97,39 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
       ) : (
         <div className="grid gap-4">
           {albums.map((album) => (
-            <Card key={album.id} className="p-4">
-              <div className="flex justify-between items-center">
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{album.title}</h4>
-                  <p className="text-sm text-gray-600">
-                    Artiste: {album.artist} • {album.total_tracks} pistes • {Math.round(album.total_duration / 60)} min
+            <Card key={album.id} className="p-4 hover:shadow-md transition-all duration-200">
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-100">
+                    {album.cover ? (
+                      <Image
+                        src={album.cover}
+                        alt={album.title}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                        <span className="text-2xl">💿</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-slate-900 truncate">{album.title}</h4>
+                  <p className="text-sm text-slate-600">
+                    Artiste: {getArtistName(album.artist)} • {album.total_tracks || 0} tracks
                   </p>
                   {album.description && (
-                    <p className="text-sm text-gray-500 mt-1">{album.description}</p>
+                    <p className="text-sm text-slate-500 truncate">{album.description}</p>
                   )}
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     Créé le {new Date(album.createdAt).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
+                
                 <div className="flex items-center space-x-2">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
@@ -124,10 +142,11 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
                   </span>
                   <Button
                     size="sm"
-                    onClick={() => handleTogglePublish()}
+                    onClick={() => handleTogglePublish(album)}
+                    disabled={updateAlbumMutation.isPending}
                     className={album.is_published ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-green-600 hover:bg-green-700'}
                   >
-                    {album.is_published ? 'Dépublier' : 'Publier'}
+                    {updateAlbumMutation.isPending ? '...' : (album.is_published ? 'Dépublier' : 'Publier')}
                   </Button>
                   <Button
                     size="sm"
@@ -136,9 +155,10 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
                       'album',
                       () => handleDeleteAlbum(album.id)
                     )}
+                    disabled={deleteAlbumMutation.isPending}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    Supprimer
+                    {deleteAlbumMutation.isPending ? '...' : 'Supprimer'}
                   </Button>
                 </div>
               </div>
@@ -151,7 +171,7 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateAlbum}
-        isSubmitting={isSubmitting}
+        isSubmitting={createAlbumMutation.isPending}
       />
 
       {/* Modal de confirmation de suppression */}
@@ -161,7 +181,7 @@ export function AdminAlbumList({ albums = [], isLoading = false }: AdminAlbumLis
         onConfirm={deleteConfirmation.handleConfirm}
         message={deleteConfirmation.message}
         itemName={deleteConfirmation.itemName}
-        isDeleting={false}
+        isDeleting={deleteAlbumMutation.isPending}
       />
     </div>
   );

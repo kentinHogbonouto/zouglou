@@ -9,13 +9,12 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ChartLineIcon, Music, Settings, ShieldCheckIcon, User, Users, Disc3, Podcast } from 'lucide-react';
+import { ChartLineIcon, Music, User, Users, Disc3, Podcast, CreditCard, SquareChartGantt, HelpCircle, Settings } from 'lucide-react';
 import Image from 'next/image';
 interface MenuItem {
   label: string;
@@ -71,7 +70,7 @@ const adminMenuItems: MenuItem[] = [
   {
     label: 'Vue d\'ensemble',
     href: '/dashboard/admin',
-    icon: '📊',
+    icon: <ChartLineIcon size={16} className="h-4 w-4" />,
   },
   {
     label: 'Utilisateurs',
@@ -80,16 +79,16 @@ const adminMenuItems: MenuItem[] = [
     permission: SYSTEM_PERMISSIONS.SYSTEM_MANAGE,
   },
   {
-    label: 'Albums',
-    href: '/dashboard/admin/albums',
-    icon: <User size={16} className="h-4 w-4" />,
-    permission: SYSTEM_PERMISSIONS.ARTIST_MANAGE,
+    label: 'Abonnements',
+    href: '/dashboard/admin/subscription',
+    icon: <CreditCard size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
   },
   {
-    label: 'Episodes',
-    href: '/dashboard/admin/episodes',
-    icon: <ChartLineIcon size={16} className="h-4 w-4" />,
-    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+    label: 'Albums',
+    href: '/dashboard/admin/albums',
+    icon: <Disc3 size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.ARTIST_MANAGE,
   },
   {
     label: 'Podcasts',
@@ -98,10 +97,34 @@ const adminMenuItems: MenuItem[] = [
     permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
   },
   {
-    label: 'Titres',
+    label: 'Tracks',
     href: '/dashboard/admin/tracks',
     icon: <Music size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+
+  {
+    label: 'Plans Abonnements',
+    href: '/dashboard/admin/plans-subscription',
+    icon: <SquareChartGantt size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+  {
+    label: 'FAQ',
+    href: '/dashboard/admin/faq',
+    icon: <HelpCircle size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+  {
+    label: 'Paramètres',
+    href: '/dashboard/admin/information',
+    icon: <Settings size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+  {
+    label: 'Mon Profil',
+    href: '/dashboard/admin/profile',
+    icon: <User size={16} className="h-4 w-4" />,
   },
 ];
 

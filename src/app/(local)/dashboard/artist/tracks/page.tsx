@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuthQueries';
-import { useSongs, useCreateSong, useDeleteSong } from '@/hooks/useMusicQueries';
+import { useSongs, useCreateSong } from '@/hooks/useMusicQueries';
 import { Button } from '@/components/ui/Button';
 import { Loading } from '@/components/ui/Loading';
 import { Card } from '@/components/ui/Card';

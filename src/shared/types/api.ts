@@ -7,6 +7,7 @@ export interface ApiArtist {
   cover?: string;
   bio?: string;
   is_active: boolean;
+  profile_image?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -197,9 +198,10 @@ export interface ApiPodcast {
   title: string;
   description: string;
   cover: string;
-  artist: string;
+  artist: ApiArtist;
   genre: string;
   is_published: boolean;
+  deleted?: boolean;
   episodes_count: number;
   subscribers_count: number;
   createdAt: string;
@@ -288,6 +290,25 @@ export interface UpdatePodcastEpisodeData {
   audio_file?: File;
 } 
 
+export interface CreateSubscriptionPlanData {
+  name: string;
+  description: string;
+  price?: string;
+  duration_days?: number;
+  features?: Record<string, unknown>;
+  max_downloads?: number;
+  ads_free?: boolean;
+  high_quality?: boolean;
+  offline_mode?: boolean;
+  podcast_access?: boolean;
+  unlimited_playlists?: boolean;
+  max_playlists?: number | null;
+  unlimited_streaming?: boolean;
+  free_trial_days?: number;
+  is_featured?: boolean;
+  is_active?: boolean;
+}
+
 export interface City {
   id: string;
   name: string;
@@ -297,4 +318,5 @@ export interface City {
   latitude: string | null;
   createdAt: string;
   updatedAt: string;
+
 }

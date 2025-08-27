@@ -130,6 +130,14 @@ export function MusicList({
                 </span>
               </div>
 
+              <div>
+                {track.deleted && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600 text-center line-clamp-1">
+                    Supprimé
+                  </span>
+                )}
+              </div>
+
               {/* Durée */}
               <div className="flex items-center gap-1 text-sm text-slate-500">
                 <Clock className="w-4 h-4" />

@@ -81,7 +81,7 @@ export function Modal({
         )}
         
         {/* Contenu */}
-        <div className="relative">
+        <div className="relative max-h-[95vh] overflow-y-auto">
           {children}
         </div>
       </div>
