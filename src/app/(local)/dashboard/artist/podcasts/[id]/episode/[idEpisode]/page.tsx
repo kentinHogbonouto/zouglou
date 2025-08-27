@@ -317,7 +317,7 @@ export default function ArtistPodcastEpisodeDetailPage() {
                             <span className="text-sm text-slate-500">Épisode #{episode.episode_number}</span>
                           </div>
                           <h2 className="text-4xl font-light text-slate-800 mb-4 leading-tight">{episode.title}</h2>
-                          <p className="text-lg text-slate-600 leading-relaxed">{episode.description}</p>
+                          <p className="text-lg text-slate-600 leading-relaxed">{episode.description.substring(0, 200)}...</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

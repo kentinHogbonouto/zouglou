@@ -213,385 +213,389 @@ export default function AlbumDetailPage() {
 
         {/* Main Content */}
         {isLoading ? <Loading /> : (
-        <div className="max-w-7xl mx-auto px-8 py-8">
-          {isEditMode ? (
-            // Mode édition
-            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-100 pb-6">
-                <CardTitle className="text-2xl font-medium text-slate-800 flex items-center gap-2">
-                  <Edit className="w-6 h-6 text-[#005929]" />
-                  Modifier l&apos;Album
-                </CardTitle>
-                <p className="text-slate-500">Mettez à jour les informations de votre album</p>
-              </CardHeader>
-              <CardContent className="p-8">
-                <form onSubmit={handleUpdateAlbum} className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-slate-700">Titre de l&apos;album</label>
-                      <Input
-                        value={formData.title || ''}
-                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        className="w-full border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
-                        placeholder="Titre de l&apos;album"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-slate-700 flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        Date de sortie
-                      </label>
-                      <Input
-                        type="date"
-                        value={formData.release_date || ''}
-                        onChange={(e) => setFormData({ ...formData, release_date: e.target.value })}
-                        className="w-full border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-slate-700">Genre</label>
-                      <GenreSelect
-                        value={formData.genre || ''}
-                        onChange={(value) => setFormData({ ...formData, genre: value })}
-                        placeholder="Sélectionner un genre"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">Description</label>
-                    <textarea
-                      value={formData.description || ''}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      rows={4}
-                      className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:border-[#005929] focus:ring-[#005929]/20 resize-none"
-                      placeholder="Description de l&apos;album..."
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <label className="block text-sm font-medium text-slate-700">
-                      Nouvelle image de couverture (optionnel)
-                    </label>
-                    <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 hover:border-[#005929]/50 transition-colors">
-                      <div className="text-center">
-
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => setSelectedCover(e.target.files?.[0] || null)}
-                          className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gradient-to-r file:from-[#005929] file:to-[#005929]/90 file:text-white hover:file:from-[#005929]/90 hover:file:to-[#005929]"
+          <div className="max-w-7xl mx-auto px-8 py-8">
+            {isEditMode ? (
+              // Mode édition
+              <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+                <CardHeader className="border-b border-slate-100 pb-6">
+                  <CardTitle className="text-2xl font-medium text-slate-800 flex items-center gap-2">
+                    <Edit className="w-6 h-6 text-[#005929]" />
+                    Modifier l&apos;Album
+                  </CardTitle>
+                  <p className="text-slate-500">Mettez à jour les informations de votre album</p>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <form onSubmit={handleUpdateAlbum} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-slate-700">Titre de l&apos;album</label>
+                        <Input
+                          value={formData.title || ''}
+                          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                          className="w-full border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
+                          placeholder="Titre de l&apos;album"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-slate-700 flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          Date de sortie
+                        </label>
+                        <Input
+                          type="date"
+                          value={formData.release_date || ''}
+                          onChange={(e) => setFormData({ ...formData, release_date: e.target.value })}
+                          className="w-full border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
                         />
                       </div>
                     </div>
-                    {album.cover && (
-                      <div className="flex items-center gap-2 p-3 bg-slate-50/50 rounded-lg">
-                        <Eye className="w-4 h-4 text-slate-500" />
-                        <span className="text-sm text-slate-600">
-                          Image actuelle: {album.cover.split('/').pop()}
-                        </span>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-slate-700">Genre</label>
+                        <GenreSelect
+                          value={formData.genre || ''}
+                          onChange={(value) => setFormData({ ...formData, genre: value })}
+                          placeholder="Sélectionner un genre"
+                        />
                       </div>
-                    )}
-                  </div>
+                    </div>
 
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#005929]/5 to-[#005929]/10 rounded-lg border border-[#005929]/20">
-                    <input
-                      type="checkbox"
-                      checked={formData.is_published || false}
-                      onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-                      className="rounded border-slate-300 text-[#005929] focus:ring-[#005929]/20"
-                    />
-                    <span className="text-sm font-medium text-slate-700">Publier cet album</span>
-                  </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-slate-700">Description</label>
+                      <textarea
+                        value={formData.description || ''}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        rows={4}
+                        className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:border-[#005929] focus:ring-[#005929]/20 resize-none"
+                        placeholder="Description de l&apos;album..."
+                      />
+                    </div>
 
-                  <div className="flex justify-end gap-4 pt-6 border-t border-slate-200">
-                    <Button
-                      type="button"
-                      onClick={() => router.push(`/dashboard/artist/albums/${albumId}`)}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-all duration-200"
-                    >
-                      Annuler
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={updateAlbumMutation.isPending}
-                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
-                    >
-                      {updateAlbumMutation.isPending ? 'Mise à jour...' : 'Mettre à jour'}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          ) : (
-            // Mode affichage
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Informations principales */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* Carte principale avec couverture et infos */}
-                <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm overflow-hidden">
-                  <div className="p-8">
-                    <div className="flex flex-col md:flex-row gap-8">
-                      {/* Couverture */}
-                      <div className="md:w-1/2">
-                        <div className="relative group">
-                          <Image
-                            src={album.cover || '/images/cover_default.jpg'}
-                            alt={album.title}
-                            className="w-full h-80 rounded-xl object-cover shadow-lg group-hover:scale-105 transition-transform duration-500"
-                            width={400}
-                            height={400}
+                    <div className="space-y-4">
+                      <label className="block text-sm font-medium text-slate-700">
+                        Nouvelle image de couverture (optionnel)
+                      </label>
+                      <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 hover:border-[#005929]/50 transition-colors">
+                        <div className="text-center">
+
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setSelectedCover(e.target.files?.[0] || null)}
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-gradient-to-r file:from-[#005929] file:to-[#005929]/90 file:text-white hover:file:from-[#005929]/90 hover:file:to-[#005929]"
                           />
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-xl flex items-center justify-center">
-                            <button
-                              onClick={() => album.songs.length > 0 && handlePlayTrack(album.songs[0])}
-                              className="opacity-0 group-hover:opacity-100 bg-white/90 p-4 rounded-full shadow-lg transition-all duration-300 hover:bg-white hover:scale-110"
-                            >
-                              <Play className="w-8 h-8 text-[#005929] ml-1" />
-                            </button>
-                          </div>
                         </div>
                       </div>
+                      {album.cover && (
+                        <div className="flex items-center gap-2 p-3 bg-slate-50/50 rounded-lg">
+                          <Eye className="w-4 h-4 text-slate-500" />
+                          <span className="text-sm text-slate-600">
+                            Image actuelle: {album.cover.split('/').pop()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
-                      {/* Informations */}
-                      <div className="md:w-1/2 space-y-6">
-                        <div>
-                          <h2 className="text-3xl font-light text-slate-800 mb-2">{album.title}</h2>
-                          <p className="text-xl text-slate-600">{album.artist.stage_name}</p>
+                    <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#005929]/5 to-[#005929]/10 rounded-lg border border-[#005929]/20">
+                      <input
+                        type="checkbox"
+                        checked={formData.is_published || false}
+                        onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                        className="rounded border-slate-300 text-[#005929] focus:ring-[#005929]/20"
+                      />
+                      <span className="text-sm font-medium text-slate-700">Publier cet album</span>
+                    </div>
+
+                    <div className="flex justify-end gap-4 pt-6 border-t border-slate-200">
+                      <Button
+                        type="button"
+                        onClick={() => router.push(`/dashboard/artist/albums/${albumId}`)}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-all duration-200"
+                      >
+                        Annuler
+                      </Button>
+                      <Button
+                        type="submit"
+                        disabled={updateAlbumMutation.isPending}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
+                      >
+                        {updateAlbumMutation.isPending ? 'Mise à jour...' : 'Mettre à jour'}
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            ) : (
+              // Mode affichage
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Informations principales */}
+                <div className="lg:col-span-2 space-y-6">
+                  {/* Carte principale avec couverture et infos */}
+                  <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm overflow-hidden">
+                    <div className="p-8">
+                      <div className="flex flex-col md:flex-row gap-8">
+                        {/* Couverture */}
+                        <div className="md:w-1/2">
+                          <div className="relative group">
+                            <Image
+                              src={album.cover || '/images/cover_default.jpg'}
+                              alt={album.title}
+                              className="w-full h-80 rounded-xl object-cover shadow-lg group-hover:scale-105 transition-transform duration-500"
+                              width={400}
+                              height={400}
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-xl flex items-center justify-center">
+                              <button
+                                onClick={() => album.songs.length > 0 && handlePlayTrack(album.songs[0])}
+                                className="opacity-0 group-hover:opacity-100 bg-white/90 p-4 rounded-full shadow-lg transition-all duration-300 hover:bg-white hover:scale-110"
+                              >
+                                <Play className="w-8 h-8 text-[#005929] ml-1" />
+                              </button>
+                            </div>
+                          </div>
                         </div>
 
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg">
-                            <User className="w-5 h-5 text-[#005929]" />
-                            <span className="text-slate-700">Artiste: <span className="font-medium">{album.artist.stage_name}</span></span>
+                        {/* Informations */}
+                        <div className="md:w-1/2 space-y-6">
+                          <div>
+                            <h2 className="text-3xl font-light text-slate-800 mb-2">{album.title}</h2>
+                            <p className="text-xl text-slate-600">{album.artist.stage_name}</p>
                           </div>
 
-                          {album.category && (
+                          <div className="space-y-4">
                             <div className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg">
-                              <Tag className="w-5 h-5 text-[#005929]" />
-                              <span className="text-slate-700">Catégorie: <span className="font-medium">{album.category}</span></span>
+                              <User className="w-5 h-5 text-[#005929]" />
+                              <span className="text-slate-700">Artiste: <span className="font-medium">{album.artist.stage_name}</span></span>
+                            </div>
+
+                            {album.category && (
+                              <div className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg">
+                                <Tag className="w-5 h-5 text-[#005929]" />
+                                <span className="text-slate-700">Catégorie: <span className="font-medium">{album.category}</span></span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg">
+                              <Clock className="w-5 h-5 text-[#005929]" />
+                              <span className="text-slate-700">Durée totale: <span className="font-medium">{formatDuration(album.total_duration)}</span></span>
+                            </div>
+                          </div>
+
+                          {album.description && (
+                            <div className="bg-slate-50/50 rounded-lg p-4">
+                              <h4 className="text-sm font-medium text-slate-700 mb-2">Description</h4>
+                              <div className="group">
+                                <p className="text-slate-600 leading-relaxed">
+                                  <span >{album.description.substring(0, 200)}...</span>
+                                </p>
+                              </div>
                             </div>
                           )}
 
-                          <div className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg">
-                            <Clock className="w-5 h-5 text-[#005929]" />
-                            <span className="text-slate-700">Durée totale: <span className="font-medium">{formatDuration(album.total_duration)}</span></span>
+                          <div className="pt-4 border-t border-slate-200">
+                            <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${album.is_published
+                              ? 'bg-gradient-to-r from-[#005929]/10 to-[#005929]/5 text-[#005929] border border-[#005929]/20'
+                              : 'bg-slate-100 text-slate-600 border border-slate-200'
+                              }`}>
+                              {album.is_published ? 'Publié' : 'Brouillon'}
+                            </span>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </Card>
 
-                        {album.description && (
-                          <div className="bg-slate-50/50 rounded-lg p-4">
-                            <h4 className="text-sm font-medium text-slate-700 mb-2">Description</h4>
-                            <p className="text-slate-600 leading-relaxed">{album.description}</p>
+                  {/* Liste des tracks */}
+                  <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+                    <CardHeader className="border-b border-slate-100 pb-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
+                            <Music className="w-5 h-5 text-[#005929]" />
+                            {album.songs && album.songs.length > 0 ? `Tracks (${album.songs.length})` : 'Track'}
+                          </CardTitle>
+                          <p className="text-slate-500 text-sm mt-1">
+                            {album.songs && album.songs.length === 1 ? 'morceau' : 'morceaux'} dans cet album
+                          </p>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      {album.songs && album.songs.length > 0 ? (
+                        <div className="space-y-3">
+                          {album.songs.map((song, index) => (
+                            <div
+                              key={song.id}
+                              className={`group flex items-center gap-4 p-4 rounded-lg hover:bg-slate-50/50 transition-all duration-200 cursor-pointer ${currentTrack?.id === song.id ? 'bg-slate-50/80' : ''
+                                }`}
+                              onClick={() => handlePlayTrack(song)}
+                            >
+                              {/* Numéro */}
+                              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-sm font-medium text-slate-600">
+                                {index + 1}
+                              </div>
+
+                              {/* Couverture */}
+                              <div className="relative group/cover">
+                                <Image
+                                  src={album.cover || '/images/cover_default.jpg'}
+                                  alt={song.title}
+                                  className="w-12 h-12 rounded-lg object-cover shadow-sm group-hover/cover:shadow-md transition-all duration-300"
+                                  width={48}
+                                  height={48}
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover/cover:bg-black/20 rounded-lg transition-all duration-300 flex items-center justify-center">
+                                  {currentTrack?.id === song.id && isPlaying ? (
+                                    <Pause className="w-4 h-4 text-white opacity-0 group-hover/cover:opacity-100 transition-opacity duration-300" />
+                                  ) : (
+                                    <Play className="w-4 h-4 text-white opacity-0 group-hover/cover:opacity-100 transition-opacity duration-300" />
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Informations */}
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-medium text-slate-800 truncate group-hover:text-slate-900 transition-colors duration-200">
+                                  {song.title}
+                                </div>
+                                <div className="text-xs text-slate-500 truncate">
+                                  {song.artist.stage_name}
+                                </div>
+                              </div>
+
+                              {/* Genre */}
+                              <div className="hidden md:block w-32">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs text-center font-medium bg-slate-100 text-slate-600">
+                                  {song.genre?.name || 'Pop'}
+                                </span>
+                              </div>
+
+                              {/* Durée */}
+                              <div className="flex items-center gap-1 text-sm text-slate-500">
+                                <Clock className="w-4 h-4" />
+                                <span>{formatDuration(song.duration)}</span>
+                              </div>
+
+                              {/* Actions */}
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handlePlayTrack(song);
+                                  }}
+                                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200 rounded-lg"
+                                >
+                                  {currentTrack?.id === song.id && isPlaying ? (
+                                    <Pause className="w-4 h-4" />
+                                  ) : (
+                                    <Play className="w-4 h-4" />
+                                  )}
+                                </button>
+
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-8 w-8 p-0 hover:bg-slate-100 transition-all duration-200 rounded-lg"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <MoreVertical className="w-4 h-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end" className="w-48 bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg">
+                                    <DropdownMenuItem
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleViewTrack(song);
+                                      }}
+                                      className="cursor-pointer hover:bg-slate-50 transition-colors duration-200"
+                                    >
+                                      <Eye className="w-4 h-4 mr-3 text-slate-600" />
+                                      <span className="text-slate-700">Voir les détails</span>
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-12">
+                          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Music className="w-8 h-8 text-slate-400" />
                           </div>
-                        )}
+                          <h3 className="text-lg font-medium text-slate-800 mb-2">Aucun track dans cet album</h3>
+                          <p className="text-slate-500 mb-6">Commencez par ajouter votre premier morceau !</p>
+                          <Button
+                            onClick={handleAddTrack}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Ajouter votre premier track
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
 
-                        <div className="pt-4 border-t border-slate-200">
-                          <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${album.is_published
-                            ? 'bg-gradient-to-r from-[#005929]/10 to-[#005929]/5 text-[#005929] border border-[#005929]/20'
-                            : 'bg-slate-100 text-slate-600 border border-slate-200'
-                            }`}>
-                            {album.is_published ? 'Publié' : 'Brouillon'}
+                {/* Sidebar avec métadonnées */}
+                <div className="space-y-6">
+                  {/* Statistiques */}
+                  <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+                    <CardHeader className="border-b border-slate-100 pb-4">
+                      <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
+                        <Music className="w-5 h-5 text-[#005929]" />
+                        Statistiques
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
+                          <span className="text-sm text-slate-600">Nombre de tracks</span>
+                          <span className="text-lg font-medium text-slate-800">{album.songs ? album.songs.length : 0}</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
+                          <span className="text-sm text-slate-600">Durée totale</span>
+                          <span className="text-lg font-medium text-slate-800">{formatDuration(album.total_duration)}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Métadonnées */}
+                  <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+                    <CardHeader className="border-b border-slate-100 pb-4">
+                      <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
+                        <Calendar className="w-5 h-5 text-[#005929]" />
+                        Métadonnées
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
+                          <span className="text-sm text-slate-600">Créé le</span>
+                          <span className="text-sm font-medium text-slate-800">
+                            {new Date(album.createdAt).toLocaleDateString('fr-FR')}
                           </span>
                         </div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Liste des tracks */}
-                <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
-                  <CardHeader className="border-b border-slate-100 pb-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
-                          <Music className="w-5 h-5 text-[#005929]" />
-                          {album.songs && album.songs.length > 0 ? `Tracks (${album.songs.length})` : 'Track'}
-                        </CardTitle>
-                        <p className="text-slate-500 text-sm mt-1">
-                          {album.songs && album.songs.length === 1 ? 'morceau' : 'morceaux'} dans cet album
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    {album.songs && album.songs.length > 0 ? (
-                      <div className="space-y-3">
-                        {album.songs.map((song, index) => (
-                          <div
-                            key={song.id}
-                            className={`group flex items-center gap-4 p-4 rounded-lg hover:bg-slate-50/50 transition-all duration-200 cursor-pointer ${currentTrack?.id === song.id ? 'bg-slate-50/80' : ''
-                              }`}
-                            onClick={() => handlePlayTrack(song)}
-                          >
-                            {/* Numéro */}
-                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-sm font-medium text-slate-600">
-                              {index + 1}
-                            </div>
-
-                            {/* Couverture */}
-                            <div className="relative group/cover">
-                              <Image
-                                src={album.cover || '/images/cover_default.jpg'}
-                                alt={song.title}
-                                className="w-12 h-12 rounded-lg object-cover shadow-sm group-hover/cover:shadow-md transition-all duration-300"
-                                width={48}
-                                height={48}
-                              />
-                              <div className="absolute inset-0 bg-black/0 group-hover/cover:bg-black/20 rounded-lg transition-all duration-300 flex items-center justify-center">
-                                {currentTrack?.id === song.id && isPlaying ? (
-                                  <Pause className="w-4 h-4 text-white opacity-0 group-hover/cover:opacity-100 transition-opacity duration-300" />
-                                ) : (
-                                  <Play className="w-4 h-4 text-white opacity-0 group-hover/cover:opacity-100 transition-opacity duration-300" />
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Informations */}
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium text-slate-800 truncate group-hover:text-slate-900 transition-colors duration-200">
-                                {song.title}
-                              </div>
-                              <div className="text-xs text-slate-500 truncate">
-                                {song.artist.stage_name}
-                              </div>
-                            </div>
-
-                            {/* Genre */}
-                            <div className="hidden md:block w-32">
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs text-center font-medium bg-slate-100 text-slate-600">
-                                {song.genre?.name || 'Pop'}
-                              </span>
-                            </div>
-
-                            {/* Durée */}
-                            <div className="flex items-center gap-1 text-sm text-slate-500">
-                              <Clock className="w-4 h-4" />
-                              <span>{formatDuration(song.duration)}</span>
-                            </div>
-
-                            {/* Actions */}
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handlePlayTrack(song);
-                                }}
-                                className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200 rounded-lg"
-                              >
-                                {currentTrack?.id === song.id && isPlaying ? (
-                                  <Pause className="w-4 h-4" />
-                                ) : (
-                                  <Play className="w-4 h-4" />
-                                )}
-                              </button>
-
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0 hover:bg-slate-100 transition-all duration-200 rounded-lg"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <MoreVertical className="w-4 h-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-48 bg-white/95 backdrop-blur-sm border border-slate-200 shadow-lg">
-                                  <DropdownMenuItem
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleViewTrack(song);
-                                    }}
-                                    className="cursor-pointer hover:bg-slate-50 transition-colors duration-200"
-                                  >
-                                    <Eye className="w-4 h-4 mr-3 text-slate-600" />
-                                    <span className="text-slate-700">Voir les détails</span>
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                          <Music className="w-8 h-8 text-slate-400" />
+                        <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
+                          <span className="text-sm text-slate-600">Modifié le</span>
+                          <span className="text-sm font-medium text-slate-800">
+                            {new Date(album.updatedAt).toLocaleDateString('fr-FR')}
+                          </span>
                         </div>
-                        <h3 className="text-lg font-medium text-slate-800 mb-2">Aucun track dans cet album</h3>
-                        <p className="text-slate-500 mb-6">Commencez par ajouter votre premier morceau !</p>
-                        <Button
-                          onClick={handleAddTrack}
-                          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Ajouter votre premier track
-                        </Button>
+
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
-
-              {/* Sidebar avec métadonnées */}
-              <div className="space-y-6">
-                {/* Statistiques */}
-                <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
-                  <CardHeader className="border-b border-slate-100 pb-4">
-                    <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
-                      <Music className="w-5 h-5 text-[#005929]" />
-                      Statistiques
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
-                        <span className="text-sm text-slate-600">Nombre de tracks</span>
-                        <span className="text-lg font-medium text-slate-800">{album.songs ? album.songs.length : 0}</span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
-                        <span className="text-sm text-slate-600">Durée totale</span>
-                        <span className="text-lg font-medium text-slate-800">{formatDuration(album.total_duration)}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Métadonnées */}
-                <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
-                  <CardHeader className="border-b border-slate-100 pb-4">
-                    <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-[#005929]" />
-                      Métadonnées
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
-                        <span className="text-sm text-slate-600">Créé le</span>
-                        <span className="text-sm font-medium text-slate-800">
-                          {new Date(album.createdAt).toLocaleDateString('fr-FR')}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
-                        <span className="text-sm text-slate-600">Modifié le</span>
-                        <span className="text-sm font-medium text-slate-800">
-                          {new Date(album.updatedAt).toLocaleDateString('fr-FR')}
-                        </span>
-                      </div>
-
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
         )}
       </div>
 
