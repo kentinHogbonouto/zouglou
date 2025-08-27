@@ -61,7 +61,7 @@ export default function ArtistProfilePage() {
         username: userData.username || '',
         email: userData.email || '',
         phone: userData.phone || '',
-        city: userData.city || '',
+        city: userData?.city?.id || '',
         country: userData.country || '',
         birth_date: userData.birth_date ? new Date(userData.birth_date).toISOString().split('T')[0] : '',
         sexe: userData.sexe || '',
