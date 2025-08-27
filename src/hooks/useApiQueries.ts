@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient, UseQueryOptions, UseMutationOptions } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, UseQueryOptions, UseMutationOptions, UseQueryResult } from '@tanstack/react-query';
 import { apiService } from '@/lib/api';
 import { ApiResponse, PaginatedResponse } from '@/shared/types';
+import { City } from '@/shared/types/api';
 
 // Clés de cache génériques
 export const queryKeys = {
@@ -169,4 +170,15 @@ export function useDashboardStats() {
 
 export function useAnalytics() {
   return useApiQuery(queryKeys.stats.analytics(), '/stats/analytics/');
-} 
+}
+
+export const useCities = () => {
+  return useQuery({
+    queryKey: ['cities'],
+    queryFn: async () => {
+      const response = await apiService.get('/city/');
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  }) as UseQueryResult<City[], Error>;
+}; 
