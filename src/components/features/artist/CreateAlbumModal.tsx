@@ -12,11 +12,10 @@ interface CreateAlbumModalProps {
   currentArtist: string;
 }
 
-export function CreateAlbumModal({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  isSubmitting, 
+export function CreateAlbumModal({
+  isOpen,
+  onClose,
+  onSubmit,
 }: CreateAlbumModalProps) {
   const [formData, setFormData] = useState<Partial<CreateAlbumData>>({});
   const [selectedCover, setSelectedCover] = useState<File | null>(null);
@@ -29,15 +28,18 @@ export function CreateAlbumModal({
     }
 
     try {
+      setTimeout(() => {
+        setFormData({});
+        setSelectedCover(null);
+        onClose();
+      }, 100);
       await onSubmit({
         ...formData as CreateAlbumData,
         cover_image: selectedCover || undefined,
       });
-      
+
       // Reset form
-      setFormData({});
-      setSelectedCover(null);
-      onClose();
+
     } catch (error) {
       console.error('Erreur lors de la création de l\'album:', error);
     }
@@ -51,7 +53,7 @@ export function CreateAlbumModal({
     >
       <ModalHeader>
         <div className="flex items-center gap-3 p-3">
-          
+
           <div>
             <h2 className="text-2xl font-medium text-slate-800">Nouvel Album</h2>
             <p className="text-slate-500">Créez votre nouvel album musical</p>
@@ -83,11 +85,10 @@ export function CreateAlbumModal({
                 onChange={(e) => setFormData({ ...formData, release_date: e.target.value })}
                 className="w-full border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
                 placeholder="Sélectionner une date de sortie"
-                min={new Date().toISOString().split('T')[0]}
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <label className="block text-sm font-medium text-slate-700">Description</label>
             <textarea
@@ -105,7 +106,7 @@ export function CreateAlbumModal({
             </label>
             <div className="border-2 border-dashed border-slate-200 rounded-lg p-6 hover:border-[#005929]/50 transition-colors">
               <div className="text-center">
-                
+
                 <input
                   type="file"
                   accept="image/*"
@@ -137,9 +138,8 @@ export function CreateAlbumModal({
             <ModalButton
               type="submit"
               variant="primary"
-              disabled={isSubmitting}
             >
-              {isSubmitting ? 'Création...' : 'Créer l\'album'}
+              Créer l&apos;album
             </ModalButton>
           </ModalActions>
         </form>
