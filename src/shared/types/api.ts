@@ -288,3 +288,22 @@ export interface UpdatePodcastEpisodeData {
   cover_image?: File;
   audio_file?: File;
 } 
+
+export interface CreateSubscriptionPlanData {
+  name: string;
+  description: string;
+  price?: string;
+  duration_days?: number;
+  features?: Record<string, unknown>;
+  max_downloads?: number;
+  ads_free?: boolean;
+  high_quality?: boolean;
+  offline_mode?: boolean;
+  podcast_access?: boolean;
+  unlimited_playlists?: boolean;
+  max_playlists?: number | null;
+  unlimited_streaming?: boolean;
+  free_trial_days?: number;
+  is_featured?: boolean;
+  is_active?: boolean;
+}

@@ -1,18 +1,15 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { AdminDashboardStats } from '@/components/dashboard/admin/AdminDashboardStats';
-import { UserManagement } from '@/components/dashboard/admin/UserManagement';
-import { ContentModeration } from '@/components/dashboard/admin/ContentModeration';
-import { SystemAnalytics } from '@/components/dashboard/admin/SystemAnalytics';
 import { AdminRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { WelcomeBanner } from '@/components/dashboard/artist/WelcomeBanner';
-import { QuickActions } from '@/components/dashboard/artist/QuickActions';
-import { useSongs, useAlbums, useAdminUsers } from '@/hooks';
+import { QuickActionsAdmin } from '@/components/dashboard/admin/QuickActionsAdmin';
+import { useSongs, useAlbums } from '@/hooks';
 import { useRouter } from 'next/navigation';
 import { ApiArtist } from '@/shared/types';
-import { ApiUser } from '@/hooks/useAdminQueries';
+import { MusicList } from '@/components/features';
+import Image from 'next/image';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -21,12 +18,10 @@ export default function AdminDashboard() {
   // React Query hooks - avec gestion d'erreur pour les endpoints inexistants
   const { data: songsData } = useSongs({ page_size: 5 });
   const { data: albumsData } = useAlbums({ page_size: 5 });
-  const { data: usersData } = useAdminUsers({ page_size: 5 });
 
   // Données récentes
   const recentSongs = songsData?.results?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) || [];
   const recentAlbums = albumsData?.results?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) || [];
-  const recentUsers = usersData?.results?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) || [];
 
   // Fonctions utilitaires pour extraire les noms d'artistes
   const getArtistName = (artist: ApiArtist) => {
@@ -42,10 +37,6 @@ export default function AdminDashboard() {
     router.push(`/dashboard/admin/albums/${albumId}`);
   };
 
-
-  const handleViewUser = (userId: string) => {
-    router.push(`/dashboard/admin/user/${userId}`);
-  };
 
   return (
     <AdminRoute>
@@ -73,92 +64,27 @@ export default function AdminDashboard() {
             <WelcomeBanner artistName={user?.full_name} lastLogin="il y a 2 heures" />
           </div>
 
-          {/* Stats Section */}
-          <div className="mb-8">
-            <AdminDashboardStats />
-          </div>
-
           {/* Quick Actions Section */}
           <div className="mb-8">
-            <QuickActions />
+            <QuickActionsAdmin />
           </div>
-
-          {/* Management Section */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
-            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
-              <CardHeader className="border-b border-slate-100 pb-4">
-                <CardTitle className="text-lg font-medium text-slate-800">
-                  Gestion des utilisateurs
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <UserManagement recentUsers={recentUsers} onViewUser={handleViewUser} />
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
-              <CardHeader className="border-b border-slate-100 pb-4">
-                <CardTitle className="text-lg font-medium text-slate-800">
-                  Modération de contenu
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <ContentModeration />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Analytics Section */}
-          <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
-            <CardHeader className="border-b border-slate-100 pb-4">
-              <CardTitle className="text-lg font-medium text-slate-800">
-                Analytics système
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <SystemAnalytics />
-            </CardContent>
-          </Card>
 
           {/* Recent Content Section */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
             {/* Recent Tracks */}
-            <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
-              <CardHeader className="border-b border-slate-100 pb-4">
-                <CardTitle className="text-lg font-medium text-slate-800">
-                  Tracks récents
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                {recentSongs.length > 0 ? (
-                  <div className="space-y-3">
-                    {recentSongs.map((song) => (
-                      <div key={song.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center">
-                            <span className="text-lg">🎵</span>
-                          </div>
-                          <div>
-                            <p className="font-medium text-slate-800">{song.title}</p>
-                            <p className="text-sm text-slate-600">{getArtistName(song.artist)}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleViewTrack(song.id)}
-                          className="text-sm text-slate-500 hover:text-slate-700"
-                        >
-                          Voir →
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center text-slate-500">
-                    Aucun track récent
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {recentSongs.length > 0 ? (
+              <div className="space-y-3">
+                <MusicList
+                  tracks={recentSongs}
+                  onPlay={(track) => handleViewTrack(track.id)}
+                  onView={(track) => handleViewTrack(track.id)}
+                />
+              </div>
+            ) : (
+              <div className="text-center text-slate-500">
+                Aucun track récent
+              </div>
+            )}
 
             {/* Recent Albums */}
             <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
@@ -174,7 +100,7 @@ export default function AdminDashboard() {
                       <div key={album.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-slate-200 rounded-lg flex items-center justify-center">
-                            <span className="text-lg">💿</span>
+                            <Image src={album.cover || '/images/cover_default.jpg'} alt={album.title} width={40} height={40} className='w-10 h-10 object-cover rounded-full' />
                           </div>
                           <div>
                             <p className="font-medium text-slate-800">{album.title}</p>

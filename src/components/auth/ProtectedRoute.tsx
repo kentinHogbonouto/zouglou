@@ -49,7 +49,7 @@ export function ProtectedRoute({
               Vous devez être connecté pour accéder à cette page.
             </p>
             <Button 
-              onClick={() => router.push('/auth/login')}
+              onClick={() => router.push('/login')}
               className="w-full"
             >
               Se connecter

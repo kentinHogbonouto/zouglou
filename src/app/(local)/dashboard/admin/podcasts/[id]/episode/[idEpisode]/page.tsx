@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminRoute } from "@/components/auth/ProtectedRoute";
-import { usePodcastEpisode, useUpdatePodcastEpisode, useDeletePodcastEpisode } from "@/hooks/usePodcastQuery";
+import { usePodcastEpisode, useUpdatePodcastEpisode, useRealDeletePodcastEpisode } from "@/hooks/usePodcastQuery";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
@@ -24,7 +24,7 @@ export default function ArtistPodcastEpisodeDetailPage() {
 
   const { data: episode, isLoading, error } = usePodcastEpisode(episodeId);
   const updateEpisode = useUpdatePodcastEpisode();
-  const deleteEpisode = useDeletePodcastEpisode();
+  const deleteEpisode = useRealDeletePodcastEpisode();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [audioFile, setAudioFile] = useState<File | null>(null);

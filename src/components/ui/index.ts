@@ -7,4 +7,6 @@ export { FormField, FormCheckbox } from './FormField';
 export { GenreSelect } from './GenreSelect';
 export { CategorySelect } from './CategorySelect';
 export { Notification } from './Notification';
-export { MusicPlayer } from './MusicPlayer'; 
+export { MusicPlayer } from './MusicPlayer';
+export { LoadingState } from './LoadingState';
+export { ErrorState } from './ErrorState'; 

@@ -112,7 +112,7 @@ export default function AdminSubscriptionDetailPage() {
   };
 
   const handleViewPlan = () => {
-    router.push(`/dashboard/admin/subscription/plans/${subscription?.plan.id}`);
+    router.push(`/dashboard/admin/plans-subscription/${subscription?.plan.id}`);
   };
 
   if (isLoading) {
@@ -422,26 +422,7 @@ export default function AdminSubscriptionDetailPage() {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Timestamps */}
-              <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-[#005929]" />
-                    Horodatage
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">Créé le</label>
-                    <p className="text-sm text-slate-900">{formatDate(subscription.createdAt)}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-600">Modifié le</label>
-                    <p className="text-sm text-slate-900">{formatDate(subscription.updatedAt)}</p>
-                  </div>
-                </CardContent>
-              </Card>
+              
             </div>
           </div>
         </div>

@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 
 interface CreateUserData {
-  username: string;
   email: string;
   first_name: string;
   last_name: string;
@@ -31,7 +30,6 @@ export default function AdminCreateUserPage() {
   const router = useRouter();
   
   const [formData, setFormData] = useState<CreateUserData>({
-    username: '',
     email: '',
     first_name: '',
     last_name: '',
@@ -55,12 +53,6 @@ export default function AdminCreateUserPage() {
 
   const validateForm = (): boolean => {
     const newErrors: Partial<CreateUserData> = {};
-
-    if (!formData.username.trim()) {
-      newErrors.username = 'Le nom d\'utilisateur est requis';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Le nom d\'utilisateur doit contenir au moins 3 caractères';
-    }
 
     if (!formData.email.trim()) {
       newErrors.email = 'L\'email est requis';
@@ -199,26 +191,6 @@ export default function AdminCreateUserPage() {
                   
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Nom d&apos;utilisateur *
-                    </label>
-                    <Input
-                      value={formData.username}
-                      onChange={(e) => handleInputChange('username', e.target.value)}
-                      placeholder="nom_utilisateur"
-                      className={`border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20 ${
-                        errors.username ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''
-                      }`}
-                    />
-                    {errors.username && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3" />
-                        {errors.username}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
                       Email *
                     </label>
                     <Input
@@ -238,7 +210,7 @@ export default function AdminCreateUserPage() {
                     )}
                   </div>
                   
-                  <div className="md:col-span-2">
+                  <div className="">
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Mot de passe *
                     </label>

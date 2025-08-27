@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import { useSong, useUpdateSong, useDeleteSong } from '@/hooks/useMusicQueries';
+import { useSong, useUpdateSong, useRealDeleteSong } from '@/hooks/useMusicQueries';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
@@ -27,7 +27,7 @@ export default function TrackDetailPage() {
 
   const { data: song, isLoading, error } = useSong(trackId);
   const updateSongMutation = useUpdateSong();
-  const deleteSongMutation = useDeleteSong();
+  const deleteSongMutation = useRealDeleteSong();
   const { playTrack, currentTrack, isPlaying } = useUnifiedMusicPlayer();
 
   // Initialiser le formulaire avec les données du track

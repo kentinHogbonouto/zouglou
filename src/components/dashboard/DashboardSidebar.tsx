@@ -15,7 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ChartLineIcon, Music, User, Users, Disc3, Podcast, CreditCard } from 'lucide-react';
+import { ChartLineIcon, Music, User, Users, Disc3, Podcast, CreditCard, SquareChartGantt } from 'lucide-react';
 import Image from 'next/image';
 interface MenuItem {
   label: string;
@@ -80,9 +80,15 @@ const adminMenuItems: MenuItem[] = [
     permission: SYSTEM_PERMISSIONS.SYSTEM_MANAGE,
   },
   {
+    label: 'Abonnements',
+    href: '/dashboard/admin/subscription',
+    icon: <CreditCard size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+  },
+  {
     label: 'Albums',
     href: '/dashboard/admin/albums',
-    icon: <User size={16} className="h-4 w-4" />,
+    icon: <Disc3 size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.ARTIST_MANAGE,
   },
   {
@@ -97,11 +103,12 @@ const adminMenuItems: MenuItem[] = [
     icon: <Music size={16} className="h-4 w-4" />,
     permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
   },
+
   {
-    label: 'Subscription',
-    href: '/dashboard/admin/subscription',
-    icon: <CreditCard size={16} className="h-4 w-4" />,
-    permission: SYSTEM_PERMISSIONS.REVENUE_READ,
+    label: 'Plans Abonnements',
+    href: '/dashboard/admin/plans-subscription',
+    icon: <SquareChartGantt size={16} className="h-4 w-4" />,
+    permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
   },
   {
     label: 'Mon Profil',

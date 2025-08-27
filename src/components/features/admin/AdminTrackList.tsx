@@ -4,8 +4,8 @@ import { Card } from '@/components/ui/Card';
 import { AdminCreateTrackModal } from './AdminCreateTrackModal';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
-import { useCreateSong, useUpdateSong, useDeleteSong } from '@/hooks';
-import { ApiAlbum, ApiArtist, ApiGenre, ApiSong, CreateSongData } from '@/shared/types/api';
+import { useCreateSong, useUpdateSong, useRealDeleteSong } from '@/hooks';
+import { ApiSong, CreateSongData } from '@/shared/types/api';
 import Image from 'next/image';
 
 interface AdminTrackListProps {
@@ -19,7 +19,7 @@ export function AdminTrackList({ tracks = [], isLoading = false }: AdminTrackLis
   // React Query mutations
   const createSongMutation = useCreateSong();
   const updateSongMutation = useUpdateSong();
-  const deleteSongMutation = useDeleteSong();
+  const deleteSongMutation = useRealDeleteSong();
   
   const deleteConfirmation = useDeleteConfirmation();
 

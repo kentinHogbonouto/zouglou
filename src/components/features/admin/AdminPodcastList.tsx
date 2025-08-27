@@ -5,7 +5,7 @@ import { AdminCreatePodcastModal } from './AdminCreatePodcastModal';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useDeleteConfirmation } from '@/hooks/useDeleteConfirmation';
 import { useCreatePodcast, useUpdatePodcast, useDeletePodcast } from '@/hooks';
-import { ApiArtist, ApiPodcast, CreatePodcastData } from '@/shared/types';
+import { ApiPodcast, CreatePodcastData } from '@/shared/types';
 import Image from 'next/image';
 
 interface AdminPodcastListProps {
@@ -49,13 +49,6 @@ export function AdminPodcastList({ podcasts = [], isLoading = false }: AdminPodc
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
-  };
-
-  const getArtistName = (artist: ApiArtist) => {
-    if (typeof artist === 'string') return artist;
-    if (artist && typeof artist === 'object' && 'name' in artist) return artist.name;
-    if (artist && typeof artist === 'object' && 'full_name' in artist) return artist.full_name;
-    return 'Artiste inconnu';
   };
 
   if (isLoading) {

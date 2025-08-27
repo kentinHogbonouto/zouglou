@@ -153,6 +153,30 @@ export function useDeletePodcast() {
   });
 }
 
+export function useRealDeletePodcast() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const loadingDeletePodcastRef = useRef<string>('');
+  return useMutation({
+    mutationFn: async (id: string): Promise<void> => {
+      loadingDeletePodcastRef.current = toast.showLoading('Chargement', 'Podcast en cours de suppression');
+      await apiService.delete(`/podcast/${id}/realDelete/`);
+    },
+    onSuccess: (_, id) => {
+      // Supprimer du cache
+      queryClient.removeQueries({ queryKey: podcastKeys.podcast(id) });
+      // Invalider les listes
+      queryClient.invalidateQueries({ queryKey: podcastKeys.podcastList() });
+      toast.dismissLoading(loadingDeletePodcastRef.current);
+      toast.showSuccess('Succès', 'Podcast supprimé avec succès');
+    },
+    onError: (error) => {
+      toast.dismissLoading(loadingDeletePodcastRef.current);
+      toast.showError('Erreur', 'Une erreur est survenue lors de la suppression du podcast ' + error.message);
+    },
+  });
+}
+
 // Hooks pour les Episodes de Podcast
 export function usePodcastEpisodeList(params?: {
   artist?: string;
@@ -295,14 +319,14 @@ export function useDeletePodcastEpisode() {
 }
 
 // Hook pour supprimer définitivement un épisode (soft delete)
-export function useDeletePodcastEpisodeReal() {
+export function useRealDeletePodcastEpisode() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const loadingDeletePodcastEpisodeRealRef = useRef<string>('');
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
       loadingDeletePodcastEpisodeRealRef.current = toast.showLoading('Chargement', 'Episode de podcast en cours de suppression définitive');
-      await apiService.delete(`/podcast-episodes/${id}/real/`);
+      await apiService.delete(`/podcast-episodes/${id}/realDelete/`);
     },
     onSuccess: (_, id) => {
       // Supprimer du cache

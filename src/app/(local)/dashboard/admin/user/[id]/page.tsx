@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
-import { useAdminUser, useUpdateUser, useToggleUserStatus, useDeleteUser } from '@/hooks/useAdminQueries';
+import { useAdminUser, useUpdateUser, useToggleUserStatus, useRealDeleteUser  } from '@/hooks/useAdminQueries';
 import { useRouter, useParams } from 'next/navigation';
 import {
   User,
@@ -25,7 +25,8 @@ import {
   Camera,
   Settings,
   Activity,
-  AlertTriangle
+  AlertTriangle,
+  CreditCard
 } from 'lucide-react';
 import Image from 'next/image';
 import { UserRole, UpdateUserRequest } from '@/shared/types';
@@ -45,7 +46,7 @@ export default function AdminUserDetailPage() {
   const { data: user, isLoading, error } = useAdminUser(userId);
   const updateUser = useUpdateUser();
   const toggleUserStatus = useToggleUserStatus();
-  const deleteUser = useDeleteUser();
+  const deleteUser = useRealDeleteUser();
 
   useEffect(() => {
     if (user) {
@@ -56,6 +57,10 @@ export default function AdminUserDetailPage() {
         sexe: user.sexe,
         default_role: user.default_role as UserRole,
         is_active: user.is_active,
+        phone: user.phone,
+        city: user.city,
+        country: user.country,
+        adress: user.adress,
       });
     }
   }, [user]);
@@ -171,6 +176,13 @@ export default function AdminUserDetailPage() {
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  const formatPrice = (price: string) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'XOF',
+    }).format(parseFloat(price));
   };
 
   if (isLoading) {
@@ -466,6 +478,93 @@ export default function AdminUserDetailPage() {
                 </CardContent>
               </Card>
 
+              {/* Contact and Location Information */}
+              <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+                <CardHeader className="border-b border-slate-100 pb-4">
+                  <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
+                    <Mail className="w-5 h-5" />
+                    Informations de contact et localisation
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Téléphone
+                      </label>
+                      {isEditing ? (
+                        <Input
+                          value={editData.phone || ''}
+                          onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
+                          className="border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
+                        />
+                      ) : (
+                        <p className="text-slate-900">{user.phone || 'Non renseigné'}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Ville
+                      </label>
+                      {isEditing ? (
+                        <Input
+                          value={editData.city || ''}
+                          onChange={(e) => setEditData({ ...editData, city: e.target.value })}
+                          className="border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
+                        />
+                      ) : (
+                        <p className="text-slate-900">{user.city || 'Non renseigné'}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Pays
+                      </label>
+                      {isEditing ? (
+                        <Input
+                          value={editData.country || ''}
+                          onChange={(e) => setEditData({ ...editData, country: e.target.value })}
+                          className="border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
+                        />
+                      ) : (
+                        <p className="text-slate-900">{user.country_name || user.country || 'Non renseigné'}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Adresse
+                      </label>
+                      {isEditing ? (
+                        <Input
+                          value={editData.adress || ''}
+                          onChange={(e) => setEditData({ ...editData, adress: e.target.value })}
+                          className="border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
+                        />
+                      ) : (
+                        <p className="text-slate-900">{user.adress || 'Non renseigné'}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Plateforme
+                      </label>
+                      <p className="text-slate-900 capitalize">{user.plateform || 'Non renseigné'}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Type d&apos;authentification
+                      </label>
+                      <p className="text-slate-900 capitalize">{user.type_auth || 'Non renseigné'}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Permissions and Status */}
               <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
                 <CardHeader className="border-b border-slate-100 pb-4">
@@ -539,7 +638,7 @@ export default function AdminUserDetailPage() {
                           Bio
                         </label>
                         <p className="text-slate-900">
-                          {user.artist_profile.bio || 'Aucune bio disponible'}
+                          {user.artist_profile.biography || 'Aucune bio disponible'}
                         </p>
                       </div>
 
@@ -564,6 +663,93 @@ export default function AdminUserDetailPage() {
                 </Card>
               )}
 
+              {/* Current Subscription */}
+              {user.last_subscription && (
+                <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+                  <CardHeader className="border-b border-slate-100 pb-4">
+                    <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5" />
+                      Abonnement actuel
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Plan
+                        </label>
+                        <p className="text-slate-900 font-medium">{user.last_subscription.plan.name}</p>
+                        <p className="text-slate-500 text-sm">{user.last_subscription.plan.description}</p>
+                        <p className="text-slate-600 text-sm font-medium">{formatPrice(user.last_subscription.plan.price)}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Statut
+                        </label>
+                        <div className="flex items-center gap-2">
+                          {getStatusBadge(user.last_subscription.status === 'active')}
+                          <span className="text-sm text-slate-500">
+                            {user.last_subscription.auto_renew ? 'Auto-renouvellement' : 'Sans auto-renouvellement'}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Période
+                        </label>
+                        <p className="text-slate-900">
+                          Du {formatDate(user.last_subscription.start_date)} au {formatDate(user.last_subscription.end_date)}
+                        </p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                          Transaction
+                        </label>
+                        <p className="text-slate-900 text-sm">Réf: {user.last_subscription.transaction.reference}</p>
+                        <p className="text-slate-500 text-sm">{user.last_subscription.transaction.payment_service_name}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Interested Artists */}
+              {user.interested_artists && user.interested_artists.length > 0 && (
+                <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+                  <CardHeader className="border-b border-slate-100 pb-4">
+                    <CardTitle className="text-lg font-medium text-slate-800 flex items-center gap-2">
+                      <Music className="w-5 h-5" />
+                      Artistes suivis ({user.interested_artists.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {user.interested_artists.map((artist) => (
+                        <div key={artist.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                          {artist.profile_image ? (
+                            <Image
+                              src={artist.profile_image}
+                              alt={artist.stage_name}
+                              width={40}
+                              height={40}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#005929] to-[#FE5200] flex items-center justify-center text-white text-sm font-bold">
+                              {artist.stage_name.charAt(0)}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-slate-900 truncate">{artist.stage_name}</p>
+                            <p className="text-xs text-slate-500">{artist.followers_count} abonnés</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Activity Summary */}
               <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
                 <CardHeader className="border-b border-slate-100 pb-4">
@@ -575,16 +761,16 @@ export default function AdminUserDetailPage() {
                 <CardContent className="p-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-[#005929] mb-1">0</div>
-                      <div className="text-sm text-slate-600">Tracks publiés</div>
+                      <div className="text-2xl font-bold text-[#005929] mb-1">{user.interested_artists?.length || 0}</div>
+                      <div className="text-sm text-slate-600">Artistes suivis</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-[#FE5200] mb-1">0</div>
-                      <div className="text-sm text-slate-600">Albums créés</div>
+                      <div className="text-2xl font-bold text-[#FE5200] mb-1">{user.user_count_notifcation || 0}</div>
+                      <div className="text-sm text-slate-600">Notifications</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-600 mb-1">0</div>
-                      <div className="text-sm text-slate-600">Podcasts</div>
+                      <div className="text-2xl font-bold text-purple-600 mb-1">{user.has_active_subscription ? 1 : 0}</div>
+                      <div className="text-sm text-slate-600">Abonnements actifs</div>
                     </div>
                   </div>
                 </CardContent>

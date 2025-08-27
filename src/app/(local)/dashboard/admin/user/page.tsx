@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Pagination } from '@/components/ui/Pagination';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
-import { useAdminUsers, useToggleUserStatus, useDeleteUser } from '@/hooks/useAdminQueries';
+import { useAdminUsers, useRealDeleteUser } from '@/hooks/useAdminQueries';
 import { useRouter } from 'next/navigation';
-import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search, Eye, Trash2 } from 'lucide-react';
+import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search, Eye, Trash2, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
 import { ApiUser } from '@/hooks/useAdminQueries';
 
@@ -19,9 +19,38 @@ export default function AdminUserPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'artist' | 'admin' | 'superuser'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'artist' | 'admin' | 'super-admin'>('all');
   const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'subscribed' | 'not_subscribed'>('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
+  // Réinitialiser la pagination quand les filtres changent
+  const handleFilterChange = <T extends string>(
+    newFilter: T, 
+    setFilter: React.Dispatch<React.SetStateAction<T>>
+  ) => {
+    setFilter(newFilter);
+    setCurrentPage(1); // Retour à la première page
+  };
+
+  // Réinitialiser tous les filtres
+  const resetFilters = () => {
+    setSearchTerm('');
+    setStatusFilter('all');
+    setRoleFilter('all');
+    setSubscriptionFilter('all');
+    setCurrentPage(1);
+  };
+
+  // Obtenir le résumé des filtres actifs
+  const getActiveFiltersSummary = () => {
+    const filters = [];
+    if (searchTerm) filters.push(`Recherche: "${searchTerm}"`);
+    if (statusFilter !== 'all') filters.push(`Statut: ${statusFilter === 'active' ? 'Actifs' : 'Inactifs'}`);
+    if (roleFilter !== 'all') filters.push(`Rôle: ${roleFilter === 'super-admin' ? 'Super Admin' : roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}`);
+    if (subscriptionFilter !== 'all') filters.push(`Abonnement: ${subscriptionFilter === 'subscribed' ? 'Abonnés' : 'Non abonnés'}`);
+    return filters;
+  };
+
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; userId: string | null; userName: string }>({
     isOpen: false,
     userId: null,
@@ -34,10 +63,11 @@ export default function AdminUserPage() {
     page_size: 10,
     search: searchTerm || undefined,
     is_active: statusFilter === 'all' ? undefined : statusFilter === 'active',
+    default_role: roleFilter === 'all' ? undefined : roleFilter,
+    has_active_subscription: subscriptionFilter === 'all' ? undefined : subscriptionFilter === 'subscribed' ? true : false,
   });
 
-  const toggleUserStatus = useToggleUserStatus();
-  const deleteUser = useDeleteUser();
+  const deleteUser = useRealDeleteUser();
 
   const users = usersData?.results || [];
   const totalUsers = usersData?.count || 0;
@@ -46,15 +76,7 @@ export default function AdminUserPage() {
   const handleViewUser = (userId: string) => {
     router.push(`/dashboard/admin/user/${userId}`);
   };
-
-  const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
-    try {
-      await toggleUserStatus.mutateAsync({ id: userId, is_active: !currentStatus });
-    } catch (error) {
-      console.error('Erreur lors du changement de statut:', error);
-    }
-  };
-
+  
   const handleDeleteUser = async (userId: string, userName: string) => {
     setDeleteModal({ isOpen: true, userId, userName });
   };
@@ -91,7 +113,7 @@ export default function AdminUserPage() {
   };
 
   const getRoleBadge = (user: ApiUser) => {
-    if (user.is_superuser) {
+    if (user.default_role === 'super-admin') {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
           <Crown className="w-3 h-3 mr-1" />
@@ -107,7 +129,7 @@ export default function AdminUserPage() {
         </span>
       );
     }
-    if (user.artist_profile) {
+    if (user.default_role === 'artist') {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
           <Music className="w-3 h-3 mr-1" />
@@ -159,23 +181,8 @@ export default function AdminUserPage() {
     });
   };
 
-  const filteredUsers = users.filter(user => {
-    // Filtre par rôle
-    if (roleFilter !== 'all') {
-      if (roleFilter === 'superuser' && !user.is_superuser) return false;
-      if (roleFilter === 'admin' && user.default_role !== 'admin') return false;
-      if (roleFilter === 'artist' && !user.artist_profile) return false;
-      if (roleFilter === 'user' && (user.is_superuser || user.default_role === 'admin' || user.artist_profile)) return false;
-    }
-
-    // Filtre par abonnement
-    if (subscriptionFilter !== 'all') {
-      if (subscriptionFilter === 'subscribed' && !user.has_active_subscription) return false;
-      if (subscriptionFilter === 'not_subscribed' && user.has_active_subscription) return false;
-    }
-
-    return true;
-  });
+  // Les données sont déjà filtrées par la requête API
+  const filteredUsers = users;
 
   return (
     <AdminRoute>
@@ -239,7 +246,7 @@ export default function AdminUserPage() {
                   <div>
                     <p className="text-sm font-medium text-slate-600">Utilisateurs Actifs</p>
                     <p className="text-2xl font-light text-slate-800">
-                      {users.filter(u => u.is_active).length}
+                      {filteredUsers.filter(u => u.is_active).length}
                     </p>
                   </div>
                 </div>
@@ -255,7 +262,7 @@ export default function AdminUserPage() {
                   <div>
                     <p className="text-sm font-medium text-slate-600">Abonnés</p>
                     <p className="text-2xl font-light text-slate-800">
-                      {users.filter(u => u.has_active_subscription).length}
+                      {filteredUsers.filter(u => u.has_active_subscription).length}
                     </p>
                   </div>
                 </div>
@@ -271,7 +278,7 @@ export default function AdminUserPage() {
                   <div>
                     <p className="text-sm font-medium text-slate-600">Admins</p>
                     <p className="text-2xl font-light text-slate-800">
-                      {users.filter(u => u.is_superuser || u.default_role === 'admin').length}
+                      {filteredUsers.filter(u => u.is_superuser || u.default_role === 'admin').length}
                     </p>
                   </div>
                 </div>
@@ -289,7 +296,10 @@ export default function AdminUserPage() {
                     <Input
                       placeholder="Rechercher un utilisateur..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1); // Retour à la première page lors de la recherche
+                      }}
                       className="pl-10 border-slate-200 focus:border-[#005929] focus:ring-[#005929]/20"
                     />
                   </div>
@@ -297,7 +307,7 @@ export default function AdminUserPage() {
                 <div className="flex gap-3">
                   <select
                     value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
+                    onChange={(e) => handleFilterChange(e.target.value as 'all' | 'active' | 'inactive', setStatusFilter)}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
                   >
                     <option value="all">Tous les statuts</option>
@@ -306,24 +316,33 @@ export default function AdminUserPage() {
                   </select>
                   <select
                     value={roleFilter}
-                    onChange={(e) => setRoleFilter(e.target.value as 'all' | 'user' | 'artist' | 'admin' | 'superuser')}
+                    onChange={(e) => handleFilterChange(e.target.value as 'all' | 'user' | 'artist' | 'admin' | 'super-admin', setRoleFilter)}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
                   >
                     <option value="all">Tous les rôles</option>
                     <option value="user">Utilisateurs</option>
                     <option value="artist">Artistes</option>
                     <option value="admin">Admins</option>
-                    <option value="superuser">Super Admins</option>
+                    <option value="super-admin">Super Admins</option>
                   </select>
                   <select
                     value={subscriptionFilter}
-                    onChange={(e) => setSubscriptionFilter(e.target.value as 'all' | 'subscribed' | 'not_subscribed')}
+                    onChange={(e) => handleFilterChange(e.target.value as 'all' | 'subscribed' | 'not_subscribed', setSubscriptionFilter)}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
                   >
                     <option value="all">Tous les abonnements</option>
                     <option value="subscribed">Abonnés</option>
                     <option value="not_subscribed">Non abonnés</option>
                   </select>
+                  <Button
+                    onClick={resetFilters}
+                    variant="outline"
+                    size="sm"
+                    className="px-4 py-2 border border-slate-200 hover:bg-slate-50"
+                    title="Réinitialiser les filtres"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -332,14 +351,30 @@ export default function AdminUserPage() {
           {/* Users List */}
           <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
             <CardHeader className="border-b border-slate-100 pb-4">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-medium text-slate-800">
-                  Liste des Utilisateurs
-                </CardTitle>
-                <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <span>{filteredUsers.length} utilisateur(s)</span>
+                              <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg font-medium text-slate-800">
+                    Liste des Utilisateurs
+                  </CardTitle>
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <span>
+                      {filteredUsers.length} utilisateur(s)
+                      {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || searchTerm) && 
+                        totalUsers !== filteredUsers.length && (
+                        <span className="text-slate-400"> sur {totalUsers}</span>
+                      )}
+                    </span>
+                    {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || searchTerm) && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                          Filtres actifs
+                        </span>
+                        <div className="text-xs text-slate-500">
+                          {getActiveFiltersSummary().join(' • ')}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
             </CardHeader>
             <CardContent className="p-0">
               {isLoading ? (
@@ -350,7 +385,22 @@ export default function AdminUserPage() {
               ) : filteredUsers.length === 0 ? (
                 <div className="p-8 text-center">
                   <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                  <p className="text-slate-600">Aucun utilisateur trouvé</p>
+                  <p className="text-slate-600 mb-2">
+                    {searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' 
+                      ? 'Aucun utilisateur trouvé avec les filtres actuels' 
+                      : 'Aucun utilisateur trouvé'}
+                  </p>
+                  {(searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all') && (
+                    <Button
+                      onClick={resetFilters}
+                      variant="outline"
+                      size="sm"
+                      className="mt-2"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Réinitialiser les filtres
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -444,6 +494,7 @@ export default function AdminUserPage() {
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleViewUser(user.id)}
+                                title="Voir le profil"
                                 className="text-slate-600 hover:text-[#005929] hover:bg-[#005929]/10"
                               >
                                 <Eye className="w-4 h-4" />
@@ -451,16 +502,8 @@ export default function AdminUserPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => handleToggleStatus(user.id, user.is_active)}
-                                className="text-slate-600 hover:text-[#005929] hover:bg-[#005929]/10"
-                                disabled={toggleUserStatus.isPending}
-                              >
-                                {user.is_active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
                                 onClick={() => handleDeleteUser(user.id, user.full_name || user.username)}
+                                title="Supprimer l'utilisateur"
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                 disabled={deleteUser.isPending}
                               >

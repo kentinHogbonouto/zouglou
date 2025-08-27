@@ -8,8 +8,12 @@ import { Input } from '@/components/ui/Input';
 import { Pagination } from '@/components/ui/Pagination';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
 import { useRouter } from 'next/navigation';
-import { CreditCard, Search, Plus, Eye, Edit, Trash2, CheckCircle, XCircle, Star, DollarSign } from 'lucide-react';
-import { useAdminSubscriptionPlans, useDeleteSubscriptionPlan } from '@/hooks/useAdminQueries';
+import { CreditCard, Search, Plus, Eye, Edit, Trash2, CheckCircle, XCircle, Star, DollarSign, Users, SquareChartGantt } from 'lucide-react';
+import { useAdminSubscriptionPlans, useDeleteSubscriptionPlan, useCreateSubscriptionPlan } from '@/hooks/useAdminQueries';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { CreateSubscriptionPlanModal } from '@/components/features/admin/CreateSubscriptionPlanModal';
+import { CreateSubscriptionPlanData } from '@/shared/types/api';
 
 
 export default function AdminSubscriptionPlansPage() {
@@ -19,6 +23,7 @@ export default function AdminSubscriptionPlansPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [featuredFilter, setFeaturedFilter] = useState<'all' | 'featured' | 'not_featured'>('all');
   const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; planId: string | null; planName: string }>({
     isOpen: false,
     planId: null,
@@ -26,7 +31,13 @@ export default function AdminSubscriptionPlansPage() {
   });
 
   // React Query hooks
-  const { data: plansData, isLoading } = useAdminSubscriptionPlans({
+  const {
+    data: plansData,
+    isLoading,
+    error,
+    isError,
+    refetch
+  } = useAdminSubscriptionPlans({
     page: currentPage,
     page_size: 10,
     name: searchTerm || undefined,
@@ -35,17 +46,31 @@ export default function AdminSubscriptionPlansPage() {
   });
 
   const deletePlan = useDeleteSubscriptionPlan();
+  const createPlan = useCreateSubscriptionPlan();
 
   const plans = plansData?.results || [];
   const totalPlans = plansData?.count || 0;
   const totalPages = Math.ceil(totalPlans / 10);
 
   const handleViewPlan = (planId: string) => {
-    router.push(`/dashboard/admin/subscription/plans/${planId}`);
+    router.push(`/dashboard/admin/plans-subscription/${planId}`);
+  };
+
+  const handleViewSubscribers = (planId: string) => {
+    router.push(`/dashboard/admin/plans-subscription/${planId}/subscribers`);
   };
 
   const handleEditPlan = (planId: string) => {
-    router.push(`/dashboard/admin/subscription/plans/${planId}/edit`);
+    router.push(`/dashboard/admin/plans-subscription/${planId}`);
+  };
+
+  const handleCreatePlan = async (data: CreateSubscriptionPlanData) => {
+    try {
+      await createPlan.mutateAsync(data);
+      setShowCreateModal(false);
+    } catch (error) {
+      console.error('Erreur lors de la création:', error);
+    }
   };
 
   const handleDeletePlan = async (planId: string, planName: string) => {
@@ -148,7 +173,7 @@ export default function AdminSubscriptionPlansPage() {
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-gradient-to-r from-[#005929]/10 to-[#FE5200]/10">
-                    <CreditCard className="w-6 h-6 text-slate-600" />
+                    <SquareChartGantt className="w-6 h-6 text-slate-600" />
                   </div>
                   <div>
                     <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
@@ -161,9 +186,9 @@ export default function AdminSubscriptionPlansPage() {
                 </div>
               </div>
               <div className="flex space-x-3">
-                <Button 
+                <Button
                   className="bg-gradient-to-r from-[#005929] to-[#005929]/90 hover:from-[#005929]/90 hover:to-[#005929] text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
-                  onClick={() => router.push('/dashboard/admin/subscription/plans/create')}
+                  onClick={() => setShowCreateModal(true)}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Nouveau Plan
@@ -287,10 +312,13 @@ export default function AdminSubscriptionPlansPage() {
             </CardHeader>
             <CardContent className="p-0">
               {isLoading ? (
-                <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#005929] mx-auto"></div>
-                  <p className="mt-2 text-slate-600">Chargement des plans...</p>
-                </div>
+                <LoadingState message="Chargement des plans..." />
+              ) : isError ? (
+                <ErrorState
+                  title="Erreur lors du chargement des plans"
+                  message={error?.message || 'Une erreur inattendue s\'est produite'}
+                  onRetry={() => refetch()}
+                />
               ) : filteredPlans.length === 0 ? (
                 <div className="p-8 text-center">
                   <CreditCard className="w-12 h-12 text-slate-400 mx-auto mb-4" />
@@ -345,9 +373,6 @@ export default function AdminSubscriptionPlansPage() {
                               <div className="text-sm font-medium text-slate-900">
                                 {plan.name}
                               </div>
-                              <div className="text-sm text-slate-500">
-                                {plan.description}
-                              </div>
                               <div className="flex gap-1 mt-1">
                                 {getStatusBadge(plan.is_active)}
                                 {getFeaturedBadge(plan.is_featured)}
@@ -381,8 +406,18 @@ export default function AdminSubscriptionPlansPage() {
                               <Button
                                 size="sm"
                                 variant="ghost"
+                                onClick={() => handleViewSubscribers(plan.id)}
+                                className="text-slate-600 hover:text-[#005929] hover:bg-[#005929]/10"
+                                title="Voir les abonnés"
+                              >
+                                <Users className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
                                 onClick={() => handleViewPlan(plan.id)}
                                 className="text-slate-600 hover:text-[#005929] hover:bg-[#005929]/10"
+                                title="Voir les détails"
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
@@ -391,6 +426,7 @@ export default function AdminSubscriptionPlansPage() {
                                 variant="ghost"
                                 onClick={() => handleEditPlan(plan.id)}
                                 className="text-slate-600 hover:text-[#005929] hover:bg-[#005929]/10"
+                                title="Modifier"
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -400,6 +436,7 @@ export default function AdminSubscriptionPlansPage() {
                                 onClick={() => handleDeletePlan(plan.id, plan.name)}
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                 disabled={deletePlan.isPending}
+                                title="Supprimer"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -433,6 +470,14 @@ export default function AdminSubscriptionPlansPage() {
             message="Cette action est irréversible. Le plan et toutes ses données seront définitivement supprimés."
             itemName={deleteModal.planName}
             isDeleting={deletePlan.isPending}
+          />
+
+          {/* Create Plan Modal */}
+          <CreateSubscriptionPlanModal
+            isOpen={showCreateModal}
+            onClose={() => setShowCreateModal(false)}
+            onSubmit={handleCreatePlan}
+            isSubmitting={createPlan.isPending}
           />
         </div>
       </div>

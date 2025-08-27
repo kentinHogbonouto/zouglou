@@ -1,7 +1,7 @@
 "use client";
 
 import { AdminRoute } from "@/components/auth/ProtectedRoute";
-import { usePodcast, useUpdatePodcast, useDeletePodcast } from "@/hooks/usePodcastQuery";
+import { usePodcast, useUpdatePodcast, useRealDeletePodcast } from "@/hooks/usePodcastQuery";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
@@ -24,7 +24,7 @@ export default function ArtistPodcastDetailPage() {
 
   const { data: podcast, isLoading, error } = usePodcast(podcastId);
   const updatePodcast = useUpdatePodcast();
-  const deletePodcast = useDeletePodcast();
+  const deletePodcast = useRealDeletePodcast();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formData, setFormData] = useState<UpdatePodcastData>({
