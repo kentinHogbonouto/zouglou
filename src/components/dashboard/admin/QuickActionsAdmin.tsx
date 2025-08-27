@@ -9,6 +9,7 @@ import {
   User,
   CreditCard
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const quickActions = [
   {
@@ -62,6 +63,7 @@ const quickActions = [
 ];
 
 export function QuickActionsAdmin() {
+  const router = useRouter();
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -76,6 +78,7 @@ export function QuickActionsAdmin() {
             <Card 
               key={index}
               className={`group cursor-pointer hover:shadow-xl transition-all duration-500 border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:scale-105 ${action.bgColor}`}
+              onClick={() => router.push(action.href)}
             >
               <CardContent className="p-4 text-center space-y-3">
                 <div className={`mx-auto w-12 h-12 rounded-xl bg-gradient-to-r ${action.color} shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center`}>

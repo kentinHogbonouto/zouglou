@@ -301,12 +301,12 @@ export default function AdminUserDetailPage() {
                         </>
                       )}
                     </Button>
-                    <ToggleDeletedButton
+                    {user.deleted && <ToggleDeletedButton
                       deleted={user.deleted}
                       onToggle={handleToggleDeleted}
                       isLoading={toggleUserDeleted.isPending}
                       className="px-6 py-3 rounded-xl transition-all duration-200 font-medium"
-                    />
+                    />}
                     <Button
                       onClick={handleDeleteUser}
                       disabled={deleteUser.isPending}

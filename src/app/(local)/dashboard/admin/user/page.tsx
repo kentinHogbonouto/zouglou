@@ -34,16 +34,6 @@ export default function AdminUserPage() {
     setCurrentPage(1); // Retour à la première page
   };
 
-  // Réinitialiser tous les filtres
-  const resetFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('all');
-    setRoleFilter('all');
-    setSubscriptionFilter('all');
-    setDeletedFilter('all');
-    setCurrentPage(1);
-  };
-
   // Obtenir le résumé des filtres actifs
   const getActiveFiltersSummary = () => {
     const filters = [];
@@ -357,15 +347,6 @@ export default function AdminUserPage() {
                     <option value="not_deleted">Actifs</option>
                     <option value="deleted">Supprimés</option>
                   </select>
-                  <Button
-                    onClick={resetFilters}
-                    variant="outline"
-                    size="sm"
-                    className="px-4 py-2 border border-slate-200 hover:bg-slate-50"
-                    title="Réinitialiser les filtres"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -413,17 +394,6 @@ export default function AdminUserPage() {
                       ? 'Aucun utilisateur trouvé avec les filtres actuels' 
                       : 'Aucun utilisateur trouvé'}
                   </p>
-                  {(searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all') && (
-                    <Button
-                      onClick={resetFilters}
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Réinitialiser les filtres
-                    </Button>
-                  )}
                 </div>
               ) : (
                 <div className="overflow-x-auto">
@@ -449,9 +419,6 @@ export default function AdminUserPage() {
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                           Abonnement
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                          Statut
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                           Date d&apos;inscription
@@ -511,9 +478,6 @@ export default function AdminUserPage() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {getSubscriptionBadge(user.has_active_subscription)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <DeletedStatusBadge deleted={user.deleted} />
-                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                             {formatDate(user.createdAt)}
                           </td>
@@ -528,12 +492,12 @@ export default function AdminUserPage() {
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
-                              <ToggleDeletedButton
+                             {user.deleted && <ToggleDeletedButton
                                 deleted={user.deleted}
                                 onToggle={() => handleToggleUserDeleted(user.id, user.deleted)}
                                 isLoading={false}
                                 className="text-xs"
-                              />
+                              />}
                               <Button
                                 size="sm"
                                 variant="ghost"
