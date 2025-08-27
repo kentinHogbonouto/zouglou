@@ -307,6 +307,7 @@ export interface CreateSubscriptionPlanData {
   free_trial_days?: number;
   is_featured?: boolean;
   is_active?: boolean;
+}
 
 export interface City {
   id: string;
