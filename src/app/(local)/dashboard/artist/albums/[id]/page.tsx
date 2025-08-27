@@ -76,7 +76,7 @@ export default function AlbumDetailPage() {
   const handleDeleteAlbum = async () => {
     if (!album) return;
     try {
-      await deleteAlbumMutation.mutateAsync(albumId).then(() => {
+      deleteAlbumMutation.mutateAsync(albumId).then(() => {
         router.back();
       });
     } catch (error) {
