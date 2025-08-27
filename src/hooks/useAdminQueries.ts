@@ -38,6 +38,80 @@ export interface ApiTransaction {
   updatedAt: string;
 }
 
+// Types pour les albums
+export interface ApiAlbum {
+  id: string;
+  title: string;
+  artist: ApiArtist;
+  release_date?: string;
+  category?: string;
+  genre?: string;
+  description?: string;
+  cover?: string;
+  total_tracks: number;
+  total_duration: number;
+  is_published: boolean;
+  deleted: boolean;
+  songs: ApiSong[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Types pour les tracks/songs
+export interface ApiSong {
+  id: string;
+  title: string;
+  artist: ApiArtist;
+  album?: ApiAlbum;
+  genre?: string;
+  duration: number;
+  file_url: string;
+  cover?: string;
+  audio_file: string;
+  track_number?: number;
+  count_likes?: number;
+  play_count?: number;
+  is_published: boolean;
+  deleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Types pour les podcasts
+export interface ApiPodcast {
+  id: string;
+  title: string;
+  description: string;
+  artist: ApiArtist;
+  cover?: string;
+  is_published: boolean;
+  deleted: boolean;
+  episodes?: ApiPodcastEpisode[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Types pour les épisodes de podcast
+export interface ApiPodcastEpisode {
+  id: string;
+  title: string;
+  description: string;
+  file: string;
+  duration: number;
+  podcast: string;
+  episode_number: number;
+  release_date: string;
+  is_in_user_favorites: string;
+  count_likes: number;
+  play_count: number;
+  unique_listeners?: number;
+  is_published: boolean;
+  cover?: string;
+  deleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Types pour les utilisateurs
 export interface ApiUser {
   id: string;
@@ -65,6 +139,7 @@ export interface ApiUser {
   user_count_notifcation: number;
   is_superuser: boolean;
   profil_image: string | null;
+  deleted: boolean;
   createdAt: string;
   updatedAt: string;
   subscription?: ApiSubscription | null;
@@ -105,6 +180,7 @@ interface UpdateUserData {
   city?: string;
   country?: string;
   adress?: string;
+  deleted?: boolean;
 }
 
 // Types pour les subscriptions
@@ -202,6 +278,14 @@ export const adminKeys = {
   user: (id: string) => [...adminKeys.users(), id] as const,
   artists: () => [...adminKeys.all, 'artists'] as const,
   artist: (id: string) => [...adminKeys.artists(), id] as const,
+  albums: () => [...adminKeys.all, 'albums'] as const,
+  album: (id: string) => [...adminKeys.albums(), id] as const,
+  songs: () => [...adminKeys.all, 'songs'] as const,
+  song: (id: string) => [...adminKeys.songs(), id] as const,
+  podcasts: () => [...adminKeys.all, 'podcasts'] as const,
+  podcast: (id: string) => [...adminKeys.podcasts(), id] as const,
+  episodes: () => [...adminKeys.all, 'episodes'] as const,
+  episode: (id: string) => [...adminKeys.episodes(), id] as const,
 };
 
 // Clés de cache pour les subscriptions
@@ -231,6 +315,7 @@ export function useAdminUsers(params?: {
   is_superuser?: boolean;
   default_role?: string;
   has_active_subscription?: boolean;
+  deleted?: boolean;
   page?: number;
   page_size?: number;
 }) {
@@ -244,13 +329,20 @@ export function useAdminUsers(params?: {
         if (params?.is_staff !== undefined) queryParams.append('is_staff', params.is_staff.toString());
         if (params?.is_superuser !== undefined) queryParams.append('is_superuser', params.is_superuser.toString());
         if (params?.default_role) queryParams.append('default_role', params.default_role);
-        if (params?.has_active_subscription !== undefined) {
-          if (params.has_active_subscription === true) {
-            queryParams.append('has_active_subscription', 'true');
-          } else if (params.has_active_subscription === false) {
-            queryParams.append('has_active_subscription', 'false');
-          }
-        }
+                       if (params?.has_active_subscription !== undefined) {
+                 if (params.has_active_subscription === true) {
+                   queryParams.append('has_active_subscription', 'true');
+                 } else if (params.has_active_subscription === false) {
+                   queryParams.append('has_active_subscription', 'false');
+                 }
+               }
+               if (params?.deleted !== undefined) {
+                 if (params.deleted === true) {
+                   queryParams.append('deleted', 'true');
+                 } else if (params.deleted === false) {
+                   queryParams.append('deleted', 'false');
+                 }
+               }
         if (params?.page) queryParams.append('page', params.page.toString());
         if (params?.page_size) queryParams.append('page_size', params.page_size.toString());
         
@@ -418,6 +510,133 @@ export function useRealDeleteUser() {
       console.error(error);
       toast.dismissLoading(loadingRef.current);
       toast.showError('Erreur', 'Une erreur est survenue lors de la suppression de l\'utilisateur ' + error.message);
+    },
+  });
+}
+
+export function useToggleUserDeleted() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  
+  return useMutation({
+    mutationFn: async ({ id, deleted }: { id: string; deleted: boolean }): Promise<ApiUser> => {
+      try {
+        const response = await apiService.put<ApiUser>(`/account/${id}/`, { deleted });
+        return response.data!;
+      } catch {
+        console.warn(`Endpoint /account/${id}/ not found, simulating update`);
+        throw new Error('Failed to update user deleted status');
+      }
+    },
+    onSuccess: (data) => {
+      // Mettre à jour le cache
+      queryClient.setQueryData(adminKeys.user(data.id), data);
+      // Invalider les listes
+      queryClient.invalidateQueries({ queryKey: adminKeys.users() });
+      toast.showSuccess('Succès', `Utilisateur ${data.deleted ? 'supprimé' : 'restauré'} avec succès`);
+    },
+    onError: () => {
+      toast.showError('Erreur', 'Erreur lors de la modification du statut de suppression');
+    },
+  });
+}
+
+export function useToggleAlbumDeleted() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  
+  return useMutation({
+    mutationFn: async ({ id, deleted }: { id: string; deleted: boolean }): Promise<ApiAlbum> => {
+      try {
+        const response = await apiService.put<ApiAlbum>(`/albums/${id}/`, { deleted });
+        return response.data!;
+      } catch {
+        console.warn(`Endpoint /albums/${id}/ not found, simulating update`);
+        throw new Error('Failed to update album deleted status');
+      }
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(adminKeys.album(data.id), data);
+      queryClient.invalidateQueries({ queryKey: adminKeys.albums() });
+      toast.showSuccess('Succès', `Album ${data.deleted ? 'supprimé' : 'restauré'} avec succès`);
+    },
+    onError: () => {
+      toast.showError('Erreur', 'Erreur lors de la modification du statut de suppression');
+    },
+  });
+}
+
+export function useToggleSongDeleted() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  
+  return useMutation({
+    mutationFn: async ({ id, deleted }: { id: string; deleted: boolean }): Promise<ApiSong> => {
+      try {
+        const response = await apiService.put<ApiSong>(`/songs/${id}/`, { deleted });
+        return response.data!;
+      } catch {
+        console.warn(`Endpoint /songs/${id}/ not found, simulating update`);
+        throw new Error('Failed to update song deleted status');
+      }
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(adminKeys.song(data.id), data);
+      queryClient.invalidateQueries({ queryKey: adminKeys.songs() });
+      toast.showSuccess('Succès', `Track ${data.deleted ? 'supprimé' : 'restauré'} avec succès`);
+    },
+    onError: () => {
+      toast.showError('Erreur', 'Erreur lors de la modification du statut de suppression');
+    },
+  });
+}
+
+export function useTogglePodcastDeleted() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  
+  return useMutation({
+    mutationFn: async ({ id, deleted }: { id: string; deleted: boolean }): Promise<ApiPodcast> => {
+      try {
+        const response = await apiService.put<ApiPodcast>(`/podcasts/${id}/`, { deleted });
+        return response.data!;
+      } catch {
+        console.warn(`Endpoint /podcasts/${id}/ not found, simulating update`);
+        throw new Error('Failed to update podcast deleted status');
+      }
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(adminKeys.podcast(data.id), data);
+      queryClient.invalidateQueries({ queryKey: adminKeys.podcasts() });
+      toast.showSuccess('Succès', `Podcast ${data.deleted ? 'supprimé' : 'restauré'} avec succès`);
+    },
+    onError: () => {
+      toast.showError('Erreur', 'Erreur lors de la modification du statut de suppression');
+    },
+  });
+}
+
+export function useToggleEpisodeDeleted() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  
+  return useMutation({
+    mutationFn: async ({ id, deleted }: { id: string; deleted: boolean }): Promise<ApiPodcastEpisode> => {
+      try {
+        const response = await apiService.put<ApiPodcastEpisode>(`/podcast-episodes/${id}/`, { deleted });
+        return response.data!;
+      } catch {
+        console.warn(`Endpoint /podcast-episodes/${id}/ not found, simulating update`);
+        throw new Error('Failed to update episode deleted status');
+      }
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(adminKeys.episode(data.id), data);
+      queryClient.invalidateQueries({ queryKey: adminKeys.episodes() });
+      toast.showSuccess('Succès', `Épisode ${data.deleted ? 'supprimé' : 'restauré'} avec succès`);
+    },
+    onError: () => {
+      toast.showError('Erreur', 'Erreur lors de la modification du statut de suppression');
     },
   });
 }

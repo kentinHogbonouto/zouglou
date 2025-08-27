@@ -10,7 +10,6 @@ import {
   VolumeX,
   Shuffle,
   Repeat,
-  Heart,
   Maximize2,
   List,
   Minimize2,
@@ -48,8 +47,6 @@ export function ModernPodcastPlayer({
   onClose,
   onNext,
   onPrevious,
-  onToggleLike,
-  isLiked = false,
   hasNext = false,
   hasPrevious = false
 }: ModernPodcastPlayerProps) {
@@ -253,16 +250,7 @@ export function ModernPodcastPlayer({
 
           {/* Contrôles secondaires */}
           <div className="flex items-center gap-3">
-            <Button
-              onClick={onToggleLike}
-              className={`p-2 rounded-lg transition-colors ${
-                isLiked 
-                  ? 'bg-gradient-to-r from-[#FE5200]/20 to-[#FE5200]/10 text-[#FE5200]' 
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-            </Button>
+    
 
             <div className="flex items-center gap-2">
               <Button

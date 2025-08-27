@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
-import { useAdminUser, useUpdateUser, useToggleUserStatus, useRealDeleteUser  } from '@/hooks/useAdminQueries';
+import { useAdminUser, useUpdateUser, useToggleUserStatus, useRealDeleteUser, useToggleUserDeleted } from '@/hooks/useAdminQueries';
 import { useRouter, useParams } from 'next/navigation';
 import {
   User,
@@ -31,6 +31,7 @@ import {
 import Image from 'next/image';
 import { UserRole, UpdateUserRequest } from '@/shared/types';
 import { ApiUser } from '@/hooks/useAdminQueries';
+import { DeletedStatusBadge, ToggleDeletedButton } from '@/components/ui/DeletedStatusBadge';
 
 
 export default function AdminUserDetailPage() {
@@ -47,6 +48,7 @@ export default function AdminUserDetailPage() {
   const updateUser = useUpdateUser();
   const toggleUserStatus = useToggleUserStatus();
   const deleteUser = useRealDeleteUser();
+  const toggleUserDeleted = useToggleUserDeleted();
 
   useEffect(() => {
     if (user) {
@@ -97,6 +99,16 @@ export default function AdminUserDetailPage() {
       await toggleUserStatus.mutateAsync({ id: userId, is_active: !user.is_active });
     } catch (error) {
       console.error('Erreur lors du changement de statut:', error);
+    }
+  };
+
+  const handleToggleDeleted = async () => {
+    if (!user) return;
+
+    try {
+      await toggleUserDeleted.mutateAsync({ id: userId, deleted: !user.deleted });
+    } catch (error) {
+      console.error('Erreur lors du changement de statut de suppression:', error);
     }
   };
 
@@ -289,13 +301,19 @@ export default function AdminUserDetailPage() {
                         </>
                       )}
                     </Button>
+                    <ToggleDeletedButton
+                      deleted={user.deleted}
+                      onToggle={handleToggleDeleted}
+                      isLoading={toggleUserDeleted.isPending}
+                      className="px-6 py-3 rounded-xl transition-all duration-200 font-medium"
+                    />
                     <Button
                       onClick={handleDeleteUser}
                       disabled={deleteUser.isPending}
                       className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
-                      Supprimer
+                      Supprimer définitivement
                     </Button>
                   </>
                 )}
@@ -359,6 +377,7 @@ export default function AdminUserDetailPage() {
                     <div className="flex justify-center gap-2 mb-6">
                       {getRoleBadge(user)}
                       {getStatusBadge(user.is_active)}
+                      <DeletedStatusBadge deleted={user.deleted} />
                     </div>
 
                     <div className="space-y-3 text-left">
@@ -609,6 +628,25 @@ export default function AdminUserDetailPage() {
                       ) : (
                         <div className="flex items-center gap-2">
                           {getRoleBadge(user)}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Statut de suppression
+                      </label>
+                      {isEditing ? (
+                        <select
+                          value={editData.deleted ? 'true' : 'false'}
+                          onChange={(e) => setEditData({ ...editData, deleted: e.target.value === 'true' })}
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
+                        >
+                          <option value="false">Actif</option>
+                          <option value="true">Supprimé</option>
+                        </select>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <DeletedStatusBadge deleted={user.deleted} />
                         </div>
                       )}
                     </div>

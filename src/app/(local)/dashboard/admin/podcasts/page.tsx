@@ -16,7 +16,7 @@ import { CreatePodcastData } from '@/shared/types/api';
 
 export default function AdminPodcastsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(6);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [genreFilter, setGenreFilter] = useState<string>('all');
@@ -313,7 +313,15 @@ export default function AdminPodcastsPage() {
                           </span>
                         </div>
 
-                        <p className="text-sm text-slate-500 mb-4 line-clamp-2">{podcast.description}</p>
+                        <div>
+                          {podcast.deleted && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600 text-center line-clamp-1">
+                              Supprimé
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-sm text-slate-500 mb-4 line-clamp-2">{podcast?.description? podcast.description : ''}</p>
 
                         {/* Statistiques */}
                         <div className="grid grid-cols-2 gap-3 mb-4">

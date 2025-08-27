@@ -201,6 +201,7 @@ export interface ApiPodcast {
   artist: ApiArtist;
   genre: string;
   is_published: boolean;
+  deleted?: boolean;
   episodes_count: number;
   subscribers_count: number;
   createdAt: string;

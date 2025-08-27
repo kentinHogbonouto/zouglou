@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Pagination } from '@/components/ui/Pagination';
 import { DeleteConfirmationModal } from '@/components/ui/DeleteConfirmationModal';
-import { useAdminUsers, useRealDeleteUser } from '@/hooks/useAdminQueries';
+import { useAdminUsers, useRealDeleteUser, useToggleUserDeleted } from '@/hooks/useAdminQueries';
 import { useRouter } from 'next/navigation';
 import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search, Eye, Trash2, RefreshCw } from 'lucide-react';
+import { DeletedStatusBadge, ToggleDeletedButton } from '@/components/ui/DeletedStatusBadge';
 import Image from 'next/image';
 import { ApiUser } from '@/hooks/useAdminQueries';
 
@@ -21,6 +22,7 @@ export default function AdminUserPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'artist' | 'admin' | 'super-admin'>('all');
   const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'subscribed' | 'not_subscribed'>('all');
+  const [deletedFilter, setDeletedFilter] = useState<'all' | 'deleted' | 'not_deleted'>('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   // Réinitialiser la pagination quand les filtres changent
@@ -38,6 +40,7 @@ export default function AdminUserPage() {
     setStatusFilter('all');
     setRoleFilter('all');
     setSubscriptionFilter('all');
+    setDeletedFilter('all');
     setCurrentPage(1);
   };
 
@@ -48,6 +51,7 @@ export default function AdminUserPage() {
     if (statusFilter !== 'all') filters.push(`Statut: ${statusFilter === 'active' ? 'Actifs' : 'Inactifs'}`);
     if (roleFilter !== 'all') filters.push(`Rôle: ${roleFilter === 'super-admin' ? 'Super Admin' : roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}`);
     if (subscriptionFilter !== 'all') filters.push(`Abonnement: ${subscriptionFilter === 'subscribed' ? 'Abonnés' : 'Non abonnés'}`);
+    if (deletedFilter !== 'all') filters.push(`Suppression: ${deletedFilter === 'deleted' ? 'Supprimés' : 'Actifs'}`);
     return filters;
   };
 
@@ -65,9 +69,11 @@ export default function AdminUserPage() {
     is_active: statusFilter === 'all' ? undefined : statusFilter === 'active',
     default_role: roleFilter === 'all' ? undefined : roleFilter,
     has_active_subscription: subscriptionFilter === 'all' ? undefined : subscriptionFilter === 'subscribed' ? true : false,
+    deleted: deletedFilter === 'all' ? undefined : deletedFilter === 'deleted' ? true : false,
   });
 
   const deleteUser = useRealDeleteUser();
+  const toggleUserDeleted = useToggleUserDeleted();
 
   const users = usersData?.results || [];
   const totalUsers = usersData?.count || 0;
@@ -79,6 +85,14 @@ export default function AdminUserPage() {
   
   const handleDeleteUser = async (userId: string, userName: string) => {
     setDeleteModal({ isOpen: true, userId, userName });
+  };
+
+  const handleToggleUserDeleted = async (userId: string, currentDeleted: boolean) => {
+    try {
+      await toggleUserDeleted.mutateAsync({ id: userId, deleted: !currentDeleted });
+    } catch (error) {
+      console.error('Erreur lors du changement de statut de suppression:', error);
+    }
   };
 
   const confirmDelete = async () => {
@@ -334,6 +348,15 @@ export default function AdminUserPage() {
                     <option value="subscribed">Abonnés</option>
                     <option value="not_subscribed">Non abonnés</option>
                   </select>
+                  <select
+                    value={deletedFilter}
+                    onChange={(e) => handleFilterChange(e.target.value as 'all' | 'deleted' | 'not_deleted', setDeletedFilter)}
+                    className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
+                  >
+                    <option value="all">Tous les statuts</option>
+                    <option value="not_deleted">Actifs</option>
+                    <option value="deleted">Supprimés</option>
+                  </select>
                   <Button
                     onClick={resetFilters}
                     variant="outline"
@@ -358,12 +381,12 @@ export default function AdminUserPage() {
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <span>
                       {filteredUsers.length} utilisateur(s)
-                      {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || searchTerm) && 
+                      {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all' || searchTerm) && 
                         totalUsers !== filteredUsers.length && (
                         <span className="text-slate-400"> sur {totalUsers}</span>
                       )}
                     </span>
-                    {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || searchTerm) && (
+                    {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all' || searchTerm) && (
                       <div className="flex items-center gap-2">
                         <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                           Filtres actifs
@@ -386,11 +409,11 @@ export default function AdminUserPage() {
                 <div className="p-8 text-center">
                   <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                   <p className="text-slate-600 mb-2">
-                    {searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' 
+                    {searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all'
                       ? 'Aucun utilisateur trouvé avec les filtres actuels' 
                       : 'Aucun utilisateur trouvé'}
                   </p>
-                  {(searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all') && (
+                  {(searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all') && (
                     <Button
                       onClick={resetFilters}
                       variant="outline"
@@ -426,6 +449,9 @@ export default function AdminUserPage() {
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                           Abonnement
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                          Statut
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                           Date d&apos;inscription
@@ -485,6 +511,9 @@ export default function AdminUserPage() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             {getSubscriptionBadge(user.has_active_subscription)}
                           </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <DeletedStatusBadge deleted={user.deleted} />
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                             {formatDate(user.createdAt)}
                           </td>
@@ -499,11 +528,17 @@ export default function AdminUserPage() {
                               >
                                 <Eye className="w-4 h-4" />
                               </Button>
+                              <ToggleDeletedButton
+                                deleted={user.deleted}
+                                onToggle={() => handleToggleUserDeleted(user.id, user.deleted)}
+                                isLoading={false}
+                                className="text-xs"
+                              />
                               <Button
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleDeleteUser(user.id, user.full_name || user.username)}
-                                title="Supprimer l'utilisateur"
+                                title="Supprimer définitivement l'utilisateur"
                                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                 disabled={deleteUser.isPending}
                               >

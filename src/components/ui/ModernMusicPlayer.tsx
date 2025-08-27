@@ -9,7 +9,6 @@ import {
   SkipForward, 
   Volume2, 
   VolumeX, 
-  Heart, 
   Shuffle, 
   Repeat, 
   Repeat1, 
@@ -54,7 +53,6 @@ export function ModernMusicPlayer({
   onClose,
   onToggleShuffle,
   onToggleRepeat,
-  onToggleLike,
   onToggleFullscreen,
   onToggleQueue,
   currentTime,
@@ -62,7 +60,6 @@ export function ModernMusicPlayer({
   volume,
   isShuffled,
   repeatMode,
-  isLiked,
   isFullscreen,
   showQueue
 }: ModernMusicPlayerProps) {
@@ -267,22 +264,6 @@ export function ModernMusicPlayer({
                 <Minimize2 className="w-4 h-4" />
               ) : (
                 <Maximize2 className="w-4 h-4" />
-              )}
-            </button>
-
-            {/* Like */}
-            <button
-              onClick={onToggleLike}
-              className={`p-2 rounded-full transition-all duration-200 ${
-                isLiked 
-                  ? 'text-red-500 bg-red-50 hover:bg-red-100' 
-                  : 'text-slate-400 hover:text-red-500 hover:bg-red-50'
-              }`}
-            >
-              {isLiked ? (
-                <Heart className="w-4 h-4 fill-current" />
-              ) : (
-                <Heart className="w-4 h-4" />
               )}
             </button>
 

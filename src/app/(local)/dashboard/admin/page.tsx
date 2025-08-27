@@ -76,13 +76,14 @@ export default function AdminDashboard() {
               <div className="space-y-3">
                 <MusicList
                   tracks={recentSongs}
+                  title="Titres récents de la plateforme"
                   onPlay={(track) => handleViewTrack(track.id)}
                   onView={(track) => handleViewTrack(track.id)}
                 />
               </div>
             ) : (
               <div className="text-center text-slate-500">
-                Aucun track récent
+                Aucun titre récent
               </div>
             )}
 
@@ -90,7 +91,7 @@ export default function AdminDashboard() {
             <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="border-b border-slate-100 pb-4">
                 <CardTitle className="text-lg font-medium text-slate-800">
-                  Albums récents
+                  Albums récents de la plateforme
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">

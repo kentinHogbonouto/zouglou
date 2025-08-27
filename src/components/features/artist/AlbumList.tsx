@@ -55,6 +55,13 @@ export function AlbumList({ albums }: AlbumListProps) {
                 }`}>
                   {album.is_published ? 'Publié' : 'Brouillon'}
                 </span>
+                  
+                {album.deleted && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600 text-center line-clamp-1">
+                    Supprimé
+                  </span>
+                )}
+                  
                 <span className="text-xs text-gray-500">
                   {album.songs?.length || 0} tracks
                 </span>

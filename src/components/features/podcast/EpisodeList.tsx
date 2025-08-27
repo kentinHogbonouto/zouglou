@@ -5,7 +5,7 @@ import { ApiPodcastEpisode } from '@/shared/types/api';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { MoreVertical, Eye, Heart, Play, Pause, Headphones, Clock, Users, FileText } from 'lucide-react';
+import { MoreVertical, Eye, Play, Pause, Headphones, Clock, Users, FileText } from 'lucide-react';
 import Image from 'next/image';
 interface EpisodeListProps {
   episodes: ApiPodcastEpisode[];
@@ -23,7 +23,6 @@ export function EpisodeList({
   title = "Mes Épisodes",
   onPlay,
   onView,
-  onLike,
   isPlaying = false,
   currentEpisodeId
 }: EpisodeListProps) {
@@ -156,17 +155,6 @@ export function EpisodeList({
                   ) : (
                     <Play className="w-4 h-4" />
                   )}
-                </button>
-
-                {/* Bouton Like */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onLike?.(episode);
-                  }}
-                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-200 rounded-lg"
-                >
-                  <Heart className="w-4 h-4" />
                 </button>
 
                 {/* Menu Dropdown */}
