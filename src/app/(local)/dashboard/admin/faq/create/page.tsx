@@ -1,56 +1,37 @@
 'use client';
 
 import React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { FaqForm } from '@/components/features/admin';
-import { useFaqById, useUpdateFaq } from '@/hooks/useFaqQueries';
-import { UpdateFaqRequest } from '@/shared/types';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { ErrorState } from '@/components/ui/ErrorState';
+import { useCreateFaq } from '@/hooks/useFaqQueries';
+import { CreateFaqRequest, UpdateFaqRequest } from '@/shared/types';
 import { useToast } from '@/components/providers/ToastProvider';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
-export default function AdminFaqEditPage() {
-  const params = useParams();
+export default function AdminFaqCreatePage() {
   const router = useRouter();
   const { showToast } = useToast();
-  const faqId = params.id as string;
+  const createFaqMutation = useCreateFaq();
 
-  const { data: faq, isLoading, error, refetch } = useFaqById(faqId);
-  const updateFaqMutation = useUpdateFaq();
-
-  const handleUpdateFaq = async (data: UpdateFaqRequest) => {
+  const handleCreateFaq = async (data: CreateFaqRequest | UpdateFaqRequest) => {
     try {
-      await updateFaqMutation.mutateAsync({ id: faqId, data });
-      showToast({
-        title: 'Succès',
-        message: 'FAQ mise à jour avec succès',
-        type: 'success',
-      });
-      router.push('/dashboard/admin/faq');
+      await createFaqMutation.mutateAsync(data as CreateFaqRequest);
+        showToast({
+          title: 'Succès',
+          message: 'FAQ créée avec succès',
+          type: 'success',
+        });
+        router.push('/dashboard/admin/faq');
     } catch {
       showToast({
         title: 'Erreur',
-        message: 'Erreur lors de la mise à jour de la FAQ',
+        message: 'Erreur lors de la création de la FAQ',
         type: 'error',
       });
     }
   };
-
-  if (isLoading) {
-    return <LoadingState message="Chargement de la FAQ..." />;
-  }
-
-  if (error || !faq) {
-    return (
-      <ErrorState 
-        message="Erreur lors du chargement de la FAQ"
-        onRetry={refetch}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -64,8 +45,8 @@ export default function AdminFaqEditPage() {
                   <HelpCircle className="h-6 w-6 text-[#005929]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900">Modifier la FAQ</h1>
-                  <p className="text-slate-600">Modifiez les détails de cette question fréquemment posée</p>
+                  <h1 className="text-2xl font-bold text-slate-900">Créer une nouvelle FAQ</h1>
+                  <p className="text-slate-600">Ajoutez une nouvelle question fréquemment posée à votre plateforme</p>
                 </div>
               </div>
             </div>
@@ -87,10 +68,9 @@ export default function AdminFaqEditPage() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
             <div className="p-8">
               <FaqForm
-                mode="edit"
-                initialData={faq}
-                onSubmit={handleUpdateFaq}
-                isLoading={updateFaqMutation.isPending}
+                mode="create"
+                onSubmit={handleCreateFaq}
+                isLoading={createFaqMutation.isPending}
               />
             </div>
           </div>

@@ -23,4 +23,6 @@ export * from './useUnifiedEpisodePlayer';
 export * from './useAdminQueries';
 
 // Hooks utilitaires
-export * from './useDeleteConfirmation'; 
+export * from './useDeleteConfirmation';
+export * from './useFaqQueries';
+export * from './useInformationQueries'; 

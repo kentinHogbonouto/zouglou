@@ -143,3 +143,5 @@ export interface PaginatedResponse<T> {
 
 // Export des types API
 export * from './api'; 
+export * from './faq';
+export * from './information'; 
