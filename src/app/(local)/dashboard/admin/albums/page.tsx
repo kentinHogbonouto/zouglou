@@ -9,13 +9,10 @@ import { Disc3, BarChart3, Music, Clock, Play, Plus, Search, Loader2 } from 'luc
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
-import { AdminCreateAlbumModal } from '@/components/features/admin/AdminCreateAlbumModal';
-import { CreateAlbumData } from '@/shared/types/api';
 import { Input } from '@/components/ui/Input';
 
 export default function AdminAlbumsPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [showCreateAlbumModal, setShowCreateAlbumModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [genreFilter, setGenreFilter] = useState<string>('all');
@@ -32,7 +29,6 @@ export default function AdminAlbumsPage() {
   });
 
   const { data: genresData } = useGenres();
-  const createAlbum = useCreateAlbum();
 
   const albums = albumsData?.results || [];
   const totalPages = albumsData ? Math.ceil(albumsData.count / pageSize) : 0;
@@ -93,16 +89,6 @@ export default function AdminAlbumsPage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleCreateAlbum = async (data: CreateAlbumData) => {
-    try {
-      await createAlbum.mutateAsync(data);
-      refetch();
-      setShowCreateAlbumModal(false);
-    } catch (error) {
-      console.error('Erreur lors de la création de l\'album:', error);
-    }
-  };
-
   return (
     <AdminRoute>
       <div className="min-h-screen bg-slate-50/50">
@@ -112,20 +98,11 @@ export default function AdminAlbumsPage() {
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
-                  Gestion des Albums
+                  Gestion des Albums de la plateforme
                 </h1>
                 <p className="text-slate-500 text-base">
-                  Créez et gérez les albums pour tous les artistes
+                  Gérez les albums pour tous les artistes
                 </p>
-              </div>
-              <div className="flex space-x-3">
-                <Button 
-                  className="bg-gradient-to-r from-[#005929] to-[#005929]/90 hover:from-[#005929]/90 hover:to-[#005929] text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
-                  onClick={() => setShowCreateAlbumModal(true)}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nouvel Album
-                </Button>
               </div>
             </div>
           </div>
@@ -342,18 +319,9 @@ export default function AdminAlbumsPage() {
                     <p className="text-slate-500 mb-6">
                       {searchTerm || statusFilter !== 'all' || genreFilter !== 'all' || dateFilter !== 'all'
                         ? 'Essayez de modifier vos critères de recherche.'
-                        : 'Commencez par créer votre premier album'
+                        : 'Aucun album trouvé'
                       }
                     </p>
-                    {!searchTerm && statusFilter === 'all' && genreFilter === 'all' && dateFilter === 'all' && (
-                      <Button
-                        onClick={() => setShowCreateAlbumModal(true)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Créer votre premier album
-                      </Button>
-                    )}
                   </div>
                 </Card>
               )}
@@ -375,13 +343,6 @@ export default function AdminAlbumsPage() {
         </div>
       </div>
 
-      {/* Modal de création d'album */}
-      <AdminCreateAlbumModal
-        isOpen={showCreateAlbumModal}
-        onClose={() => setShowCreateAlbumModal(false)}
-        onSubmit={handleCreateAlbum}
-        isSubmitting={createAlbum.isPending}
-      />
     </AdminRoute>
   );
 } 
