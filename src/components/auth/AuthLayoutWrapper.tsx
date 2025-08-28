@@ -14,7 +14,7 @@ export default function AuthLayoutWrapper({ children }: AuthLayoutWrapperProps) 
 
   useEffect(() => {
     if (!isLoading && user) {
-      const redirectPath = `/dashboard/${user.default_role === 'artist' ? 'artist' : user.default_role === 'admin' || user.role === 'super-admin' ? 'admin' : 'user'}`;
+      const redirectPath = `/dashboard/${user.default_role === 'artist' ? 'artist' : 'admin'}`;
       redirect(redirectPath);
     }
   }, [user, isLoading]);

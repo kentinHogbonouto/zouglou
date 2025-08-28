@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { MoreVertical, Eye, Play, Pause, Music, Clock, Users, Disc3 } from 'lucide-react';
 import Image from 'next/image';
+import { useAuth } from '@/hooks/useAuth';
+
 interface MusicListProps {
   tracks: ApiSong[];
   title?: string;
@@ -24,6 +26,8 @@ export function MusicList({
   isPlaying = false,
   currentTrackId
 }: MusicListProps) {
+
+  const user = useAuth();
   const formatDuration = (duration: number) => {
     const minutes = Math.floor(duration / 60);
     const seconds = duration % 60;
@@ -124,11 +128,11 @@ export function MusicList({
               </div>
 
               {/* Genre */}
-              <div className="hidden xl:block w-32">
+             {user.user?.default_role === 'artist' && <div className="hidden xl:block w-32">
                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 text-center line-clamp-1">
                   {track.genre?.name || 'Pop'}
                 </span>
-              </div>
+              </div>}
 
               <div>
                 {track.deleted && (
