@@ -9,7 +9,7 @@ import { Modal, ModalHeader, ModalContent, ModalActions, ModalButton } from "@/c
 import { Loading } from "@/components/ui/Loading";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useUnifiedEpisodePlayer } from '@/hooks/useUnifiedEpisodePlayer';
-import { Play, Pause, Headphones, Edit, Trash2, Calendar, Clock, Heart, Users, ArrowLeft, Save, X, BarChart3 } from 'lucide-react';
+import { Play, Pause, Headphones, Trash2, Calendar, Clock, Heart, Users, ArrowLeft, X, BarChart3 } from 'lucide-react';
 import Image from 'next/image';
 
 export default function ArtistPodcastEpisodeDetailPage() {

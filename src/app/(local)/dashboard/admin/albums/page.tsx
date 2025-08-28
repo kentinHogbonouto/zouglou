@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AdminRoute } from '@/components/auth/ProtectedRoute';
-import { useAlbums, useGenres, useCreateAlbum } from '@/hooks';
+import { useAlbums, useGenres } from '@/hooks';
 import { Pagination } from '@/components/ui/Pagination';
-import { Disc3, BarChart3, Music, Clock, Play, Plus, Search, Loader2 } from 'lucide-react';
+import { Disc3, BarChart3, Music, Clock, Play, Search, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { Button } from '@/components/ui/Button';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 
@@ -21,7 +20,7 @@ export default function AdminAlbumsPage() {
   
   // React Query hook
   const pageSize = 6;
-  const { data: albumsData, isLoading, error, refetch } = useAlbums({
+  const { data: albumsData, isLoading, error } = useAlbums({
     page: currentPage,
     page_size: pageSize,
     genre: genreFilter === 'all' ? undefined : genreFilter,

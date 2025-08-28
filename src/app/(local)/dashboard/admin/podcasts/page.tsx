@@ -8,7 +8,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { ApiGenre, ApiPodcast } from '@/shared/types/api';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Mic, Headphones, FileText, Users, BarChart3, Search, Loader2, Plus } from 'lucide-react';
+import { Mic, Headphones, FileText, Users, BarChart3, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
 
 export default function AdminPodcastsPage() {
