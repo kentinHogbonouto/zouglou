@@ -319,17 +319,6 @@ export default function AdminUserPage() {
                     <option value="inactive">Inactifs</option>
                   </select>
                   <select
-                    value={roleFilter}
-                    onChange={(e) => handleFilterChange(e.target.value as 'all' | 'user' | 'artist' | 'admin' | 'super-admin', setRoleFilter)}
-                    className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
-                  >
-                    <option value="all">Tous les rôles</option>
-                    <option value="user">Utilisateurs</option>
-                    <option value="artist">Artistes</option>
-                    <option value="admin">Admins</option>
-                    <option value="super-admin">Super Admins</option>
-                  </select>
-                  <select
                     value={subscriptionFilter}
                     onChange={(e) => handleFilterChange(e.target.value as 'all' | 'subscribed' | 'not_subscribed', setSubscriptionFilter)}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
