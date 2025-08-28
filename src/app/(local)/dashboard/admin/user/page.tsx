@@ -334,9 +334,9 @@ export default function AdminUserPage() {
                     onChange={(e) => handleFilterChange(e.target.value as 'all' | 'subscribed' | 'not_subscribed', setSubscriptionFilter)}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
                   >
-                    <option value="all">Tous les abonnements</option>
-                    <option value="subscribed">Abonnés</option>
-                    <option value="not_subscribed">Non abonnés</option>
+                    <option value="all">Tous</option>
+                    <option value="subscribed">Abonné</option>
+                    <option value="not_subscribed">Non abonné</option>
                   </select>
                   <select
                     value={deletedFilter}
