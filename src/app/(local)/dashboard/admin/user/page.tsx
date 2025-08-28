@@ -310,15 +310,6 @@ export default function AdminUserPage() {
                 </div>
                 <div className="flex gap-3">
                   <select
-                    value={statusFilter}
-                    onChange={(e) => handleFilterChange(e.target.value as 'all' | 'active' | 'inactive', setStatusFilter)}
-                    className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
-                  >
-                    <option value="all">Tous les statuts</option>
-                    <option value="active">Actifs</option>
-                    <option value="inactive">Inactifs</option>
-                  </select>
-                  <select
                     value={roleFilter}
                     onChange={(e) => handleFilterChange(e.target.value as 'all' | 'user' | 'artist' | 'admin' | 'super-admin', setRoleFilter)}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"
