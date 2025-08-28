@@ -19,7 +19,6 @@ export default function AdminUserPage() {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'artist' | 'admin' | 'super-admin'>('all');
   const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'subscribed' | 'not_subscribed'>('all');
   const [deletedFilter, setDeletedFilter] = useState<'all' | 'deleted' | 'not_deleted'>('all');
@@ -38,7 +37,6 @@ export default function AdminUserPage() {
   const getActiveFiltersSummary = () => {
     const filters = [];
     if (searchTerm) filters.push(`Recherche: "${searchTerm}"`);
-    if (statusFilter !== 'all') filters.push(`Statut: ${statusFilter === 'active' ? 'Actifs' : 'Inactifs'}`);
     if (roleFilter !== 'all') filters.push(`Rôle: ${roleFilter === 'super-admin' ? 'Super Admin' : roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}`);
     if (subscriptionFilter !== 'all') filters.push(`Abonnement: ${subscriptionFilter === 'subscribed' ? 'Abonnés' : 'Non abonnés'}`);
     if (deletedFilter !== 'all') filters.push(`Suppression: ${deletedFilter === 'deleted' ? 'Supprimés' : 'Actifs'}`);
@@ -56,7 +54,6 @@ export default function AdminUserPage() {
     page: currentPage,
     page_size: 10,
     search: searchTerm || undefined,
-    is_active: statusFilter === 'all' ? undefined : statusFilter === 'active',
     default_role: roleFilter === 'all' ? undefined : roleFilter,
     has_active_subscription: subscriptionFilter === 'all' ? undefined : subscriptionFilter === 'subscribed' ? true : false,
     deleted: deletedFilter === 'all' ? undefined : deletedFilter === 'deleted' ? true : false,
@@ -353,12 +350,12 @@ export default function AdminUserPage() {
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <span>
                       {filteredUsers.length} utilisateur(s)
-                      {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all' || searchTerm) && 
+                      {( roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all' || searchTerm) && 
                         totalUsers !== filteredUsers.length && (
                         <span className="text-slate-400"> sur {totalUsers}</span>
                       )}
                     </span>
-                    {(statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all' || searchTerm) && (
+                    {( roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all' || searchTerm) && (
                       <div className="flex items-center gap-2">
                         <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                           Filtres actifs
@@ -381,7 +378,7 @@ export default function AdminUserPage() {
                 <div className="p-8 text-center">
                   <Users className="w-12 h-12 text-slate-400 mx-auto mb-4" />
                   <p className="text-slate-600 mb-2">
-                    {searchTerm || statusFilter !== 'all' || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all'
+                    {searchTerm || roleFilter !== 'all' || subscriptionFilter !== 'all' || deletedFilter !== 'all'
                       ? 'Aucun utilisateur trouvé avec les filtres actuels' 
                       : 'Aucun utilisateur trouvé'}
                   </p>
