@@ -93,7 +93,7 @@ export default function AdminAlbumsPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
@@ -108,7 +108,7 @@ export default function AdminAlbumsPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           {/* Stats Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:shadow-md transition-all duration-300">
@@ -185,7 +185,7 @@ export default function AdminAlbumsPage() {
                     />
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as 'all' | 'published' | 'draft')}
@@ -266,7 +266,7 @@ export default function AdminAlbumsPage() {
                             height={400}
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-center justify-center">
-                            <div className="opacity-0 group-hover:opacity-100 bg-white/90 p-3 rounded-full shadow-lg transition-all duration-300">
+                            <div className="opacity-80 lg:opacity-0 group-hover:opacity-100 bg-white/90 p-3 rounded-full shadow-lg transition-all duration-300">
                               <Play className="w-5 h-5 text-slate-600" />
                             </div>
                           </div>

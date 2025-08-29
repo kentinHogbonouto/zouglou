@@ -133,7 +133,7 @@ export default function ArtistPodcastEpisodeDetailPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -188,7 +188,7 @@ export default function ArtistPodcastEpisodeDetailPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           {isEditMode ? (
             // Mode édition
             <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
@@ -431,12 +431,6 @@ export default function ArtistPodcastEpisodeDetailPage() {
                         <span className="text-sm text-slate-600">Créé le</span>
                         <span className="text-sm font-medium text-slate-800">
                           {new Date(episode.createdAt).toLocaleDateString('fr-FR')}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50/50 to-white/50 rounded-lg border border-slate-200/50">
-                        <span className="text-sm text-slate-600">Modifié le</span>
-                        <span className="text-sm font-medium text-slate-800">
-                          {new Date(episode.updatedAt).toLocaleDateString('fr-FR')}
                         </span>
                       </div>
                     </div>

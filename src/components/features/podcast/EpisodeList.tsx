@@ -141,7 +141,7 @@ export function EpisodeList({
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
                 {/* Bouton Play/Pause */}
                 <button
                   onClick={(e) => {

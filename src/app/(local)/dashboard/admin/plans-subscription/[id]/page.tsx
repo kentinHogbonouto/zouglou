@@ -18,13 +18,13 @@ import {
   Calendar,
   Download,
   Music,
-  Wifi,
   WifiOff,
   Headphones,
   Play,
   Clock,
   Zap,
-  SquareChartGantt
+  SquareChartGantt,
+  Infinity
 } from 'lucide-react';
 import { useAdminSubscriptionPlan, useUpdateSubscriptionPlan } from '@/hooks/useAdminQueries';
 import { useToast } from '@/components/providers/ToastProvider';
@@ -114,7 +114,7 @@ export default function PlanDetailPage() {
       offline_mode: <WifiOff className="w-4 h-4" />,
       podcast_access: <Headphones className="w-4 h-4" />,
       unlimited_playlists: <Play className="w-4 h-4" />,
-      unlimited_streaming: <Wifi className="w-4 h-4" />
+      unlimited_streaming: <Infinity className="w-4 h-4" />
     };
     return icons[feature as keyof typeof icons] || <CheckCircle className="w-4 h-4" />;
   };
@@ -166,7 +166,7 @@ export default function PlanDetailPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -205,7 +205,7 @@ export default function PlanDetailPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Plan Details */}
             <div className="lg:col-span-2 space-y-6">
@@ -333,10 +333,6 @@ export default function PlanDetailPage() {
                   <div>
                     <p className="text-sm text-slate-500">Créé le</p>
                     <p className="text-sm font-medium text-slate-800">{formatDate(plan.createdAt)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-500">Modifié le</p>
-                    <p className="text-sm font-medium text-slate-800">{formatDate(plan.updatedAt)}</p>
                   </div>
                 </CardContent>
               </Card>

@@ -51,7 +51,7 @@ function DashboardHeader() {
               <DropdownMenuContent className="w-56" align="start">
                 <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${user?.default_role}/profile`)}>
+                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${user?.default_role == 'artist'? 'artist': 'admin'}/profile`)}>
                     Profile
                   </DropdownMenuItem>
 
