@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { AdminRoute } from "@/components/auth/ProtectedRoute";
+import { SuperAdminRoute } from "@/components/auth/ProtectedRoute";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -104,7 +104,7 @@ export default function AdminCreateUserPage() {
   };
 
   return (
-    <AdminRoute>
+    <SuperAdminRoute>
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
@@ -298,24 +298,6 @@ export default function AdminCreateUserPage() {
                     </p>
                   </div>
                   
-                  <div>
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={formData.default_role === 'super-admin'}
-                        onChange={(e) => handleInputChange('default_role', e.target.checked ? 'super-admin' : 'user')}
-                        className="rounded border-slate-300 text-[#005929] focus:ring-[#005929]/20"
-                      />
-                      <span className="ml-2 text-sm font-medium text-slate-700 flex items-center gap-1">
-                        <Crown className="w-4 h-4" />
-                        Super administrateur
-                      </span>
-                    </label>
-                    <p className="mt-1 text-xs text-slate-500 ml-6">
-                      Accès complet à toutes les fonctionnalités
-                    </p>
-                  </div>
-                  
                   {/* Role Summary */}
                   <div className="mt-6 p-4 bg-slate-50 rounded-lg">
                     <h4 className="text-sm font-medium text-slate-700 mb-2">Résumé des permissions</h4>
@@ -356,6 +338,6 @@ export default function AdminCreateUserPage() {
           </form>
         </div>
       </div>
-    </AdminRoute>
+    </SuperAdminRoute>
   );
 }
