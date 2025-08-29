@@ -16,8 +16,8 @@ export default function AdminDashboard() {
   const { user } = useAuth();
 
   // React Query hooks - avec gestion d'erreur pour les endpoints inexistants
-  const { data: songsData } = useSongs({ page_size: 5 });
-  const { data: albumsData } = useAlbums({ page_size: 5 });
+  const { data: songsData } = useSongs();
+  const { data: albumsData } = useAlbums();
 
   // Données récentes
   const recentSongs = songsData?.results?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 5) || [];
