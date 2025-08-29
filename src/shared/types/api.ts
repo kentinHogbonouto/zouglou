@@ -36,8 +36,8 @@ export interface ApiAlbum {
   title: string;
   artist: ApiArtist;
   release_date?: string;
-  category?: string;
-  genre?: string;
+  category?: ApiCategory;
+  genre?: ApiGenre;
   description?: string;
   cover?: string;
   total_tracks: number;
