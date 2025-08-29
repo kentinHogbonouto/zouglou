@@ -3,16 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { AdminRoute } from '@/components/auth/ProtectedRoute';
-import { useGenres, usePodcastList, useCreatePodcast } from '@/hooks';
+import { useGenres, usePodcastList } from '@/hooks';
 import { Pagination } from '@/components/ui/Pagination';
 import { ApiGenre, ApiPodcast } from '@/shared/types/api';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Mic, Headphones, FileText, Users, BarChart3, Search, Loader2, Plus } from 'lucide-react';
+import { Mic, Headphones, FileText, Users, BarChart3, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { AdminCreatePodcastModal } from '@/components/features/admin/AdminCreatePodcastModal';
-import { CreatePodcastData } from '@/shared/types/api';
 
 export default function AdminPodcastsPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,11 +18,10 @@ export default function AdminPodcastsPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [genreFilter, setGenreFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
-  const [showCreatePodcastModal, setShowCreatePodcastModal] = useState(false);
   const router = useRouter();
   
   // React Query hooks
-  const { data: podcastsData, isLoading, error, refetch } = usePodcastList({
+  const { data: podcastsData, isLoading, error } = usePodcastList({
     page: currentPage,
     page_size: pageSize,
     genre: genreFilter === 'all' ? undefined : genreFilter,
@@ -33,7 +29,6 @@ export default function AdminPodcastsPage() {
   });
 
   const { data: podcastGenres } = useGenres();
-  const createPodcast = useCreatePodcast();
 
   const podcasts = podcastsData?.results || [];
   const totalPages = podcastsData ? Math.ceil(podcastsData.count / pageSize) : 0;
@@ -87,16 +82,6 @@ export default function AdminPodcastsPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleCreatePodcast = async (data: CreatePodcastData) => {
-    try {
-      await createPodcast.mutateAsync(data);
-      refetch();
-      setShowCreatePodcastModal(false);
-    } catch (error) {
-      console.error('Erreur lors de la création du podcast:', error);
-    }
-  };
-
   return (
     <AdminRoute>
       <div className="min-h-screen bg-slate-50/50">
@@ -111,15 +96,6 @@ export default function AdminPodcastsPage() {
                 <p className="text-slate-500 text-base">
                   Créez et gérez les podcasts pour tous les artistes
                 </p>
-              </div>
-              <div className="flex space-x-3">
-                <Button 
-                  className="bg-gradient-to-r from-[#005929] to-[#005929]/90 hover:from-[#005929]/90 hover:to-[#005929] text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
-                  onClick={() => setShowCreatePodcastModal(true)}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nouveau Podcast
-                </Button>
               </div>
             </div>
           </div>
@@ -374,14 +350,6 @@ export default function AdminPodcastsPage() {
           )}
         </div>
       </div>
-
-      {/* Modal de création de podcast */}
-      <AdminCreatePodcastModal
-        isOpen={showCreatePodcastModal}
-        onClose={() => setShowCreatePodcastModal(false)}
-        onSubmit={handleCreatePodcast}
-        isSubmitting={createPodcast.isPending}
-      />
     </AdminRoute>
   );
 } 

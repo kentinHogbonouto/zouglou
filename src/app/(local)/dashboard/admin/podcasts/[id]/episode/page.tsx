@@ -1,24 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import { AdminRoute } from "@/components/auth/ProtectedRoute";
 import { usePodcastEpisodeList } from "@/hooks/usePodcastQuery";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link"
-import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { EpisodeList } from "@/components/features/podcast/EpisodeList";
 import { useUnifiedEpisodePlayer } from '@/hooks/useUnifiedEpisodePlayer';
-import { Headphones, Plus, ArrowLeft } from 'lucide-react';
+import { Headphones, ArrowLeft } from 'lucide-react';
 import { ApiPodcastEpisode } from "@/shared/types/api";
-import { AdminCreateEpisodeModal } from "@/components/features/admin/AdminCreateEpisodeModal";
 
 export default function ArtistPodcastEpisodePage() {
   const params = useParams();
   const router = useRouter();
   const { data: episodesData } = usePodcastEpisodeList({ podcast: params.id as string });
   const episodes = episodesData?.results || [];
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const { playEpisodeQueue, currentEpisode, isPlaying } = useUnifiedEpisodePlayer();
 
@@ -40,19 +36,11 @@ export default function ArtistPodcastEpisodePage() {
                     <Headphones className="w-6 h-6 text-slate-600" />
                   </div>
                   <div>
-                    <h1 className="text-3xl lg:text-4xl font-light text-slate-800">Mes Épisodes de Podcast</h1>
-                    <p className="text-slate-500 text-base">Gérez vos épisodes de podcast</p>
+                    <h1 className="text-3xl lg:text-4xl font-light text-slate-800">Les Épisodes du Podcast</h1>
+                    <p className="text-slate-500 text-base">Gérez les épisodes de podcast</p>
                   </div>
                 </div>
               </div>
-
-              <Button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                <Plus className="w-4 h-4" />
-                Créer un épisode
-              </Button>
             </div>
           </div>
         </div>
@@ -70,7 +58,7 @@ export default function ArtistPodcastEpisodePage() {
                   playEpisodeQueue(episodes, episodeIndex);
                 }}
                 onView={(episode) => router.push(`/dashboard/admin/podcasts/${params.id}/episode/${episode.id}`)}
-                onEdit={(episode) => router.push(`/dashboard/admin/podcasts/${params.id}/episode/${episode.id}?edit=true`)}
+                onEdit={(episode) => router.push(`/dashboard/admin/podcasts/${params.id}/episode/${episode.id}`)}
                 isPlaying={isPlaying}
                 currentEpisodeId={currentEpisode?.id}
               />
@@ -81,23 +69,9 @@ export default function ArtistPodcastEpisodePage() {
                 <Headphones className="w-8 h-8 text-slate-600" />
               </div>
               <h3 className="text-xl font-medium text-slate-800 mb-2">Aucun épisode</h3>
-              <p className="text-slate-500 mb-6">Commencez par créer votre premier épisode</p>
-              <Button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#005929] to-[#005929]/90 text-white font-medium rounded-lg hover:from-[#005929]/90 hover:to-[#005929] transition-all duration-200 shadow-lg hover:shadow-xl"
-              >
-                <Plus className="w-4 h-4" />
-                Créer un épisode
-              </Button>
+              
             </Card>
           )}
-
-          <AdminCreateEpisodeModal
-            isOpen={isCreateModalOpen}
-            onClose={() => setIsCreateModalOpen(false)}
-            isSubmitting={false}
-            onSubmit={(e) => { console.log(e); return Promise.resolve() }}
-          />
 
         </div>
       </div>

@@ -3,16 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/Card';
 import { AdminRoute } from '@/components/auth/ProtectedRoute';
-import { useSongs, useUnifiedMusicPlayer, useGenres, useCreateSong } from '@/hooks';
+import { useSongs, useUnifiedMusicPlayer, useGenres } from '@/hooks';
 import { Pagination } from '@/components/ui/Pagination';
 import { MusicList } from '@/components/features';
 import { ApiSong } from '@/shared/types/api';
 import { useRouter } from 'next/navigation';
-import { BarChart3, Clock, Music, Search, Loader2, Plus } from 'lucide-react';
+import { BarChart3, Clock, Music, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { AdminCreateTrackModal } from '@/components/features/admin/AdminCreateTrackModal';
-import { CreateSongData } from '@/shared/types/api';
 
 export default function AdminTracksPage() {
   const router = useRouter();
@@ -22,7 +19,6 @@ export default function AdminTracksPage() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
   const [genreFilter, setGenreFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
-  const [showCreateTrackModal, setShowCreateTrackModal] = useState(false);
 
   // React Query hooks
   const { data: tracksData, isLoading, error } = useSongs({
@@ -33,7 +29,6 @@ export default function AdminTracksPage() {
   });
 
   const { data: genresData } = useGenres();
-  const createSong = useCreateSong();
 
   const tracks = tracksData?.results || [];
   const totalPages = tracksData ? Math.ceil(tracksData.count / pageSize) : 0;
@@ -98,15 +93,6 @@ export default function AdminTracksPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleCreateTrack = async (data: CreateSongData) => {
-    try {
-      await createSong.mutateAsync(data);
-      setShowCreateTrackModal(false);
-    } catch (error) {
-      console.error('Erreur lors de la création du track:', error);
-    }
-  };
-
   return (
     <AdminRoute>
       <div className="min-h-screen bg-slate-50/50">
@@ -121,15 +107,6 @@ export default function AdminTracksPage() {
                 <p className="text-slate-500 text-base">
                   Créez et gérez les tracks pour tous les artistes
                 </p>
-              </div>
-              <div className="flex space-x-3">
-                <Button 
-                  className="bg-gradient-to-r from-[#005929] to-[#005929]/90 hover:from-[#005929]/90 hover:to-[#005929] text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
-                  onClick={() => setShowCreateTrackModal(true)}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nouveau Track
-                </Button>
               </div>
             </div>
           </div>
@@ -307,13 +284,6 @@ export default function AdminTracksPage() {
         </div>
       </div>
 
-      {/* Modal de création de track */}
-      <AdminCreateTrackModal
-        isOpen={showCreateTrackModal}
-        onClose={() => setShowCreateTrackModal(false)}
-        onSubmit={handleCreateTrack}
-        isSubmitting={createSong.isPending}
-      />
     </AdminRoute>
   );
 } 
