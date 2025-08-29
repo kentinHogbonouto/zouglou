@@ -120,7 +120,7 @@ export default function AdminSubscriptionPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export default function AdminSubscriptionPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           {/* Stats Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="group hover:shadow-xl transition-all duration-500 border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:scale-105">
@@ -215,7 +215,7 @@ export default function AdminSubscriptionPage() {
           {/* Filters and Search */}
           <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm mb-6">
             <CardContent className="p-6">
-              <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex flex-col lg:flex-row  gap-4">
                 <div className="flex-1">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -227,7 +227,7 @@ export default function AdminSubscriptionPage() {
                     />
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'cancelled' | 'expired' | 'pending')}
@@ -322,7 +322,7 @@ export default function AdminSubscriptionPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-slate-900">
-                              ID: {subscription?.user?.substring(0, 8)}...
+                              Nom: {subscription?.user?.full_name.substring(0, 10)}...
                             </div>
                             <div className="text-xs text-slate-500">
                               Réf: {subscription.transaction?.reference || 'N/A'}

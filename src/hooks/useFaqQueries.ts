@@ -75,7 +75,7 @@ export const useDeleteFaq = () => {
   
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      await apiService.delete(`/faq/${id}/`);
+      await apiService.delete(`/faq/${id}/realDelete/`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: faqKeys.lists() });

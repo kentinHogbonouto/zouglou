@@ -80,7 +80,7 @@ export function MusicList({
                   {index + 1}
                 </div>
 
-                <div className="relative group/cover">
+                <div className="hidden lg:flex relative group/cover">
                   <Image
                     src={track.album?.cover || '/images/cover_default.jpg'}
                     alt={track.title}
@@ -139,20 +139,20 @@ export function MusicList({
               </div>
 
               {/* Durée */}
-              <div className="flex items-center gap-1 text-sm text-slate-500">
+              <div className="hidden lg:flex items-center gap-1 text-sm text-slate-500">
                 <Clock className="w-4 h-4" />
                 <span>{formatDuration(track.duration)}</span>
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="flex items-center gap-1 opacity-80 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 {/* Bouton Play/Pause */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onPlay(track);
                   }}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200 rounded-lg"
+                  className="p-2 text-slate-600 lg:text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200 rounded-lg"
                 >
                   {currentTrackId === track.id && isPlaying ? (
                     <Pause className="w-4 h-4" />

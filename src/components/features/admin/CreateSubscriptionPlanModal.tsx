@@ -12,6 +12,7 @@ import {
   Play, 
   Star,
   CheckCircle,
+  Infinity,
 } from 'lucide-react';
 
 interface CreateSubscriptionPlanData {
@@ -285,7 +286,7 @@ export function CreateSubscriptionPlanModal({
 
               <div className="flex items-center justify-between p-3 border border-slate-200 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <Play className="w-4 h-4 text-green-600" />
+                  <Infinity className="w-4 h-4 text-green-600" />
                   <span className="text-sm font-medium">Streaming illimité</span>
                 </div>
                 <input

@@ -186,7 +186,7 @@ interface UpdateUserData {
 // Types pour les subscriptions
 interface ApiSubscription {
   id: string;
-  user: string;
+  user: ApiUser;
   plan: {
     id: string;
     name: string;
