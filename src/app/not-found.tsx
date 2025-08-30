@@ -18,17 +18,21 @@ export default function NotFound() {
           <p className="text-gray-600">
             Désolé, la page que vous recherchez n&apos;existe pas ou a été déplacée.
           </p>
-          <div className="space-y-2">
-            <Link href="/">
-              <Button className="w-full">
-                Retour à l&apos;accueil
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button variant="outline" className="w-full">
-                Nous contacter
-              </Button>
-            </Link>
+          <div className="flex flex-col gap-6">
+            <div>
+              <Link href="/">
+                <Button className="w-full">
+                  Retour à l&apos;accueil
+                </Button>
+              </Link>
+            </div>
+            <div>
+              <Link href="/#contact">
+                <Button variant="outline" className="w-full">
+                  Nous contacter
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
