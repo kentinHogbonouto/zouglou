@@ -44,14 +44,10 @@ export default function AdvertisementDetailPage() {
   const {
     isPlaying,
     isLoading: isAudioLoading,
-    error: audioError,
     toggleAudio,
     stopAudio,
   } = useAdvertisementAudio({
     audioUrl: advertisement?.audio_url || null,
-    onError: (error) => {
-      toast.showError(error);
-    },
   });
 
   const deleteMutation = useRealDeleteAdvertisement();
@@ -66,10 +62,8 @@ export default function AdvertisementDetailPage() {
   const handleDelete = async () => {
     try {
       await deleteMutation.mutateAsync(params.id as string);
-      toast.showSuccess('Publicité supprimée avec succès');
       router.push('/dashboard/admin/advertisements');
     } catch (error) {
-      toast.showError('Erreur lors de la suppression de la publicité');
       console.error('Erreur lors de la suppression de la publicité', error);
     }
   };
@@ -214,12 +208,7 @@ export default function AdvertisementDetailPage() {
                       Fichier audio
                     </h3>
                     <div className="bg-slate-50 rounded-lg p-4">
-                      {audioError ? (
-                        <div className="text-red-600 text-sm mb-3 p-3 bg-red-50 rounded-lg border border-red-200">
-                          {audioError}
-                        </div>
-                      ) : null}
-                      
+                     
                       <div className="flex items-center gap-4">
                         <Button
                           onClick={toggleAudio}
@@ -241,11 +230,6 @@ export default function AdvertisementDetailPage() {
                           <div className="text-sm text-slate-600">
                             Durée: {formatDuration(advertisement.duration || 0)}
                           </div>
-                          {advertisement.audio_url && (
-                            <div className="text-xs text-slate-500 mt-1">
-                              URL: {advertisement.audio_url}
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
