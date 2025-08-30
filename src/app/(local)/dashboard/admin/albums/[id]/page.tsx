@@ -37,8 +37,9 @@ export default function AlbumDetailPage() {
   };
 
   const formatDuration = (duration: number) => {
+    if (!duration) return '0:00';
     const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
+    const seconds = Math.floor(duration % 60);
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
@@ -154,7 +155,14 @@ export default function AlbumDetailPage() {
                           {album.category && (
                             <div className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg">
                               <Tag className="w-5 h-5 text-[#005929]" />
-                              <span className="text-slate-700">Catégorie: <span className="font-medium">{album.category}</span></span>
+                              <span className="text-slate-700">Catégorie: <span className="font-medium">{album.category?.name}</span></span>
+                            </div>
+                          )}
+
+                           {album.genre && (
+                            <div className="flex items-center gap-3 p-3 bg-slate-50/50 rounded-lg">
+                              <Tag className="w-5 h-5 text-[#005929]" />
+                              <span className="text-slate-700">Genre: <span className="font-medium">{album.genre?.name}</span></span>
                             </div>
                           )}
 
