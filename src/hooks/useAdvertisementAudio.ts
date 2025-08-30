@@ -20,7 +20,7 @@ export function useAdvertisementAudio({ audioUrl, onError }: UseAdvertisementAud
   // Nettoyer l'URL audio
   const cleanAudioUrl = useCallback((url: string): string => {
     // Supprimer les guillemets simples qui causent des problèmes
-    const cleanUrl = url.replace(/'/g, '');
+    const cleanUrl = url
     
     // Encoder l'URL pour gérer les caractères spéciaux
     try {
