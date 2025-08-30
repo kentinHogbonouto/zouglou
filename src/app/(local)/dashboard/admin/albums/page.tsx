@@ -9,6 +9,7 @@ import { Disc3, BarChart3, Music, Clock, Play, Search, Loader2 } from 'lucide-re
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
+import { useDebounce } from '@/hooks';
 
 export default function AdminAlbumsPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,6 +19,7 @@ export default function AdminAlbumsPage() {
   const [dateFilter, setDateFilter] = useState<string>('all');
   const router = useRouter();
   
+  const debouncedSearchTerm = useDebounce(searchTerm)
   // React Query hook
   const pageSize = 6;
   const { data: albumsData, isLoading, error } = useAlbums({
@@ -36,13 +38,13 @@ export default function AdminAlbumsPage() {
   // Réinitialiser la page quand les filtres changent
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, genreFilter, dateFilter]);
+  }, [debouncedSearchTerm, statusFilter, genreFilter, dateFilter]);
 
   // Filtrer les albums selon la recherche et la date
   const filteredAlbums = albums.filter(album => {
     // Filtre par recherche
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
       return (
         album.title.toLowerCase().includes(searchLower) ||
         album.description?.toLowerCase().includes(searchLower) ||

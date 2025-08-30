@@ -13,6 +13,7 @@ import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search
 import { ToggleDeletedButton } from '@/components/ui/DeletedStatusBadge';
 import Image from 'next/image';
 import { ApiUser } from '@/hooks/useAdminQueries';
+import { useDebounce } from '@/hooks';
 
 
 export default function AdminUserPage() {
@@ -23,6 +24,7 @@ export default function AdminUserPage() {
   const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'subscribed' | 'not_subscribed'>('all');
   const [deletedFilter, setDeletedFilter] = useState<'all' | 'deleted' | 'not_deleted'>('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const debouncedSearchTerm = useDebounce(searchTerm)
 
   // Réinitialiser la pagination quand les filtres changent
   const handleFilterChange = <T extends string>(
@@ -36,7 +38,7 @@ export default function AdminUserPage() {
   // Obtenir le résumé des filtres actifs
   const getActiveFiltersSummary = () => {
     const filters = [];
-    if (searchTerm) filters.push(`Recherche: "${searchTerm}"`);
+    if (debouncedSearchTerm) filters.push(`Recherche: "${debouncedSearchTerm}"`);
     if (roleFilter !== 'all') filters.push(`Rôle: ${roleFilter === 'super-admin' ? 'Super Admin' : roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}`);
     if (subscriptionFilter !== 'all') filters.push(`Abonnement: ${subscriptionFilter === 'subscribed' ? 'Abonnés' : 'Non abonnés'}`);
     if (deletedFilter !== 'all') filters.push(`Suppression: ${deletedFilter === 'deleted' ? 'Supprimés' : 'Actifs'}`);
@@ -53,7 +55,7 @@ export default function AdminUserPage() {
   const { data: usersData, isLoading } = useAdminUsers({
     page: currentPage,
     page_size: 10,
-    search: searchTerm || undefined,
+    search: debouncedSearchTerm || undefined,
     default_role: roleFilter === 'all' ? undefined : roleFilter,
     has_active_subscription: subscriptionFilter === 'all' ? undefined : subscriptionFilter === 'subscribed' ? true : false,
     deleted: deletedFilter === 'all' ? undefined : deletedFilter === 'deleted' ? true : false,
