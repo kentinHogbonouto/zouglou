@@ -108,7 +108,7 @@ export default function AdminSubscriptionDetailPage() {
   };
 
   const handleViewUser = () => {
-    router.push(`/dashboard/admin/user/${subscription?.user}`);
+    router.push(`/dashboard/admin/user/${subscription?.user.id}`);
   };
 
   const handleViewPlan = () => {
@@ -151,7 +151,7 @@ export default function AdminSubscriptionDetailPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -183,7 +183,7 @@ export default function AdminSubscriptionDetailPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Information */}
             <div className="lg:col-span-2 space-y-6">
@@ -339,17 +339,9 @@ export default function AdminSubscriptionDetailPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-slate-600">ID Utilisateur</label>
+                    <label className="text-sm font-medium text-slate-600">Nom Complet</label>
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-slate-900 font-mono">{subscription.user}</p>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(subscription.user)}
-                        className="p-1"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
+                      <p className="text-sm font-medium text-slate-900">{subscription.user.full_name}</p>
                     </div>
                   </div>
                   <Button
@@ -422,7 +414,7 @@ export default function AdminSubscriptionDetailPage() {
                   </div>
                 </CardContent>
               </Card>
-              
+
             </div>
           </div>
         </div>

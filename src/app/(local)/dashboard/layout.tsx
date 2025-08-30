@@ -19,12 +19,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDownIcon } from 'lucide-react';
-import { Inter } from 'next/font/google';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 
-const inter = Inter({ subsets: ['latin'] })
 
 // Separate component for the header that uses auth hooks
 function DashboardHeader() {
@@ -43,7 +41,7 @@ function DashboardHeader() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-auto p-0 hover:bg-transparent my-auto">
                   <Avatar>
-                    <AvatarImage src={ user?.artist_profile?.profile_image || "/images/avatar.jpg"} alt="Profile image" />
+                    <AvatarImage src={user?.artist_profile?.profile_image || "/images/avatar.jpg"} alt="Profile image" />
                   </Avatar>
                   <ChevronDownIcon size={16} className="opacity-60" aria-hidden="true" />
                 </Button>
@@ -51,7 +49,7 @@ function DashboardHeader() {
               <DropdownMenuContent className="w-56" align="start">
                 <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${user?.default_role}/profile`)}>
+                  <DropdownMenuItem onClick={() => router.push(`/dashboard/${user?.default_role == 'artist' ? 'artist' : 'admin'}/profile`)}>
                     Profile
                   </DropdownMenuItem>
 
@@ -77,29 +75,25 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
-      <body className={inter.className}>
-        <QueryProvider>
-          <AuthProvider>
-            <ToastProvider>
-            <UnifiedPlayerProvider>
-              <SidebarProvider>
-                <div className="flex min-h-screen w-full">
-                  <DashboardSidebar />
-                  <SidebarInset className="w-full">
-                    <DashboardHeader />
-                    <div className="flex flex-col gap-4 p-4 md:gap-8 md:p-6 w-full pb-20">
-                      {children}
-                    </div>
-                  </SidebarInset>
-                </div>
-                <UnifiedPlayer />
-              </SidebarProvider>
-            </UnifiedPlayerProvider>
-            </ToastProvider>
-          </AuthProvider>
-        </QueryProvider>
-      </body>
-    </html>
+    <QueryProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <UnifiedPlayerProvider>
+            <SidebarProvider>
+              <div className="flex min-h-screen w-full">
+                <DashboardSidebar />
+                <SidebarInset className="w-full">
+                  <DashboardHeader />
+                  <div className="flex flex-col gap-4 p-4 md:gap-8 md:p-6 w-full pb-20">
+                    {children}
+                  </div>
+                </SidebarInset>
+              </div>
+              <UnifiedPlayer />
+            </SidebarProvider>
+          </UnifiedPlayerProvider>
+        </ToastProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 } 

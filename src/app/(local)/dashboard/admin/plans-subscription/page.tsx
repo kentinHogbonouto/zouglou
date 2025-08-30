@@ -14,6 +14,7 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CreateSubscriptionPlanModal } from '@/components/features/admin/CreateSubscriptionPlanModal';
 import { CreateSubscriptionPlanData } from '@/shared/types/api';
+import { useDebounce } from '@/hooks';
 
 
 export default function AdminSubscriptionPlansPage() {
@@ -30,6 +31,7 @@ export default function AdminSubscriptionPlansPage() {
     planName: ''
   });
 
+  const debouncedSearchTerm = useDebounce(searchTerm)
   // React Query hooks
   const {
     data: plansData,
@@ -40,7 +42,7 @@ export default function AdminSubscriptionPlansPage() {
   } = useAdminSubscriptionPlans({
     page: currentPage,
     page_size: 10,
-    name: searchTerm || undefined,
+    name: debouncedSearchTerm|| undefined,
     is_active: statusFilter === 'all' ? undefined : statusFilter === 'active',
     is_featured: featuredFilter === 'all' ? undefined : featuredFilter === 'featured',
   });
@@ -147,8 +149,8 @@ export default function AdminSubscriptionPlansPage() {
   };
 
   const filteredPlans = plans.filter(plan => {
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
       return (
         plan.name.toLowerCase().includes(searchLower) ||
         plan.description.toLowerCase().includes(searchLower)
@@ -168,7 +170,7 @@ export default function AdminSubscriptionPlansPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -199,7 +201,7 @@ export default function AdminSubscriptionPlansPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           {/* Stats Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="group hover:shadow-xl transition-all duration-500 border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:scale-105">
@@ -274,7 +276,7 @@ export default function AdminSubscriptionPlansPage() {
                     />
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}

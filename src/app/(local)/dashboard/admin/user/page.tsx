@@ -14,7 +14,7 @@ import { ToggleDeletedButton } from '@/components/ui/DeletedStatusBadge';
 import Image from 'next/image';
 import { ApiUser } from '@/hooks/useAdminQueries';
 import { useAuth } from '@/hooks/useAuth';
-
+import { useDebounce } from '@/hooks';
 
 export default function AdminUserPage() {
   const router = useRouter();
@@ -27,6 +27,7 @@ export default function AdminUserPage() {
   const [subscriptionFilter, setSubscriptionFilter] = useState<'all' | 'subscribed' | 'not_subscribed'>('all');
   const [deletedFilter, setDeletedFilter] = useState<'all' | 'deleted' | 'not_deleted'>('all');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const debouncedSearchTerm = useDebounce(searchTerm)
 
   // Réinitialiser la pagination quand les filtres changent
   const handleFilterChange = <T extends string>(
@@ -40,7 +41,7 @@ export default function AdminUserPage() {
   // Obtenir le résumé des filtres actifs
   const getActiveFiltersSummary = () => {
     const filters = [];
-    if (searchTerm) filters.push(`Recherche: "${searchTerm}"`);
+    if (debouncedSearchTerm) filters.push(`Recherche: "${debouncedSearchTerm}"`);
     if (roleFilter !== 'all') filters.push(`Rôle: ${roleFilter === 'super-admin' ? 'Super Admin' : roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}`);
     if (subscriptionFilter !== 'all') filters.push(`Abonnement: ${subscriptionFilter === 'subscribed' ? 'Abonnés' : 'Non abonnés'}`);
     if (deletedFilter !== 'all') filters.push(`Suppression: ${deletedFilter === 'deleted' ? 'Supprimés' : 'Actifs'}`);
@@ -57,7 +58,7 @@ export default function AdminUserPage() {
   const { data: usersData, isLoading } = useAdminUsers({
     page: currentPage,
     page_size: 10,
-    search: searchTerm || undefined,
+    search: debouncedSearchTerm || undefined,
     default_role: roleFilter === 'all' ? undefined : roleFilter,
     has_active_subscription: subscriptionFilter === 'all' ? undefined : subscriptionFilter === 'subscribed' ? true : false,
     deleted: deletedFilter === 'all' ? undefined : deletedFilter === 'deleted' ? true : false,
@@ -194,7 +195,7 @@ export default function AdminUserPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
@@ -225,7 +226,7 @@ export default function AdminUserPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           {/* Stats Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="group hover:shadow-xl transition-all duration-500 border-0 shadow-sm bg-white/60 backdrop-blur-sm hover:scale-105">
@@ -309,8 +310,8 @@ export default function AdminUserPage() {
                     />
                   </div>
                 </div>
-                <div className="flex gap-3">
-                    <select
+                <div className="flex flex-wrap gap-3">
+                  <select
                     value={roleFilter}
                     onChange={(e) => handleFilterChange(e.target.value as 'all' | 'user' | 'artist' | 'admin' | 'super-admin', setRoleFilter)}
                     className="px-4 py-2 border border-slate-200 rounded-lg focus:border-[#005929] focus:ring-[#005929]/20 bg-white"

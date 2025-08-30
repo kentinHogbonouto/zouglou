@@ -24,11 +24,12 @@ import {
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useDebounce } from '@/hooks';
 
 export const InformationList: React.FC = () => {
   const [filters, setFilters] = useState<InformationFilters>({});
 
-  const { data: informations, isLoading, error, refetch } = useInformations(filters);
+  const { data: informations, isLoading, error, refetch } = useInformations({...filters, search: useDebounce(filters.search)});
   const deleteInformationMutation = useDeleteInformation();
   const { 
     isOpen, 

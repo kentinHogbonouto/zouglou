@@ -37,7 +37,7 @@ export default function AdminInformationCreatePage() {
     <div className="min-h-screen bg-slate-50/50">
       {/* Header Section */}
       <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export default function AdminInformationCreatePage() {
       </div>
 
       {/* Content Section */}
-      <div className="max-w-7xl mx-auto px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-xl shadow-sm border border-slate-200/60 overflow-hidden">
             <div className="p-8">

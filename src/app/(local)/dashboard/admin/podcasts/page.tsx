@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { AdminRoute } from '@/components/auth/ProtectedRoute';
-import { useGenres, usePodcastList } from '@/hooks';
+import { useDebounce, useGenres, usePodcastList } from '@/hooks';
 import { Pagination } from '@/components/ui/Pagination';
 import { ApiGenre, ApiPodcast } from '@/shared/types/api';
 import { useRouter } from 'next/navigation';
@@ -19,7 +19,7 @@ export default function AdminPodcastsPage() {
   const [genreFilter, setGenreFilter] = useState<string>('all');
   const [dateFilter, setDateFilter] = useState<string>('all');
   const router = useRouter();
-  
+  const debouncedSearchTerm = useDebounce(searchTerm)
   // React Query hooks
   const { data: podcastsData, isLoading, error } = usePodcastList({
     page: currentPage,
@@ -36,13 +36,13 @@ export default function AdminPodcastsPage() {
   // Réinitialiser la page quand les filtres changent
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, genreFilter, dateFilter]);
+  }, [debouncedSearchTerm, statusFilter, genreFilter, dateFilter]);
 
   // Filtrer les podcasts selon la recherche et la date
   const filteredPodcasts = podcasts.filter(podcast => {
     // Filtre par recherche
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
       return (
         podcast.title.toLowerCase().includes(searchLower) ||
         podcast.description?.toLowerCase().includes(searchLower) ||
@@ -87,7 +87,7 @@ export default function AdminPodcastsPage() {
       <div className="min-h-screen bg-slate-50/50">
         {/* Header Section */}
         <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto px-8 py-8">
+          <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               <div className="space-y-2">
                 <h1 className="text-3xl lg:text-4xl font-light text-slate-800">
@@ -102,7 +102,7 @@ export default function AdminPodcastsPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-8 py-8">
+        <div className="max-w-7xl mx-auto px-2 lg:px-8 py-8">
           {/* Stats Section */}
           <div className="mb-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -183,7 +183,7 @@ export default function AdminPodcastsPage() {
                     />
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as 'all' | 'published' | 'draft')}

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { Menu, X, Bell, User, LogOut, Music, Home, Users, Mail, ChevronDown, HelpCircle } from 'lucide-react';
+import { Menu, X, User, LogOut, Music, Home, Users, Mail, ChevronDown, HelpCircle } from 'lucide-react';
 import Image from 'next/image';
 
 interface HeaderProps {
@@ -68,13 +68,6 @@ export function Header({ className }: HeaderProps) {
           <div className="hidden md:flex items-center space-x-4">
             {user && (
               <>
-                {/* Notifications */}
-                <Link href={`/dashboard/${user.default_role === 'artist' ? 'artist' : 'admin'}/notifications`}>
-                  <button className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all duration-200 relative">
-                    <Bell className="w-5 h-5" />
-                  </button>
-                </Link>
-
                 {/* Menu utilisateur */}
                 <div className="relative">
                   <button

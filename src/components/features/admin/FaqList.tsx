@@ -22,11 +22,12 @@ import {
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useDebounce } from '@/hooks';
 
 export const FaqList: React.FC = () => {
   const [filters, setFilters] = useState<FaqFilters>({});
 
-  const { data: faqs, isLoading, error, refetch } = useFaqs(filters);
+  const { data: faqs, isLoading, error, refetch } = useFaqs({position : filters.position, search: useDebounce(filters.search)});
   const deleteFaqMutation = useDeleteFaq();
   const { 
     isOpen, 
@@ -38,8 +39,10 @@ export const FaqList: React.FC = () => {
   } = useDeleteConfirmation();
 
   const handleSearch = (searchTerm: string) => {
-    setFilters(prev => ({ ...prev, search: searchTerm }));
+    setFilters(prev => ({ ...prev, search: searchTerm?.toLocaleLowerCase() }));
   };
+
+  
 
 
   const handleDelete = async (faq: Faq) => {
