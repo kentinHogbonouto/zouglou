@@ -12,6 +12,7 @@ import { useAdminSubscriptions } from '@/hooks/useAdminQueries';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import Link from 'next/link';
+import { useDebounce } from '@/hooks';
 
 
 export default function AdminSubscriptionPage() {
@@ -20,6 +21,7 @@ export default function AdminSubscriptionPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'cancelled' | 'expired' | 'pending'>('all');
   const [autoRenewFilter, setAutoRenewFilter] = useState<'all' | 'true' | 'false'>('all');
+  const debouncedSearchTerm = useDebounce(searchTerm)
 
   // React Query hooks
   const { 
@@ -97,8 +99,8 @@ export default function AdminSubscriptionPage() {
   };
 
   const filteredSubscriptions = subscriptions.filter(subscription => {
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
       return (
         (subscription.plan?.name?.toLowerCase().includes(searchLower)) ||
         (subscription.transaction?.reference?.toLowerCase().includes(searchLower)) ||

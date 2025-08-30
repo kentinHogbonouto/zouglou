@@ -14,6 +14,7 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { CreateSubscriptionPlanModal } from '@/components/features/admin/CreateSubscriptionPlanModal';
 import { CreateSubscriptionPlanData } from '@/shared/types/api';
+import { useDebounce } from '@/hooks';
 
 
 export default function AdminSubscriptionPlansPage() {
@@ -30,6 +31,7 @@ export default function AdminSubscriptionPlansPage() {
     planName: ''
   });
 
+  const debouncedSearchTerm = useDebounce(searchTerm)
   // React Query hooks
   const {
     data: plansData,
@@ -40,7 +42,7 @@ export default function AdminSubscriptionPlansPage() {
   } = useAdminSubscriptionPlans({
     page: currentPage,
     page_size: 10,
-    name: searchTerm || undefined,
+    name: debouncedSearchTerm|| undefined,
     is_active: statusFilter === 'all' ? undefined : statusFilter === 'active',
     is_featured: featuredFilter === 'all' ? undefined : featuredFilter === 'featured',
   });
@@ -147,8 +149,8 @@ export default function AdminSubscriptionPlansPage() {
   };
 
   const filteredPlans = plans.filter(plan => {
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
+    if (debouncedSearchTerm) {
+      const searchLower = debouncedSearchTerm.toLowerCase();
       return (
         plan.name.toLowerCase().includes(searchLower) ||
         plan.description.toLowerCase().includes(searchLower)
