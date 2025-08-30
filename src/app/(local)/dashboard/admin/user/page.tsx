@@ -13,11 +13,14 @@ import { Users, Plus, UserCheck, UserX, Shield, Crown, Music, CreditCard, Search
 import { ToggleDeletedButton } from '@/components/ui/DeletedStatusBadge';
 import Image from 'next/image';
 import { ApiUser } from '@/hooks/useAdminQueries';
+import { useAuth } from '@/hooks/useAuth';
 import { useDebounce } from '@/hooks';
-
 
 export default function AdminUserPage() {
   const router = useRouter();
+
+  const { user } = useAuth();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'artist' | 'admin' | 'super-admin'>('all');
@@ -209,7 +212,7 @@ export default function AdminUserPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex space-x-3">
+             {user?.default_role === "super-admin"  && <div className="flex space-x-3">
                 <Button 
                   className="bg-gradient-to-r from-[#005929] to-[#005929]/90 hover:from-[#005929]/90 hover:to-[#005929] text-white px-6 py-3 rounded-xl transition-all duration-200 font-medium"
                   onClick={() => router.push('/dashboard/admin/user/create')}
@@ -217,7 +220,7 @@ export default function AdminUserPage() {
                   <Plus className="w-4 h-4 mr-2" />
                   Nouvel utilisateur
                 </Button>
-              </div>
+              </div>}
             </div>
           </div>
         </div>

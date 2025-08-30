@@ -126,6 +126,17 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
   );
 }
 
+export function SuperAdminRoute({ children }: { children: React.ReactNode }) {
+  return (
+    <ProtectedRoute 
+      requiredRoles={['super-admin']}
+      requiredPermissions={[SYSTEM_PERMISSIONS.SYSTEM_MANAGE]}
+    >
+      {children}
+    </ProtectedRoute>
+  );
+}
+
 export function ArtistRoute({ children }: { children: React.ReactNode }) {
   return (
     <ProtectedRoute 
