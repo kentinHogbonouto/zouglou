@@ -72,11 +72,6 @@ export function useCreateAdvertisement() {
         }
       });
 
-      console.log('FormData contents:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
       const response = await apiService.post('/advertisements/', formData);
       return response.data as Advertisement;
     },
@@ -111,10 +106,6 @@ export function useUpdateAdvertisement() {
         }
       });
 
-      console.log('Update FormData contents:');
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
 
       const response = await apiService.patch(`/advertisements/${id}/`, formData);
       return response.data as Advertisement;
