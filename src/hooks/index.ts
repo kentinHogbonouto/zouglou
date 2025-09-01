@@ -31,3 +31,4 @@ export * from './useAdvertisementQueries';
 
 // Hooks pour l'audio des publicités
 export * from './useAdvertisementAudio';
+export * from './useCityQueries';

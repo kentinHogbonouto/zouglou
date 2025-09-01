@@ -12,7 +12,6 @@ import {
   ArrowLeft, 
   Save, 
   Shield, 
-  Crown, 
   Music, 
   AlertTriangle,
 } from 'lucide-react';

@@ -35,7 +35,8 @@ import {
   Settings,
   Info,
   ChevronDown,
-  Megaphone
+  Megaphone,
+  MapPin
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -154,6 +155,12 @@ const adminMenuItems: MenuItem[] = [
         label: 'Publicités',
         href: '/dashboard/admin/advertisements',
         icon: <Megaphone size={16} className="h-4 w-4" />,
+        permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+      },
+      {
+        label: 'Villes',
+        href: '/dashboard/admin/cities',
+        icon: <MapPin size={16} className="h-4 w-4" />,
         permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
       }
     ],
