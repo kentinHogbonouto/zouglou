@@ -12,4 +12,6 @@ export * from './FaqNavigation';
 export * from './InformationList';
 export * from './InformationForm';
 export * from './InformationStats';
-export * from './InformationNavigation'; 
+export * from './InformationNavigation';
+export * from './CityList';
+export * from './CityModal'; 
