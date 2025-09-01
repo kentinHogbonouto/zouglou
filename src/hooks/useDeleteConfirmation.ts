@@ -7,7 +7,7 @@ interface DeleteConfirmationState {
   title: string;
   message: string;
   itemName: string;
-  itemType: 'podcast' | 'episode' | 'track' | 'album' | 'live' | 'account';
+  itemType: 'podcast' | 'episode' | 'track' | 'album' | 'live' | 'account' | 'category' | 'genre';
   onConfirm: (() => void) | null;
 }
 
@@ -23,7 +23,7 @@ export function useDeleteConfirmation() {
 
   const showDeleteConfirmation = (
     itemName: string,
-    itemType: 'podcast' | 'episode' | 'track' | 'album' | 'live' | 'account',
+    itemType: 'podcast' | 'episode' | 'track' | 'album' | 'live' | 'account' | 'category' | 'genre',
     onConfirm: () => void,
     title?: string,
     message?: string
@@ -35,6 +35,8 @@ export function useDeleteConfirmation() {
       album: 'Supprimer l\'album',
       live: 'Supprimer le live stream',
       account: 'Supprimer le compte',
+      category: 'Supprimer la catégorie',
+      genre: 'Supprimer le genre',
     };
 
     const defaultMessages = {
@@ -44,6 +46,8 @@ export function useDeleteConfirmation() {
       album: 'Êtes-vous sûr de vouloir supprimer cet album ? Cette action est irréversible.',
       live: 'Êtes-vous sûr de vouloir supprimer ce live stream ? Cette action est irréversible.',
       account: 'Êtes-vous ABSOLUMENT sûr de vouloir supprimer votre compte ? Cette action est irréversible et supprimera définitivement toutes vos données.',
+      category: 'Êtes-vous sûr de vouloir supprimer cette catégorie ? Cette action est irréversible.',
+      genre: 'Êtes-vous sûr de vouloir supprimer ce genre ? Cette action est irréversible.',
     };
 
     setState({

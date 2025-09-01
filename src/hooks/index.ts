@@ -31,3 +31,9 @@ export * from './useAdvertisementQueries';
 
 // Hooks pour l'audio des publicités
 export * from './useAdvertisementAudio';
+
+// Hooks pour les catégories
+export * from './useCategoryQueries';
+
+// Hooks pour les genres
+export * from './useGenreQueries';

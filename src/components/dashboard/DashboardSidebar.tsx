@@ -35,7 +35,9 @@ import {
   Settings,
   Info,
   ChevronDown,
-  Megaphone
+  Megaphone,
+  Tags,
+  Tag
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -154,6 +156,18 @@ const adminMenuItems: MenuItem[] = [
         label: 'Publicités',
         href: '/dashboard/admin/advertisements',
         icon: <Megaphone size={16} className="h-4 w-4" />,
+        permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+      },
+      {
+        label: 'Catégories',
+        href: '/dashboard/admin/categories',
+        icon: <Tags size={16} className="h-4 w-4" />,
+        permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
+      },
+      {
+        label: 'Genres',
+        href: '/dashboard/admin/genres',
+        icon: <Tag size={16} className="h-4 w-4" />,
         permission: SYSTEM_PERMISSIONS.CONTENT_MODERATE,
       }
     ],
